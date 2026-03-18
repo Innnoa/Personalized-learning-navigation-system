@@ -39,3 +39,11 @@
 
 # debug information files
 *.dwo
+
+# Project runtime/build artifacts
+frontend/node_modules/
+frontend/dist/
+backend/build/
+database/data/*.db
+database/data/*.sqlite
+!database/data/.gitkeep
