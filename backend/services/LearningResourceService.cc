@@ -8,6 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <unordered_map>
 #include <vector>
 
@@ -68,6 +69,184 @@ Json::Value buildSingleResourcePayload(const Json::Value &resourceJson)
     payload["focusNodeLabel"] = resourceJson["focusNodeLabel"].asString();
     payload["selectionReason"] = "";
     return payload;
+}
+
+int buildPhasePriority(const std::string &recommendedPhase,
+                       const algorithm::planner::LearningPathItem &item)
+{
+    const bool scheduledNow = item.status == "scheduled";
+
+    if (recommendedPhase == "主学")
+    {
+        return scheduledNow ? 600 : 520;
+    }
+
+    if (recommendedPhase == "预习")
+    {
+        return scheduledNow ? 520 : 600;
+    }
+
+    if (recommendedPhase == "难点突破")
+    {
+        return scheduledNow ? 460 : 440;
+    }
+
+    if (recommendedPhase == "巩固")
+    {
+        return scheduledNow ? 380 : 360;
+    }
+
+    if (recommendedPhase == "答辩复盘")
+    {
+        return 300;
+    }
+
+    if (recommendedPhase == "延伸学习")
+    {
+        return 220;
+    }
+
+    return 180;
+}
+
+int buildTypePriority(const std::string &type)
+{
+    if (type == "video")
+    {
+        return 30;
+    }
+
+    if (type == "article")
+    {
+        return 20;
+    }
+
+    if (type == "document")
+    {
+        return 10;
+    }
+
+    return 0;
+}
+
+int buildFocusPriority(const Json::Value &resourcePayload,
+                       const algorithm::planner::LearningPathItem &item)
+{
+    const auto focusNodeCode = resourcePayload["focusNodeCode"].asString();
+    if (focusNodeCode.empty())
+    {
+        return 20;
+    }
+
+    if (focusNodeCode == item.point.code)
+    {
+        return 30;
+    }
+
+    return 10;
+}
+
+int buildResourcePriorityScore(
+    const algorithm::planner::LearningPathItem &item,
+    const Json::Value &resourcePayload)
+{
+    return buildPhasePriority(resourcePayload["recommendedPhase"].asString(), item) +
+           buildTypePriority(resourcePayload["type"].asString()) +
+           buildFocusPriority(resourcePayload, item);
+}
+
+std::string buildPriorityLabel(bool isPrimaryRecommendation,
+                               const Json::Value &resourcePayload)
+{
+    if (isPrimaryRecommendation)
+    {
+        return "优先看";
+    }
+
+    const auto recommendedPhase = resourcePayload["recommendedPhase"].asString();
+    if (recommendedPhase == "巩固")
+    {
+        return "巩固看";
+    }
+
+    if (recommendedPhase == "答辩复盘")
+    {
+        return "答辩看";
+    }
+
+    if (recommendedPhase == "延伸学习")
+    {
+        return "延伸看";
+    }
+
+    return "随后看";
+}
+
+std::string buildResourceLayer(const Json::Value &resourcePayload,
+                               bool isPrimaryRecommendation)
+{
+    const auto recommendedPhase = resourcePayload["recommendedPhase"].asString();
+    const auto type = resourcePayload["type"].asString();
+
+    if (recommendedPhase == "答辩复盘")
+    {
+        return "答辩复盘";
+    }
+
+    if (isPrimaryRecommendation || type == "video" ||
+        recommendedPhase == "主学" || recommendedPhase == "预习" ||
+        recommendedPhase == "难点突破")
+    {
+        return "课程风格优先";
+    }
+
+    return "图文补充";
+}
+
+std::string buildResourceLayerHint(const std::string &resourceLayer)
+{
+    if (resourceLayer == "课程风格优先")
+    {
+        return "适合作为当前节点的主线学习入口，优先建立整体理解。";
+    }
+
+    if (resourceLayer == "图文补充")
+    {
+        return "适合在主线学习后补概念、查步骤或整理笔记。";
+    }
+
+    if (resourceLayer == "答辩复盘")
+    {
+        return "适合在实现完成后回顾术语、定义和讲解顺序。";
+    }
+
+    return "适合作为当前节点的补充学习材料。";
+}
+
+Json::Value buildResourceLayerSummary(const Json::Value &resources)
+{
+    Json::Value summary(Json::objectValue);
+    summary["课程风格优先"] = 0;
+    summary["图文补充"] = 0;
+    summary["答辩复盘"] = 0;
+
+    if (!resources.isArray())
+    {
+        return summary;
+    }
+
+    for (const auto &resource : resources)
+    {
+        const auto layer = resource["resourceLayer"].asString();
+        if (layer.empty())
+        {
+            continue;
+        }
+
+        summary[layer] = summary[layer].asInt() + 1;
+    }
+
+    return summary;
 }
 
 std::string buildRolePhrase(
@@ -298,6 +477,36 @@ const std::unordered_map<std::string, Json::Value> &getLearningResourceCatalog()
     static const auto catalog = loadLearningResourceCatalog();
     return catalog;
 }
+
+Json::Value findRawResourcesForKnowledgePoint(
+    const std::string &knowledgePointCode)
+{
+    const auto &catalog = getLearningResourceCatalog();
+    const auto directIt = catalog.find(knowledgePointCode);
+    if (directIt != catalog.end())
+    {
+        return directIt->second;
+    }
+
+    Json::Value matchedResources(Json::arrayValue);
+    for (const auto &[_, resources] : catalog)
+    {
+        if (!resources.isArray())
+        {
+            continue;
+        }
+
+        for (const auto &resourcePayload : resources)
+        {
+            if (resourcePayload["focusNodeCode"].asString() == knowledgePointCode)
+            {
+                matchedResources.append(resourcePayload);
+            }
+        }
+    }
+
+    return matchedResources;
+}
 }
 
 namespace services
@@ -305,33 +514,63 @@ namespace services
 Json::Value LearningResourceService::buildResourcesForKnowledgePoint(
     const std::string &knowledgePointCode)
 {
-    const auto &catalog = getLearningResourceCatalog();
-    const auto it = catalog.find(knowledgePointCode);
-    if (it == catalog.end())
-    {
-        return Json::Value(Json::arrayValue);
-    }
-
-    return it->second;
+    return findRawResourcesForKnowledgePoint(knowledgePointCode);
 }
 
 Json::Value LearningResourceService::buildResourcesForLearningPathItem(
     const algorithm::planner::LearningPathItem &item)
 {
-    const auto &catalog = getLearningResourceCatalog();
-    const auto it = catalog.find(item.point.code);
-    if (it == catalog.end())
+    const auto rawResources =
+        findRawResourcesForKnowledgePoint(item.point.code);
+    if (!rawResources.isArray() || rawResources.empty())
     {
         return Json::Value(Json::arrayValue);
     }
 
-    Json::Value resources(Json::arrayValue);
-    for (const auto &resourcePayload : it->second)
+    std::vector<Json::Value> resourceItems;
+    for (const auto &resourcePayload : rawResources)
     {
         auto enrichedResource = resourcePayload;
         enrichedResource["selectionReason"] =
             buildSelectionReason(item, enrichedResource);
-        resources.append(enrichedResource);
+        enrichedResource["recommendationScore"] =
+            buildResourcePriorityScore(item, enrichedResource);
+        resourceItems.push_back(std::move(enrichedResource));
+    }
+
+    std::stable_sort(resourceItems.begin(),
+                     resourceItems.end(),
+                     [](const Json::Value &left, const Json::Value &right) {
+                         const auto leftScore =
+                             left["recommendationScore"].asInt();
+                         const auto rightScore =
+                             right["recommendationScore"].asInt();
+                         if (leftScore != rightScore)
+                         {
+                             return leftScore > rightScore;
+                         }
+
+                         return left["title"].asString() <
+                                right["title"].asString();
+                     });
+
+    Json::Value resources(Json::arrayValue);
+    for (std::size_t index = 0; index < resourceItems.size(); ++index)
+    {
+        auto resourcePayload = resourceItems[index];
+        const bool isPrimaryRecommendation = index == 0;
+        const auto resourceLayer =
+            buildResourceLayer(resourcePayload, isPrimaryRecommendation);
+        resourcePayload["recommendationRank"] =
+            static_cast<int>(index + 1);
+        resourcePayload["isPrimaryRecommendation"] =
+            isPrimaryRecommendation;
+        resourcePayload["priorityLabel"] =
+            buildPriorityLabel(isPrimaryRecommendation, resourcePayload);
+        resourcePayload["resourceLayer"] = resourceLayer;
+        resourcePayload["resourceLayerHint"] =
+            buildResourceLayerHint(resourceLayer);
+        resources.append(resourcePayload);
     }
 
     return resources;
@@ -365,6 +604,12 @@ Json::Value LearningResourceService::buildResourceRecommendations(
             item.status == "scheduled"
                 ? "建议与当前轮次学习同步使用，优先先看视频建立概念，再配合文本巩固。"
                 : "建议在进入下一轮前提前预习，先熟悉概念与依赖关系。";
+        recommendation["primaryResourceTitle"] =
+            resources[0]["title"].asString();
+        recommendation["primaryResourcePriorityLabel"] =
+            resources[0]["priorityLabel"].asString();
+        recommendation["resourceLayerSummary"] =
+            buildResourceLayerSummary(resources);
         recommendation["resources"] = resources;
         recommendations.append(recommendation);
     }

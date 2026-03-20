@@ -271,5 +271,5 @@ curl -X POST http://127.0.0.1:8080/api/feedback/rollback \
 后端当前已覆盖最小路径规划、反馈更新规则、推荐解释，以及学习者画像读取与反馈持久化链路的定向测试。测试运行时会自动创建隔离的 SQLite 测试库，不会直接修改开发演示用的 `database/data/app.db`。可通过以下命令运行：
 
 ```bash
-ctest --test-dir backend/build/tests --output-on-failure
+ctest --test-dir backend/build --output-on-failure
 ```

@@ -11,11 +11,21 @@ class PathPlanningController
     METHOD_LIST_BEGIN
     ADD_METHOD_TO(PathPlanningController::generate, "/api/path/generate",
                   drogon::Post);
+    ADD_METHOD_TO(PathPlanningController::generateDetail,
+                  "/api/path/detail/generate", drogon::Post);
+    ADD_METHOD_TO(PathPlanningController::adjustDetail,
+                  "/api/path/detail/adjust", drogon::Post);
     ADD_METHOD_TO(PathPlanningController::adjust, "/api/path/adjust",
                   drogon::Post);
     METHOD_LIST_END
 
     void generate(
+        const drogon::HttpRequestPtr &req,
+        std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
+    void generateDetail(
+        const drogon::HttpRequestPtr &req,
+        std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
+    void adjustDetail(
         const drogon::HttpRequestPtr &req,
         std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
     void adjust(const drogon::HttpRequestPtr &req,

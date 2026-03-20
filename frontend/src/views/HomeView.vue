@@ -63,7 +63,6 @@ const healthError = ref("");
 const learnerProfile = ref(null);
 const learnerProfileLoading = ref(true);
 const learnerProfileError = ref("");
-
 function handleLearnerProfileUpdated(payload) {
   learnerProfile.value = payload;
   learnerProfileError.value = "";
