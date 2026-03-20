@@ -1,0 +1,36 @@
+{
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 8080,
+      "https": false
+    }
+  ],
+  "db_clients": [
+    {
+      "name": "sqlite_client",
+      "rdbms": "sqlite3",
+      "filename": "../../database/data/app.db",
+      "is_fast": false,
+      "number_of_connections": 1,
+      "timeout": -1.0
+    }
+  ],
+  "app": {
+    "number_of_threads": 1,
+    "enable_session": false,
+    "document_root": "./public",
+    "use_implicit_page": false,
+    "load_dynamic_views": false,
+    "log": {
+      "log_level": "INFO",
+      "display_local_time": true
+    }
+  },
+  "custom_config": {
+    "selected_course": "数据结构",
+    "default_learner_code": "demo-learner",
+    "knowledge_graph_detail_file": "../config/knowledge_graph_details.json",
+    "learning_resource_file": "../config/learning_resources.json"
+  }
+}
