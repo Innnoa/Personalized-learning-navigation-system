@@ -104,6 +104,13 @@ std::filesystem::path prepareIsolatedTestDatabase()
     }
 
     sqlite3_close(db);
+    // 复位 SQLite 全局状态，避免后续 Drogon 初始化连接时再次配置线程模式报错。
+    const int shutdownResult = sqlite3_shutdown();
+    if (shutdownResult != SQLITE_OK)
+    {
+        throw std::runtime_error("测试数据库初始化后 sqlite3_shutdown 失败，错误码: " +
+                                 std::to_string(shutdownResult));
+    }
     return dbPath;
 }
 }

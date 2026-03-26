@@ -1,5 +1,10 @@
 :root {
   font-family: "Segoe UI Variable", "Noto Sans SC", "PingFang SC", sans-serif;
+  --panel-surface: rgba(255, 255, 255, 0.93);
+  --panel-surface-soft: rgba(255, 255, 255, 0.95);
+  --panel-border: 1px solid rgba(22, 32, 42, 0.08);
+  --panel-shadow: 0 10px 26px rgba(22, 32, 42, 0.06);
+  --panel-shadow-strong: 0 8px 18px rgba(12, 106, 113, 0.14);
   color: #16202a;
   background:
     radial-gradient(circle at top left, rgba(255, 201, 120, 0.45), transparent 34%),
@@ -27,6 +32,7 @@ body,
 
 body {
   min-width: 320px;
+  overflow-y: scroll;
 }
 
 a {
@@ -39,4 +45,33 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+.surface-panel {
+  background: var(--panel-surface);
+  border: var(--panel-border);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: var(--panel-shadow);
+  contain: paint;
+}
+
+.page-section-label {
+  margin: 0 0 6px;
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6d7781;
+}
+
+.page-error-panel {
+  background: #fff2f2;
+  color: #9b3333;
+}
+
+@supports (content-visibility: auto) {
+  .surface-panel {
+    content-visibility: auto;
+    contain-intrinsic-size: 320px;
+  }
 }

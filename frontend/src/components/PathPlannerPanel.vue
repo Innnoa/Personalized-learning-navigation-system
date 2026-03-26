@@ -126,6 +126,65 @@
             {{ reachableMessage }}
           </p>
 
+          <article v-if="overallExplanation" class="overall-explanation-card">
+            <div class="section-headline">
+              <div>
+                <p class="label">路径总说明</p>
+                <h3>本次路径为什么这样安排</h3>
+              </div>
+              <p class="caption">
+                该说明直接聚合规划结果与推荐依据，方便答辩时先讲“整条路径的逻辑”。
+              </p>
+            </div>
+
+            <ul
+              v-if="(overallExplanation.labels || []).length > 0"
+              class="overall-explanation-tags"
+            >
+              <li
+                v-for="label in overallExplanation.labels || []"
+                :key="`overall-${label}`"
+                class="overall-explanation-tag"
+              >
+                {{ label }}
+              </li>
+            </ul>
+
+            <p class="overall-explanation-summary">
+              {{ overallExplanation.summary }}
+            </p>
+
+            <ul
+              v-if="(overallExplanation.bullets || []).length > 0"
+              class="overall-explanation-list"
+            >
+              <li
+                v-for="(bullet, index) in overallExplanation.bullets || []"
+                :key="`overall-bullet-${index}`"
+              >
+                {{ bullet }}
+              </li>
+            </ul>
+          </article>
+
+          <div class="result-action-row">
+            <button
+              type="button"
+              class="ghost-button"
+              data-testid="export-path-button"
+              @click="exportCurrentPlan"
+            >
+              导出本次学习路径
+            </button>
+            <p class="result-action-note">
+              导出为文本文件，包含目标、时间预算、当前路径、推荐理由摘要与资源建议。
+            </p>
+          </div>
+
+          <div v-if="exportError" class="state state--error state--result">
+            {{ exportError }}
+          </div>
+
           <div class="result-grid">
             <article class="result-card">
             <h3>本轮推荐学习</h3>
@@ -135,6 +194,30 @@
                   <strong>{{ item.name }}</strong>
                   <div class="path-item-actions">
                     <span>{{ item.estimatedMinutes }} 分钟</span>
+                    <button
+                      type="button"
+                      class="detail-toggle"
+                      @click="emit('focus-node', item.code)"
+                    >
+                      前往学习图谱
+                    </button>
+                    <button
+                      v-if="hasDetailLearningSection(item.code)"
+                      :data-testid="`detail-learning-${item.code}`"
+                      type="button"
+                      class="detail-toggle"
+                      @click="openDetailLearningSection(item.code)"
+                    >
+                      细化学习
+                    </button>
+                    <button
+                      v-if="hasResourceSection(item.code)"
+                      type="button"
+                      class="detail-toggle"
+                      @click="openResourceRecommendationSection(item.code)"
+                    >
+                      查看推荐资源
+                    </button>
                     <button
                       type="button"
                       class="detail-toggle"
@@ -207,6 +290,21 @@
                     <button
                       type="button"
                       class="detail-toggle"
+                      @click="emit('focus-node', item.code)"
+                    >
+                      前往学习图谱
+                    </button>
+                    <button
+                      v-if="hasResourceSection(item.code)"
+                      type="button"
+                      class="detail-toggle"
+                      @click="openResourceRecommendationSection(item.code)"
+                    >
+                      查看推荐资源
+                    </button>
+                    <button
+                      type="button"
+                      class="detail-toggle"
                       @click="toggleExplanation(item.code)"
                     >
                       {{ isExplanationExpanded(item.code) ? "收起理由" : "展开理由" }}
@@ -276,14 +374,13 @@
           <div class="section-headline">
             <div>
               <p class="label">扩展区</p>
-              <h3>资源、反馈与路径变化</h3>
+              <h3>反馈与路径变化</h3>
             </div>
             <p class="caption">
-              首屏聚焦“图谱 + 路径”，下方用于查看配套资源、提交学习反馈，并观察路径如何变化。
+              首屏聚焦“图谱 + 路径”，资源直接从上方路径项进入；下方主要用于提交学习反馈，并观察路径如何变化。
             </p>
           </div>
           <ul class="planner-extension-chips">
-            <li class="planner-extension-chip">资源建议</li>
             <li class="planner-extension-chip">学习反馈</li>
             <li class="planner-extension-chip">操作摘要</li>
             <li class="planner-extension-chip">路径变化</li>
@@ -292,218 +389,6 @@
 
         <div class="planner-extension-columns">
           <div class="planner-extension-main">
-            <article class="card planner-section-card resource-recommendation-card">
-              <div class="section-headline">
-                <div>
-                  <p class="label">资源建议</p>
-                  <h3>当前学习导航配套资源</h3>
-                </div>
-                <p class="caption">系统会根据本轮与下一轮节点，给出可直接使用的视频和文本教程。</p>
-              </div>
-
-              <div
-                v-if="resourceRecommendations.length === 0"
-                class="empty-tip"
-              >
-                当前路径中的节点还没有配置资源建议，可先查看推荐理由与掌握度变化。
-              </div>
-
-              <div v-else>
-                <div class="resource-toolbar">
-                  <div class="resource-toolbar-main">
-                    <div class="resource-filter-tabs">
-                      <button
-                        v-for="option in resourceFilterOptions"
-                        :key="`resource-filter-${option.value}`"
-                        type="button"
-                        class="resource-filter-tab"
-                        :class="{
-                          'resource-filter-tab--active': resourceFilter === option.value,
-                        }"
-                        @click="resourceFilter = option.value"
-                      >
-                        {{ option.label }}
-                        <span>{{ getResourceFilterCount(option.value) }}</span>
-                      </button>
-                    </div>
-                    <ul class="resource-layer-overview">
-                      <li
-                        v-for="item in resourceLayerOverview"
-                        :key="`resource-layer-overview-${item.layer}`"
-                        class="resource-layer-chip"
-                        :class="resourceLayerClass(item.layer)"
-                      >
-                        <strong>{{ item.layer }}</strong>
-                        <span>{{ item.count }} 条</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <p class="resource-toolbar-tip">
-                    当前显示 {{ visibleResourceRecommendations.length }} 组资源，默认优先展开本轮推荐学习。
-                  </p>
-                </div>
-
-                <div
-                  v-if="visibleResourceRecommendations.length === 0"
-                  class="empty-tip resource-empty-tip"
-                >
-                  当前筛选条件下暂无资源建议，可切换到其他分组查看。
-                </div>
-
-                <div v-else class="resource-sections">
-                  <section
-                    v-for="section in visibleResourceRecommendations"
-                    :key="`resource-${section.code}`"
-                    class="resource-section"
-                  >
-                    <div class="resource-section-head">
-                      <div>
-                        <div class="resource-section-title-row">
-                          <strong>{{ section.name }}</strong>
-                          <span
-                            class="resource-section-status"
-                            :class="{
-                              'resource-section-status--scheduled':
-                                section.status === 'scheduled',
-                              'resource-section-status--deferred':
-                                section.status === 'deferred',
-                            }"
-                          >
-                            {{ formatResourceSectionStatus(section.status) }}
-                          </span>
-                        </div>
-                        <p class="path-item-meta">
-                          {{ section.resourceCount }} 条资源
-                        </p>
-                        <p
-                          v-if="section.primaryResourceTitle"
-                          class="resource-primary-summary"
-                        >
-                          {{ section.primaryResourcePriorityLabel || "优先资源" }}：{{ section.primaryResourceTitle }}
-                        </p>
-                        <ul
-                          v-if="getSectionResourceLayerSummary(section).length > 0"
-                          class="resource-layer-summary"
-                        >
-                          <li
-                            v-for="item in getSectionResourceLayerSummary(section)"
-                            :key="`${section.code}-${item.layer}`"
-                            class="resource-layer-chip resource-layer-chip--compact"
-                            :class="resourceLayerClass(item.layer)"
-                          >
-                            <strong>{{ item.layer }}</strong>
-                            <span>{{ item.count }}</span>
-                          </li>
-                        </ul>
-                      </div>
-                      <div class="resource-section-actions">
-                        <span class="resource-section-usage">
-                          {{ section.recommendedUsage }}
-                        </span>
-                        <button
-                          type="button"
-                          class="resource-toggle"
-                          @click="toggleResourceSection(section.code)"
-                        >
-                          {{ isResourceSectionExpanded(section) ? "收起资源" : "展开资源" }}
-                        </button>
-                      </div>
-                    </div>
-
-                    <ul
-                      v-if="isResourceSectionExpanded(section)"
-                      class="resource-list"
-                    >
-                      <li
-                        v-for="resource in section.resources"
-                        :key="`${section.code}-${resource.url}`"
-                        class="resource-item"
-                      >
-                        <div class="resource-item-head">
-                          <a
-                            :href="resource.url"
-                            target="_blank"
-                            rel="noreferrer"
-                            class="resource-link"
-                          >
-                            {{ resource.title }}
-                          </a>
-                          <div class="resource-item-badges">
-                            <span
-                              v-if="resource.isPrimaryRecommendation"
-                              class="resource-top-badge"
-                            >
-                              优先看
-                            </span>
-                            <span
-                              v-if="resource.resourceLayer"
-                              class="resource-layer-badge"
-                              :class="resourceLayerClass(resource.resourceLayer)"
-                            >
-                              {{ resource.resourceLayer }}
-                            </span>
-                            <span class="resource-type">
-                              {{ formatResourceType(resource.type) }}
-                            </span>
-                          </div>
-                        </div>
-                        <div class="resource-tag-row">
-                          <span
-                            v-if="resource.recommendedPhase"
-                            class="resource-phase"
-                          >
-                            {{ resource.recommendedPhase }}
-                          </span>
-                          <span
-                            v-if="resource.focusNodeLabel"
-                            class="resource-focus-node"
-                          >
-                            对应细化节点：{{ resource.focusNodeLabel }}
-                          </span>
-                        </div>
-                        <ul
-                          v-if="getResourceFocusTags(resource).length > 0"
-                          class="resource-focus-tags"
-                        >
-                          <li
-                            v-for="tag in getResourceFocusTags(resource)"
-                            :key="`${section.code}-${resource.url}-${tag}`"
-                            class="resource-focus-tag"
-                          >
-                            {{ tag }}
-                          </li>
-                        </ul>
-                        <p class="resource-meta">{{ resource.source }}</p>
-                        <p class="resource-description">{{ resource.description }}</p>
-                        <p
-                          v-if="getResourceSelectionReason(resource)"
-                          class="resource-selection-reason"
-                        >
-                          选择原因：{{ getResourceSelectionReason(resource) }}
-                        </p>
-                        <p
-                          v-if="resource.resourceLayerHint"
-                          class="resource-layer-hint"
-                        >
-                          分层说明：{{ resource.resourceLayerHint }}
-                        </p>
-                        <p class="resource-usage">
-                          使用建议：{{ resource.recommendedUsage }}
-                        </p>
-                      </li>
-                    </ul>
-
-                    <p
-                      v-else
-                      class="resource-collapsed-tip"
-                    >
-                      已收起该节点的资源建议，点击“展开资源”后可查看视频和文本教程。
-                    </p>
-                  </section>
-                </div>
-              </div>
-            </article>
-
             <section class="card planner-section-card feedback-panel">
               <div class="section-headline">
                 <div>
@@ -553,10 +438,28 @@
                     <span class="feedback-badge">{{ item.estimatedMinutes }} 分钟</span>
                   </div>
 
+                  <div class="feedback-quick-actions">
+                    <span class="feedback-quick-actions__label">快捷录入</span>
+                    <div class="feedback-quick-actions__buttons">
+                      <button
+                        v-for="preset in feedbackQuickPresets"
+                        :key="`${item.code}-${preset.key}`"
+                        type="button"
+                        class="feedback-preset-button"
+                        :class="`feedback-preset-button--${preset.tone}`"
+                        :data-testid="`feedback-preset-${item.code}-${preset.key}`"
+                        @click="applyFeedbackQuickPreset(item, preset.key)"
+                      >
+                        {{ preset.label }}
+                      </button>
+                    </div>
+                  </div>
+
                   <div class="feedback-fields">
                     <label class="field">
                       <span>完成情况</span>
                       <select
+                        :data-testid="`feedback-status-${item.code}`"
                         v-model="feedbackDraftByCode[item.code].completionStatus"
                       >
                         <option value="completed">已完成</option>
@@ -569,6 +472,7 @@
                       <span>学习后掌握度</span>
                       <div class="slider-row">
                         <input
+                          :data-testid="`feedback-mastery-${item.code}`"
                           v-model.number="feedbackDraftByCode[item.code].selfRatedMastery"
                           type="range"
                           min="0"
@@ -596,58 +500,6 @@
           </div>
 
           <aside class="planner-extension-side">
-            <article class="card planner-section-card planner-overview-card">
-              <div class="section-headline">
-                <div>
-                  <p class="label">辅助摘要</p>
-                  <h3>当前导航速览</h3>
-                </div>
-                <p class="caption">右侧固定查看本轮状态，不用反复在长内容里上下滚动。</p>
-              </div>
-
-              <dl class="planner-overview-grid">
-                <div>
-                  <dt>资源分组</dt>
-                  <dd>{{ resourceRecommendations.length }} 组</dd>
-                </div>
-                <div>
-                  <dt>本轮节点</dt>
-                  <dd>{{ scheduledItems.length }} 个</dd>
-                </div>
-                <div>
-                  <dt>反馈记录</dt>
-                  <dd>{{ feedbackRecordCount }} 条</dd>
-                </div>
-                <div>
-                  <dt>路径变化</dt>
-                  <dd>{{ pathComparison?.changeItems.length || 0 }} 项</dd>
-                </div>
-              </dl>
-
-              <p class="overview-note">
-                {{ extensionOverviewMessage }}
-              </p>
-
-              <ul
-                v-if="pathComparison?.changeItems.length > 0"
-                class="planner-overview-change-list"
-              >
-                <li
-                  v-for="item in pathComparison.changeItems.slice(0, 3)"
-                  :key="`overview-${item.code}`"
-                  class="planner-overview-change-item"
-                >
-                  <strong>{{ item.name }}</strong>
-                  <span
-                    class="change-badge"
-                    :class="changeBadgeClass(item.changeType)"
-                  >
-                    {{ item.changeLabel }}
-                  </span>
-                </li>
-              </ul>
-            </article>
-
             <article
               v-if="adjustmentSummary || rollbackSummary"
               class="card planner-section-card planner-section-card--summary"
@@ -881,11 +733,13 @@
         </article>
       </section>
     </template>
+
   </section>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { fetchKnowledgeGraph } from "../api/knowledgeGraph";
 import {
@@ -893,11 +747,21 @@ import {
   submitLearningFeedback,
 } from "../api/feedback";
 import { generateLearningPath } from "../api/path";
+import { useNavigationStore } from "../stores/navigationStore";
+import {
+  feedbackQuickPresets,
+  resolveFeedbackQuickPresetDraft,
+} from "../utils/feedbackQuickPreset";
+import { downloadLearningPathExport } from "../utils/learningPathExport";
 
 const props = defineProps({
   learnerCode: {
     type: String,
     default: "demo-learner",
+  },
+  externalTargetCode: {
+    type: String,
+    default: "",
   },
   initialMasteryByCode: {
     type: Object,
@@ -913,18 +777,19 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["feedback-saved"]);
+const emit = defineEmits([
+  "feedback-saved",
+  "focus-node",
+]);
+const route = useRoute();
+const router = useRouter();
+const navigationStore = useNavigationStore();
 
 const minuteOptions = [60, 90, 120, 150, 180, 240];
 const adjustmentStatusLabelMap = {
   completed: "已完成",
   partial: "部分完成",
   blocked: "学习受阻",
-};
-const resourceTypeLabelMap = {
-  video: "视频教程",
-  article: "文本教程",
-  document: "参考资料",
 };
 const planStatusLabelMap = {
   mastered: "已掌握",
@@ -941,6 +806,7 @@ const showMasteryEditor = ref(false);
 const masteryPercentByCode = ref({});
 const planning = ref(false);
 const planError = ref("");
+const exportError = ref("");
 const planResult = ref(null);
 const feedbackDraftByCode = ref({});
 const adjusting = ref(false);
@@ -956,15 +822,8 @@ const pathComparisonMode = ref("adjust");
 const optionsReady = ref(false);
 const initialPlanInitialized = ref(false);
 const expandedExplanationByCode = ref({});
-const resourceFilter = ref("all");
-const expandedResourceSectionByCode = ref({});
-
-const resourceFilterOptions = [
-  { value: "all", label: "全部资源" },
-  { value: "scheduled", label: "只看本轮" },
-  { value: "deferred", label: "只看下一轮" },
-];
-const resourceLayerOrder = ["课程风格优先", "图文补充", "答辩复盘"];
+const externalTargetCode = computed(() => String(props.externalTargetCode || ""));
+const routeTargetCode = computed(() => String(route.query.target || ""));
 
 const selectedTargetLabel = computed(() => {
   const target = knowledgePoints.value.find(
@@ -984,35 +843,22 @@ const deferredItems = computed(() =>
 const resourceRecommendations = computed(
   () => planResult.value?.resourceRecommendations || [],
 );
-
-const resourceFilterCountMap = computed(() => ({
-  all: resourceRecommendations.value.length,
-  scheduled: resourceRecommendations.value.filter(
-    (section) => section.status === "scheduled",
-  ).length,
-  deferred: resourceRecommendations.value.filter(
-    (section) => section.status === "deferred",
-  ).length,
-}));
-
-const visibleResourceRecommendations = computed(() => {
-  if (resourceFilter.value === "all") {
-    return resourceRecommendations.value;
-  }
-
-  return resourceRecommendations.value.filter(
-    (section) => section.status === resourceFilter.value,
-  );
-});
-
-const resourceLayerOverview = computed(() =>
-  resourceLayerOrder.map((layer) => ({
-    layer,
-    count: visibleResourceRecommendations.value.reduce((total, section) => {
-      const summary = section.resourceLayerSummary || {};
-      return total + Number(summary[layer] || 0);
-    }, 0),
-  })),
+const overallExplanation = computed(
+  () => planResult.value?.overallExplanation || null,
+);
+const knowledgePointMetaByCode = computed(
+  () =>
+    new Map(
+      knowledgePoints.value.map((node) => [
+        node.code,
+        {
+          code: node.code,
+          label: node.label,
+          chapterNo: node.chapterNo || 0,
+          detailScopeCode: node.detailScopeCode || "",
+        },
+      ]),
+    ),
 );
 
 const canRollbackFeedback = computed(() => props.feedbackRecordCount > 0);
@@ -1072,26 +918,6 @@ const comparisonNoChangeTip = computed(() =>
     ? "本次回退主要恢复了掌握度，路径状态没有出现明显变化。"
     : "本次反馈主要更新了掌握度，路径状态没有出现明显变化。",
 );
-
-const extensionOverviewMessage = computed(() => {
-  if (rollbackSummary.value) {
-    return `最近一次操作为反馈回退，已恢复 ${rollbackSummary.value.feedbackItemCount} 个节点的掌握度，可继续重新判断后再提交。`;
-  }
-
-  if (adjustmentSummary.value) {
-    return `最近一次操作为学习反馈提交，本轮共处理 ${adjustmentSummary.value.feedbackItemCount} 个节点，路径已按新掌握度重算。`;
-  }
-
-  if (pathComparison.value?.changeItems.length) {
-    return "下方已生成路径变化明细，可以先看右侧速览，再进入整宽对比区查看前后安排差异。";
-  }
-
-  if (resourceRecommendations.value.length > 0) {
-    return "建议先在左侧查看资源建议，再对本轮节点提交反馈，系统会据此动态调整后续学习导航。";
-  }
-
-  return "当前扩展区主要用于查看资源、提交反馈和理解路径变化，适合作为答辩演示的辅助说明区。";
-});
 
 function setAllMastery(percent) {
   masteryPercentByCode.value = Object.fromEntries(
@@ -1300,65 +1126,120 @@ function getExplanationBullets(item) {
   return item?.explanation?.bullets || item?.reasonTrace?.triggerReasons || [];
 }
 
-function getResourceFocusTags(resource) {
-  return resource?.focusTags || [];
+function findResourceSectionByCode(code) {
+  return resourceRecommendations.value.find((section) => section.code === code) || null;
 }
 
-function getResourceSelectionReason(resource) {
-  return resource?.selectionReason || "";
+function hasResourceSection(code) {
+  return Boolean(findResourceSectionByCode(code));
 }
 
-function resourceLayerClass(layer) {
-  return {
-    "resource-layer--primary": layer === "课程风格优先",
-    "resource-layer--supplement": layer === "图文补充",
-    "resource-layer--review": layer === "答辩复盘",
-  };
-}
-
-function getSectionResourceLayerSummary(section) {
-  return resourceLayerOrder
-    .map((layer) => ({
-      layer,
-      count: Number(section?.resourceLayerSummary?.[layer] || 0),
-    }))
-    .filter((item) => item.count > 0);
-}
-
-function getResourceFilterCount(filter) {
-  return resourceFilterCountMap.value[filter] || 0;
-}
-
-function formatResourceSectionStatus(status) {
-  if (status === "scheduled") {
-    return "本轮推荐学习";
+function buildDetailLearningSections(currentPlan = planResult.value) {
+  if (!currentPlan) {
+    return [];
   }
 
-  if (status === "deferred") {
-    return "下一轮建议";
+  return scheduledItems.value
+    .map((item) => {
+      const metadata = knowledgePointMetaByCode.value.get(item.code);
+      if (!metadata?.detailScopeCode) {
+        return null;
+      }
+
+      return {
+        code: item.code,
+        name: item.name,
+        scopeCode: metadata.detailScopeCode,
+        scopeLabel: item.name,
+        chapterNo: item.chapterNo || metadata.chapterNo || 0,
+        masteryPercent: item.masteryPercent,
+        estimatedMinutes: item.estimatedMinutes,
+        status: item.status,
+      };
+    })
+    .filter(Boolean);
+}
+
+function hasDetailLearningSection(code) {
+  return buildDetailLearningSections().some((item) => item.code === code);
+}
+
+function syncDetailLearningContext(selectedCode = "") {
+  const detailLearningSections = buildDetailLearningSections();
+  if (detailLearningSections.length === 0) {
+    navigationStore.clearDetailLearningContext();
+    return null;
   }
 
-  return "资源建议";
+  const selectedSection =
+    detailLearningSections.find((item) => item.code === selectedCode) ||
+    detailLearningSections.find(
+      (item) =>
+        item.scopeCode === navigationStore.detailLearningSummary?.selectedScopeCode,
+    ) ||
+    detailLearningSections[0];
+
+  navigationStore.setDetailLearningContext({
+    learnerCode: props.learnerCode,
+    detailLearningSections,
+    selectedScopeCode: selectedSection?.scopeCode || "",
+    sourceTargetLabel: selectedTargetLabel.value,
+    sourcePage: "home",
+  });
+
+  return selectedSection || null;
 }
 
-function formatResourceType(type) {
-  return resourceTypeLabelMap[type] || "学习资源";
-}
-
-function toggleResourceSection(code) {
-  expandedResourceSectionByCode.value = {
-    ...expandedResourceSectionByCode.value,
-    [code]: !expandedResourceSectionByCode.value[code],
-  };
-}
-
-function isResourceSectionExpanded(section) {
-  const expanded = expandedResourceSectionByCode.value[section.code];
-  if (typeof expanded === "boolean") {
-    return expanded;
+function syncResourceRecommendationContext(currentPlan = planResult.value) {
+  if (!currentPlan) {
+    navigationStore.clearResourceRecommendationContext("main");
+    return;
   }
 
-  return section.status === "scheduled";
+  navigationStore.setResourceRecommendationContext({
+    learnerCode: props.learnerCode,
+    resourceRecommendationSections: currentPlan.resourceRecommendations || [],
+    contextMode: "main",
+    sourcePage: "home",
+    targetLabel: selectedTargetLabel.value,
+    availableMinutes: currentPlan.summary?.availableMinutes || availableMinutes.value,
+    scheduledCount: currentPlan.summary?.scheduledCount || 0,
+    deferredCount: currentPlan.summary?.deferredCount || 0,
+    scopeCode: "root",
+    scopeLabel: "课程主线",
+    parentNodeCode: "",
+    parentNodeLabel: "",
+  });
+}
+
+function openResourceRecommendationSection(code) {
+  const section = findResourceSectionByCode(code);
+  if (!section) {
+    return;
+  }
+
+  syncResourceRecommendationContext(planResult.value);
+  router.push({
+    name: "resource-recommendation",
+    params: { code: section.code },
+    query: {
+      level: "main",
+    },
+  });
+}
+
+function openDetailLearningSection(code) {
+  const selectedSection = syncDetailLearningContext(code);
+  if (!selectedSection) {
+    return;
+  }
+
+  router.push({
+    name: "detail-learning",
+    query: {
+      scope: selectedSection.scopeCode,
+    },
+  });
 }
 
 function toggleExplanation(code) {
@@ -1393,6 +1274,13 @@ function syncFeedbackDrafts() {
   );
 }
 
+function applyFeedbackQuickPreset(item, presetKey) {
+  feedbackDraftByCode.value = {
+    ...feedbackDraftByCode.value,
+    [item.code]: resolveFeedbackQuickPresetDraft(item, presetKey),
+  };
+}
+
 function clearOperationOutputs() {
   adjustError.value = "";
   rollbackError.value = "";
@@ -1401,6 +1289,50 @@ function clearOperationOutputs() {
   rollbackSummary.value = null;
   rollbackItems.value = [];
   pathComparison.value = null;
+}
+
+function exportCurrentPlan() {
+  if (!planResult.value) {
+    return;
+  }
+
+  exportError.value = "";
+
+  try {
+    downloadLearningPathExport({
+      learnerCode: props.learnerCode,
+      targetCode: selectedTargetCode.value,
+      targetLabel: selectedTargetLabel.value,
+      availableMinutes: availableMinutes.value,
+      planResult: planResult.value,
+    });
+  } catch (error) {
+    exportError.value =
+      error?.message || "学习路径导出失败，请稍后重试或检查浏览器下载权限。";
+    console.error(error);
+  }
+}
+
+function resolveRequestedTargetCode(preferredCode = "") {
+  const candidateCode = preferredCode || externalTargetCode.value || routeTargetCode.value;
+  if (!candidateCode) {
+    return "";
+  }
+
+  const exists = knowledgePoints.value.some(
+    (node) => node.code === candidateCode,
+  );
+  return exists ? candidateCode : "";
+}
+
+function applyRequestedTargetCode(preferredCode = "") {
+  const requestedTargetCode = resolveRequestedTargetCode(preferredCode);
+  if (!requestedTargetCode) {
+    return false;
+  }
+
+  selectedTargetCode.value = requestedTargetCode;
+  return true;
 }
 
 async function loadKnowledgePoints() {
@@ -1412,9 +1344,10 @@ async function loadKnowledgePoints() {
     knowledgePoints.value = payload.nodes;
     selectedTargetCode.value =
       payload.nodes[payload.nodes.length - 1]?.code || "";
+    applyRequestedTargetCode();
   } catch (error) {
     optionsError.value =
-      "未能读取知识点选项，请先初始化数据库并启动后端服务。";
+      "未能读取知识点选项。请先启动后端并确认数据库已初始化。";
     console.error(error);
   } finally {
     optionsLoading.value = false;
@@ -1432,6 +1365,7 @@ async function initializePlannerFromProfile() {
     applyPreset("beginner");
   }
 
+  applyRequestedTargetCode();
   initialPlanInitialized.value = true;
   await submitPlan();
 }
@@ -1439,19 +1373,24 @@ async function initializePlannerFromProfile() {
 async function submitPlan() {
   planning.value = true;
   planError.value = "";
+  exportError.value = "";
   clearOperationOutputs();
   expandedExplanationByCode.value = {};
 
   try {
     planResult.value = await generateLearningPath({
+      learnerCode: props.learnerCode,
       targetCodes: [selectedTargetCode.value],
       availableMinutes: availableMinutes.value,
       masteryByCode: buildMasteryPayload(),
     });
+    syncResourceRecommendationContext(planResult.value);
+    syncDetailLearningContext();
     syncFeedbackDrafts();
   } catch (error) {
     planError.value =
-      error?.response?.data?.detail || "学习路径生成失败，请检查后端日志。";
+      error?.response?.data?.detail ||
+      "学习路径生成失败。请稍后重试或检查后端日志。";
     console.error(error);
   } finally {
     planning.value = false;
@@ -1470,6 +1409,7 @@ function buildFeedbackItems() {
 
 async function submitAdjustment() {
   adjusting.value = true;
+  exportError.value = "";
   clearOperationOutputs();
   const beforePlanSnapshot = clonePlanSnapshot(planResult.value);
 
@@ -1487,17 +1427,21 @@ async function submitAdjustment() {
     expandedExplanationByCode.value = {};
     emit("feedback-saved", payload);
     const nextPlanResult = await generateLearningPath({
+      learnerCode: props.learnerCode,
       targetCodes: [selectedTargetCode.value],
       availableMinutes: availableMinutes.value,
       masteryByCode: updatedMasteryByCode,
     });
     planResult.value = nextPlanResult;
+    syncResourceRecommendationContext(nextPlanResult);
+    syncDetailLearningContext();
     pathComparisonMode.value = "adjust";
     pathComparison.value = buildPathComparison(beforePlanSnapshot, nextPlanResult);
     syncFeedbackDrafts();
   } catch (error) {
     adjustError.value =
-      error?.response?.data?.detail || "学习反馈保存失败，请检查后端日志。";
+      error?.response?.data?.detail ||
+      "学习反馈保存失败。请稍后重试或检查后端日志。";
     console.error(error);
   } finally {
     adjusting.value = false;
@@ -1510,6 +1454,7 @@ async function rollbackLatestAdjustment() {
   }
 
   rollingBack.value = true;
+  exportError.value = "";
   clearOperationOutputs();
   const beforePlanSnapshot = clonePlanSnapshot(planResult.value);
 
@@ -1526,32 +1471,26 @@ async function rollbackLatestAdjustment() {
     emit("feedback-saved", payload);
 
     const nextPlanResult = await generateLearningPath({
+      learnerCode: props.learnerCode,
       targetCodes: [selectedTargetCode.value],
       availableMinutes: availableMinutes.value,
       masteryByCode: updatedMasteryByCode,
     });
     planResult.value = nextPlanResult;
+    syncResourceRecommendationContext(nextPlanResult);
+    syncDetailLearningContext();
     pathComparisonMode.value = "rollback";
     pathComparison.value = buildPathComparison(beforePlanSnapshot, nextPlanResult);
     syncFeedbackDrafts();
   } catch (error) {
     rollbackError.value =
-      error?.response?.data?.detail || "学习反馈回退失败，请检查后端日志。";
+      error?.response?.data?.detail ||
+      "学习反馈回退失败。请稍后重试或检查后端日志。";
     console.error(error);
   } finally {
     rollingBack.value = false;
   }
 }
-
-watch(
-  resourceRecommendations,
-  (sections) => {
-    expandedResourceSectionByCode.value = Object.fromEntries(
-      sections.map((section) => [section.code, section.status === "scheduled"]),
-    );
-  },
-  { immediate: true },
-);
 
 watch(
   () => props.profileLoading,
@@ -1574,6 +1513,38 @@ watch(
   { deep: true },
 );
 
+watch(
+  routeTargetCode,
+  async (targetCode) => {
+    if (!targetCode || !optionsReady.value) {
+      return;
+    }
+
+    const applied = applyRequestedTargetCode();
+    if (!applied || !initialPlanInitialized.value) {
+      return;
+    }
+
+    await submitPlan();
+  },
+);
+
+watch(
+  externalTargetCode,
+  async (targetCode) => {
+    if (!targetCode || !optionsReady.value) {
+      return;
+    }
+
+    const applied = applyRequestedTargetCode(targetCode);
+    if (!applied || !initialPlanInitialized.value) {
+      return;
+    }
+
+    await submitPlan();
+  },
+);
+
 onMounted(async () => {
   await loadKnowledgePoints();
   optionsReady.value = true;
@@ -1589,16 +1560,16 @@ onMounted(async () => {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(22, 32, 42, 0.08);
+  background: var(--panel-surface);
+  border: var(--panel-border);
   border-radius: 24px;
   padding: 22px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 50px rgba(22, 32, 42, 0.08);
+  box-shadow: var(--panel-shadow);
+  contain: paint;
 }
 
 .planner-core-card {
-  grid-column: 2;
+  grid-column: 1 / -1;
   align-self: start;
 }
 
@@ -1633,7 +1604,13 @@ onMounted(async () => {
 }
 
 .planner-extension-side {
+  position: sticky;
+  top: 24px;
   align-self: start;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
 }
 
 .planner-extension-intro {
@@ -1659,11 +1636,6 @@ onMounted(async () => {
   display: grid;
   gap: 18px;
   min-height: 100%;
-}
-
-.planner-overview-card {
-  position: sticky;
-  top: 24px;
 }
 
 .section-headline {
@@ -1697,49 +1669,6 @@ onMounted(async () => {
   color: #0c5960;
   font-size: 0.84rem;
   font-weight: 700;
-}
-
-.planner-overview-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.planner-overview-grid div {
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(244, 248, 247, 0.86);
-}
-
-.overview-note {
-  margin: 0;
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(12, 106, 113, 0.08);
-  color: #29434a;
-  line-height: 1.65;
-}
-
-.planner-overview-change-list {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.planner-overview-change-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(247, 250, 249, 0.86);
-}
-
-.planner-overview-change-item strong {
-  color: #24323b;
 }
 
 .card-head {
@@ -1921,6 +1850,68 @@ dd {
   color: #8a4d10;
 }
 
+.overall-explanation-card {
+  margin-top: 18px;
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(12, 106, 113, 0.08), rgba(255, 255, 255, 0.9)),
+    rgba(247, 250, 249, 0.9);
+  padding: 18px;
+  contain: layout paint;
+}
+
+.overall-explanation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overall-explanation-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(12, 106, 113, 0.12);
+  color: #0c5960;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.overall-explanation-summary {
+  margin: 14px 0 0;
+  color: #2d3d46;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.overall-explanation-list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding-left: 18px;
+  color: #44515c;
+  line-height: 1.55;
+}
+
+.result-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.result-action-note {
+  margin: 0;
+  color: #66727d;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .result-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1932,6 +1923,7 @@ dd {
   border-radius: 22px;
   background: rgba(247, 250, 249, 0.86);
   padding: 18px;
+  contain: layout paint;
 }
 
 .result-card--wide {
@@ -1954,6 +1946,7 @@ dd {
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.9);
   padding: 14px;
+  contain: layout paint;
 }
 
 .path-item-head {
@@ -2038,338 +2031,6 @@ dd {
   background: rgba(244, 248, 247, 0.86);
 }
 
-.resource-recommendation-card {
-  margin-top: 0;
-}
-
-.resource-toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: start;
-  margin-top: 18px;
-}
-
-.resource-toolbar-main {
-  display: grid;
-  gap: 12px;
-}
-
-.resource-filter-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.resource-layer-overview,
-.resource-layer-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.resource-filter-tab,
-.resource-toggle {
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.resource-filter-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: rgba(12, 106, 113, 0.08);
-  color: #0c5960;
-  font-weight: 700;
-}
-
-.resource-filter-tab span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.84);
-  color: #214861;
-  font-size: 0.8rem;
-}
-
-.resource-filter-tab--active {
-  background: linear-gradient(135deg, #0c6a71, #1b828b);
-  color: #ffffff;
-}
-
-.resource-filter-tab--active span {
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-}
-
-.resource-filter-tab:hover,
-.resource-toggle:hover {
-  transform: translateY(-1px);
-}
-
-.resource-toolbar-tip,
-.resource-collapsed-tip {
-  margin: 0;
-  color: #53616c;
-  line-height: 1.6;
-}
-
-.resource-empty-tip {
-  margin-top: 18px;
-}
-
-.resource-layer-chip,
-.resource-layer-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.resource-layer-chip strong,
-.resource-layer-badge {
-  font-weight: 700;
-}
-
-.resource-layer-chip span {
-  opacity: 0.9;
-}
-
-.resource-layer-chip--compact {
-  padding: 4px 10px;
-  font-size: 0.78rem;
-}
-
-.resource-layer--primary {
-  background: rgba(28, 113, 58, 0.12);
-  color: #14542d;
-}
-
-.resource-layer--supplement {
-  background: rgba(12, 106, 113, 0.1);
-  color: #0c5960;
-}
-
-.resource-layer--review {
-  background: rgba(55, 82, 129, 0.12);
-  color: #27456f;
-}
-
-.resource-sections {
-  display: grid;
-  gap: 16px;
-  margin-top: 18px;
-}
-
-.resource-section {
-  border-radius: 20px;
-  background: rgba(247, 250, 249, 0.86);
-  padding: 16px;
-}
-
-.resource-section-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: start;
-}
-
-.resource-section-title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-
-.resource-section-status {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.resource-section-status--scheduled {
-  background: rgba(28, 113, 58, 0.12);
-  color: #14542d;
-}
-
-.resource-section-status--deferred {
-  background: rgba(186, 93, 23, 0.12);
-  color: #8a4d10;
-}
-
-.resource-section-actions {
-  display: grid;
-  gap: 10px;
-  justify-items: end;
-}
-
-.resource-primary-summary {
-  margin: 8px 0 0;
-  color: #214861;
-  font-size: 0.92rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.resource-layer-summary {
-  margin-top: 10px;
-}
-
-.resource-section-usage {
-  max-width: 320px;
-  color: #53616c;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  text-align: right;
-}
-
-.resource-toggle {
-  padding: 7px 12px;
-  background: rgba(12, 106, 113, 0.09);
-  color: #0c5960;
-  font-weight: 700;
-}
-
-.resource-list {
-  display: grid;
-  gap: 12px;
-  margin: 14px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.resource-item {
-  border-radius: 16px;
-  border: 1px solid rgba(22, 32, 42, 0.08);
-  background: rgba(255, 255, 255, 0.94);
-  padding: 14px;
-}
-
-.resource-item-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: start;
-}
-
-.resource-item-badges {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: end;
-}
-
-.resource-link {
-  color: #0c5960;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.resource-link:hover {
-  text-decoration: underline;
-}
-
-.resource-type {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(12, 106, 113, 0.09);
-  color: #0c5960;
-  font-size: 0.82rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.resource-meta,
-.resource-description,
-.resource-selection-reason,
-.resource-usage {
-  margin: 8px 0 0;
-  color: #44515c;
-  line-height: 1.5;
-}
-
-.resource-selection-reason {
-  color: #214861;
-  font-weight: 600;
-}
-
-.resource-layer-hint {
-  margin: 8px 0 0;
-  color: #53616c;
-  line-height: 1.5;
-}
-
-.resource-tag-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.resource-phase,
-.resource-focus-node,
-.resource-focus-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.resource-phase {
-  background: rgba(28, 113, 58, 0.12);
-  color: #14542d;
-}
-
-.resource-focus-node {
-  background: rgba(55, 82, 129, 0.12);
-  color: #27456f;
-}
-
-.resource-focus-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.resource-focus-tag {
-  background: rgba(12, 106, 113, 0.09);
-  color: #0c5960;
-}
-
-.resource-top-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(225, 147, 35, 0.16);
-  color: #8a4d10;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
 .state {
   margin-top: 18px;
   border-radius: 18px;
@@ -2419,6 +2080,77 @@ dd {
   border-radius: 20px;
   background: rgba(247, 250, 249, 0.86);
   padding: 16px;
+  contain: layout paint;
+}
+
+@supports (content-visibility: auto) {
+  .planner-extension-intro,
+  .planner-section-card--comparison,
+  .overall-explanation-card,
+  .result-card,
+  .feedback-item,
+  .path-item {
+    content-visibility: auto;
+  }
+
+  .planner-extension-intro,
+  .planner-section-card--comparison,
+  .overall-explanation-card,
+  .result-card {
+    contain-intrinsic-size: 260px;
+  }
+
+  .feedback-item,
+  .path-item {
+  contain-intrinsic-size: 140px;
+  }
+}
+
+.feedback-quick-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.feedback-quick-actions__label {
+  color: #53616c;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.feedback-quick-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.feedback-preset-button {
+  border: 1px solid rgba(22, 32, 42, 0.1);
+  background: rgba(244, 248, 247, 0.96);
+  color: #214861;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.feedback-preset-button--completed {
+  background: rgba(28, 113, 58, 0.08);
+  border-color: rgba(28, 113, 58, 0.16);
+  color: #14542d;
+}
+
+.feedback-preset-button--partial {
+  background: rgba(12, 106, 113, 0.08);
+  border-color: rgba(12, 106, 113, 0.14);
+  color: #0c5960;
+}
+
+.feedback-preset-button--blocked {
+  background: rgba(186, 93, 23, 0.08);
+  border-color: rgba(186, 93, 23, 0.16);
+  color: #8a4d10;
 }
 
 .feedback-fields {
@@ -2491,15 +2223,17 @@ dd {
   }
 
   .planner-extension-columns,
-  .planner-overview-grid,
   .planner-extension-stack {
     grid-template-columns: 1fr;
   }
 
-  .planner-overview-card {
+  .planner-extension-side {
     position: static;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
   }
-
   .planner-form,
   .mastery-grid,
   .summary-grid,
@@ -2512,11 +2246,8 @@ dd {
   .card-head,
   .section-headline,
   .field-head,
-  .resource-toolbar,
+  .result-action-row,
   .path-item-head,
-  .planner-overview-change-item,
-  .resource-section-head,
-  .resource-item-head,
   .feedback-head,
   .feedback-item-head {
     flex-direction: column;
@@ -2527,17 +2258,8 @@ dd {
     justify-items: start;
   }
 
-  .resource-section-actions {
-    justify-items: start;
-  }
-
-  .resource-section-usage {
-    max-width: none;
-    text-align: left;
-  }
-
-  .resource-item-badges {
-    justify-content: start;
+  .feedback-quick-actions__buttons {
+    width: 100%;
   }
 }
 </style>

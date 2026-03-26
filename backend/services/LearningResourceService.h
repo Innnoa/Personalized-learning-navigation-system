@@ -14,8 +14,10 @@ class LearningResourceService
     static Json::Value buildResourcesForKnowledgePoint(
         const std::string &knowledgePointCode);
     static Json::Value buildResourcesForLearningPathItem(
-        const algorithm::planner::LearningPathItem &item);
+        const algorithm::planner::LearningPathItem &item,
+        const std::string &learnerCode = "");
     static Json::Value buildResourceRecommendations(
-        const std::vector<algorithm::planner::LearningPathItem> &pathItems);
+        const std::vector<algorithm::planner::LearningPathItem> &pathItems,
+        const std::string &learnerCode = "");
 };
 }

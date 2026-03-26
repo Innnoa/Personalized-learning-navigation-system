@@ -45,6 +45,10 @@
           <dd>{{ profile.summary.feedbackRecordCount }} 条</dd>
         </div>
         <div>
+          <dt>资源行为</dt>
+          <dd>{{ profile.summary.resourceViewRecordCount || 0 }} 条</dd>
+        </div>
+        <div>
           <dt>知识点总数</dt>
           <dd>{{ profile.summary.knowledgePointCount }} 个</dd>
         </div>
@@ -58,16 +62,35 @@
 
         <ul class="weak-list">
           <li v-for="item in weakItems" :key="item.code" class="weak-item">
-            <div>
-              <strong>{{ item.name }}</strong>
-              <p>第{{ item.chapterNo }}章 · {{ item.chapterName }}</p>
+            <div class="weak-item-main">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <p>第{{ item.chapterNo }}章 · {{ item.chapterName }}</p>
+              </div>
+              <div class="weak-item-side">
+                <span>{{ item.masteryPercent }}%</span>
+                <button
+                  type="button"
+                  class="weak-action-button"
+                  :disabled="Boolean(resourcePreviewCode)"
+                  @click="emit('open-resource', item)"
+                >
+                  {{
+                    resourcePreviewCode === item.code
+                      ? "准备资源中..."
+                      : "查看推荐资源"
+                  }}
+                </button>
+              </div>
             </div>
-            <span>{{ item.masteryPercent }}%</span>
           </li>
         </ul>
 
         <p v-if="weakItems.length === 0" class="empty-tip">
           当前画像中的知识点已全部达到较稳定掌握度。
+        </p>
+        <p v-if="resourcePreviewError" class="state state--error state--inline">
+          {{ resourcePreviewError }}
         </p>
       </section>
 
@@ -106,6 +129,56 @@
           当前还没有学习反馈记录，提交一次反馈后会在这里展示最近学习过程。
         </p>
       </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h3>最近资源行为</h3>
+          <span>展示最近 {{ recentResourceViewItems.length }} 条</span>
+        </div>
+
+        <ul v-if="recentResourceViewItems.length > 0" class="record-list">
+          <li
+            v-for="item in recentResourceViewItems"
+            :key="`${item.resourceUrl}-${item.recordedAt}`"
+            class="record-item"
+          >
+            <div class="record-main">
+              <div>
+                <strong>{{ item.resourceTitle }}</strong>
+                <p>对应知识点：{{ item.name }} · 第{{ item.chapterNo }}章</p>
+              </div>
+              <div class="record-badge-group">
+                <span
+                  class="status-badge"
+                  :class="resourceInteractionBadgeClass(item.interactionType)"
+                >
+                  {{
+                    item.interactionTypeLabel ||
+                    resourceInteractionLabelMap[item.interactionType] ||
+                    "已打开"
+                  }}
+                </span>
+                <span class="status-badge status-badge--resource">
+                  {{ resourceTypeLabelMap[item.resourceType] || "学习资源" }}
+                </span>
+              </div>
+            </div>
+            <p class="record-mastery">
+              {{ item.resourceLayer || "资源建议" }} · {{ item.sourceContextLabel }}
+            </p>
+            <p v-if="item.linkedReasonSummary" class="record-meta">
+              {{ item.linkedReasonSummary }}
+            </p>
+            <p class="record-meta">
+              {{ item.resourceSource }} · {{ item.recordedAt }}
+            </p>
+          </li>
+        </ul>
+
+        <p v-else class="empty-tip">
+          当前还没有资源行为记录，点击资源标题或使用“记为已看 / 记为学完 / 稍后再看”后会在这里展示最近轨迹。
+        </p>
+      </section>
     </template>
   </article>
 </template>
@@ -126,12 +199,32 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  resourcePreviewCode: {
+    type: String,
+    default: "",
+  },
+  resourcePreviewError: {
+    type: String,
+    default: "",
+  },
 });
+const emit = defineEmits(["open-resource"]);
 
 const feedbackStatusLabelMap = {
   completed: "已完成",
   partial: "部分完成",
   blocked: "学习受阻",
+};
+const resourceTypeLabelMap = {
+  video: "视频教程",
+  article: "文本教程",
+  document: "参考资料",
+};
+const resourceInteractionLabelMap = {
+  opened: "已打开",
+  viewed: "记为已看",
+  completed: "已学完",
+  save_for_later: "稍后再看",
 };
 
 const weakItems = computed(() => {
@@ -146,21 +239,32 @@ const weakItems = computed(() => {
 });
 
 const recentFeedbackItems = computed(() => props.profile?.recentFeedbackItems || []);
+const recentResourceViewItems = computed(
+  () => props.profile?.recentResourceViewItems || [],
+);
+
+function resourceInteractionBadgeClass(interactionType) {
+  return {
+    "status-badge--opened": interactionType === "opened",
+    "status-badge--viewed": interactionType === "viewed",
+    "status-badge--completed": interactionType === "completed",
+    "status-badge--save-later": interactionType === "save_for_later",
+  };
+}
 </script>
 
 <style scoped>
 .card {
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(22, 32, 42, 0.08);
+  background: var(--panel-surface);
+  border: var(--panel-border);
   border-radius: 24px;
   padding: 22px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 50px rgba(22, 32, 42, 0.08);
+  box-shadow: var(--panel-shadow);
+  contain: paint;
 }
 
 .card-head,
-.section-head,
-.weak-item {
+.section-head {
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -243,6 +347,14 @@ dd {
   padding: 14px;
   border-radius: 18px;
   background: rgba(247, 250, 249, 0.86);
+  contain: layout paint;
+}
+
+.weak-item-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
 }
 
 .weak-item p,
@@ -251,9 +363,30 @@ dd {
   color: #44515c;
 }
 
+.weak-item-side {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+}
+
 .weak-item span {
   font-weight: 700;
   color: #0c5960;
+}
+
+.weak-action-button {
+  border: 1px solid rgba(12, 106, 113, 0.16);
+  border-radius: 999px;
+  background: rgba(12, 106, 113, 0.08);
+  color: #0c5960;
+  padding: 8px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weak-action-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .record-list {
@@ -268,6 +401,24 @@ dd {
   padding: 14px;
   border-radius: 18px;
   background: rgba(247, 250, 249, 0.86);
+  contain: layout paint;
+}
+
+@supports (content-visibility: auto) {
+  .section,
+  .weak-item,
+  .record-item {
+    content-visibility: auto;
+  }
+
+  .section {
+    contain-intrinsic-size: 280px;
+  }
+
+  .weak-item,
+  .record-item {
+    contain-intrinsic-size: 120px;
+  }
 }
 
 .record-main {
@@ -275,6 +426,13 @@ dd {
   justify-content: space-between;
   gap: 14px;
   align-items: start;
+}
+
+.record-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: end;
 }
 
 .record-main p,
@@ -305,11 +463,40 @@ dd {
   font-weight: 700;
 }
 
+.status-badge--resource {
+  background: rgba(55, 82, 129, 0.12);
+  color: #27456f;
+}
+
+.status-badge--opened {
+  background: rgba(12, 106, 113, 0.09);
+  color: #0c5960;
+}
+
+.status-badge--viewed {
+  background: rgba(12, 106, 113, 0.12);
+  color: #0c5960;
+}
+
+.status-badge--completed {
+  background: rgba(28, 113, 58, 0.12);
+  color: #14542d;
+}
+
+.status-badge--save-later {
+  background: rgba(161, 118, 23, 0.12);
+  color: #8a4d10;
+}
+
 .state {
   margin-top: 18px;
   border-radius: 18px;
   padding: 18px;
   font-weight: 600;
+}
+
+.state--inline {
+  padding: 14px 16px;
 }
 
 .state--loading {
@@ -329,10 +516,15 @@ dd {
 
   .card-head,
   .section-head,
-  .weak-item,
-  .record-main {
+  .weak-item-main,
+  .record-main,
+  .record-badge-group {
     flex-direction: column;
     align-items: start;
+  }
+
+  .weak-item-side {
+    justify-items: start;
   }
 }
 </style>

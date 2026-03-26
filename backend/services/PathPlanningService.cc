@@ -3,16 +3,43 @@
 #include "algorithm/adjuster/LearningPathAdjuster.h"
 #include "algorithm/explainer/LearningPathExplainer.h"
 #include "algorithm/planner/LearningPathPlanner.h"
+#include "repositories/DetailLearningRepository.h"
+#include "repositories/LearnerProfileRepository.h"
+#include "services/DetailLearningProgressService.h"
 #include "services/KnowledgeGraphService.h"
 #include "services/LearningResourceService.h"
 
+#include <drogon/drogon.h>
+#include <drogon/utils/Utilities.h>
+
 #include <cmath>
 #include <algorithm>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace
 {
+int toPercent(double score)
+{
+    return static_cast<int>(std::round(std::clamp(score, 0.0, 1.0) * 100.0));
+}
+
+void appendUnique(std::vector<std::string> &values, const std::string &value)
+{
+    if (value.empty())
+    {
+        return;
+    }
+
+    if (std::find(values.begin(), values.end(), value) == values.end())
+    {
+        values.push_back(value);
+    }
+}
+
 algorithm::planner::PlanningRequest parsePlanningRequest(
     const Json::Value &requestJson)
 {
@@ -88,6 +115,38 @@ algorithm::planner::PlanningRequest parsePlanningRequest(
     }
 
     return request;
+}
+
+std::string readDefaultLearnerCode()
+{
+    const auto &config = drogon::app().getCustomConfig();
+    if (config.isMember("default_learner_code") &&
+        config["default_learner_code"].isString())
+    {
+        const auto learnerCode = config["default_learner_code"].asString();
+        if (!learnerCode.empty())
+        {
+            return learnerCode;
+        }
+    }
+
+    return "demo-learner";
+}
+
+std::string resolvePlanningLearnerCode(const Json::Value &requestJson)
+{
+    if (!requestJson.isMember("learnerCode"))
+    {
+        return readDefaultLearnerCode();
+    }
+
+    if (!requestJson["learnerCode"].isString())
+    {
+        throw std::invalid_argument("learnerCode 必须是字符串。");
+    }
+
+    const auto learnerCode = requestJson["learnerCode"].asString();
+    return learnerCode.empty() ? readDefaultLearnerCode() : learnerCode;
 }
 
 algorithm::planner::PlanningRequest parseDetailPlanningRequest(
@@ -273,11 +332,242 @@ Json::Value buildExplanationPayload(
     return payload;
 }
 
+std::string joinValues(const std::vector<std::string> &values,
+                       std::size_t limit,
+                       const std::string &overflowUnit)
+{
+    if (values.empty())
+    {
+        return "";
+    }
+
+    std::ostringstream builder;
+    const auto visibleCount = std::min(limit, values.size());
+    for (std::size_t index = 0; index < visibleCount; ++index)
+    {
+        if (index > 0)
+        {
+            builder << "、";
+        }
+        builder << values[index];
+    }
+
+    if (values.size() > limit)
+    {
+        builder << "等" << values.size() << overflowUnit;
+    }
+
+    return builder.str();
+}
+
+std::string resolveKnowledgePointName(
+    const algorithm::graph::KnowledgeGraph &graph,
+    const std::string &code)
+{
+    const auto pointIt =
+        std::find_if(graph.points.begin(), graph.points.end(),
+                     [&code](const auto &point) { return point.code == code; });
+    if (pointIt != graph.points.end())
+    {
+        return pointIt->name;
+    }
+
+    return code;
+}
+
+Json::Value buildOverallExplanationPayload(
+    const algorithm::graph::KnowledgeGraph &graph,
+    const algorithm::planner::PlanningRequest &request,
+    const algorithm::planner::PlanningResult &planningResult)
+{
+    std::vector<std::string> targetNames;
+    std::vector<std::string> scheduledNames;
+    std::vector<std::string> deferredNames;
+    std::vector<std::string> prerequisiteNames;
+    std::vector<std::string> lowMasteryNames;
+    std::vector<std::string> triggerReasons;
+    std::vector<std::string> labels;
+
+    targetNames.reserve(request.targetCodes.size());
+    for (const auto &code : request.targetCodes)
+    {
+        appendUnique(targetNames, resolveKnowledgePointName(graph, code));
+    }
+
+    for (const auto &item : planningResult.path)
+    {
+        if (item.status == "scheduled")
+        {
+            appendUnique(scheduledNames, item.point.name);
+        }
+        else if (item.status == "deferred")
+        {
+            appendUnique(deferredNames, item.point.name);
+        }
+
+        if (item.isPrerequisite)
+        {
+            appendUnique(prerequisiteNames, item.point.name);
+        }
+
+        if (item.status != "mastered" && item.reasonTrace.masteryGap >= 0.5)
+        {
+            appendUnique(lowMasteryNames, item.point.name);
+        }
+
+        for (const auto &reason : item.reasonTrace.triggerReasons)
+        {
+            appendUnique(triggerReasons, reason);
+        }
+    }
+
+    if (!prerequisiteNames.empty())
+    {
+        appendUnique(labels, "前置依赖链路");
+    }
+    if (!lowMasteryNames.empty())
+    {
+        appendUnique(labels, "掌握度待提升");
+    }
+    if (!scheduledNames.empty())
+    {
+        appendUnique(labels, "本轮优先安排");
+    }
+    if (!deferredNames.empty())
+    {
+        appendUnique(labels, planningResult.targetReachableWithinBudget
+                                 ? "下一轮建议"
+                                 : "时间预算受限");
+    }
+
+    std::ostringstream summary;
+    summary << "当前目标为" << joinValues(targetNames, 2, "个目标") << "。";
+
+    std::vector<std::string> reasonFragments;
+    if (!prerequisiteNames.empty())
+    {
+        reasonFragments.push_back("目标链路依赖" +
+                                  joinValues(prerequisiteNames, 2, "个前置节点"));
+    }
+    if (!lowMasteryNames.empty())
+    {
+        reasonFragments.push_back(joinValues(lowMasteryNames, 2, "个节点") +
+                                  "当前掌握度仍偏低");
+    }
+
+    if (!reasonFragments.empty())
+    {
+        summary << "由于";
+        for (std::size_t index = 0; index < reasonFragments.size(); ++index)
+        {
+            if (index > 0)
+            {
+                summary << "，且";
+            }
+            summary << reasonFragments[index];
+        }
+        summary << "，";
+    }
+    else
+    {
+        summary << "结合当前掌握度与时间预算，";
+    }
+
+    if (!scheduledNames.empty())
+    {
+        summary << "本轮优先安排" << joinValues(scheduledNames, 3, "个节点");
+    }
+    else if (!deferredNames.empty())
+    {
+        summary << "当前暂无可直接纳入本轮的新节点";
+    }
+    else
+    {
+        summary << "当前链路已基本满足，无需新增学习节点";
+    }
+
+    if (!deferredNames.empty())
+    {
+        summary << "；" << joinValues(deferredNames, 2, "个节点");
+        if (planningResult.targetReachableWithinBudget)
+        {
+            summary << "保留为下一轮建议";
+        }
+        else
+        {
+            summary << "因时间预算限制顺延到下一轮";
+        }
+    }
+    summary << "。";
+
+    Json::Value payload;
+    payload["summary"] = summary.str();
+
+    Json::Value bullets(Json::arrayValue);
+    {
+        std::ostringstream bullet;
+        bullet << "当前目标：" << joinValues(targetNames, 3, "个目标");
+        bullets.append(bullet.str());
+    }
+    if (!prerequisiteNames.empty())
+    {
+        bullets.append("前置依赖：" +
+                       joinValues(prerequisiteNames, 3, "个前置节点"));
+    }
+    if (!lowMasteryNames.empty())
+    {
+        bullets.append("待补强节点：" +
+                       joinValues(lowMasteryNames, 3, "个节点"));
+    }
+    if (!scheduledNames.empty())
+    {
+        std::ostringstream bullet;
+        bullet << "本轮安排：" << planningResult.scheduledCount << " 个节点，优先学习 "
+               << joinValues(scheduledNames, 3, "个节点");
+        bullets.append(bullet.str());
+    }
+    if (!deferredNames.empty())
+    {
+        std::ostringstream bullet;
+        bullet << "下一轮建议：" << planningResult.deferredCount << " 个节点，"
+               << joinValues(deferredNames, 3, "个节点");
+        if (!planningResult.targetReachableWithinBudget)
+        {
+            bullet << " 受当前时间预算限制顺延";
+        }
+        bullets.append(bullet.str());
+    }
+    if (!triggerReasons.empty())
+    {
+        bullets.append("关键依据：" + joinValues(triggerReasons, 2, "条依据"));
+    }
+    {
+        std::ostringstream bullet;
+        bullet << "预算判断：当前时间预算为 " << planningResult.availableMinutes
+               << " 分钟，";
+        bullet << (planningResult.targetReachableWithinBudget
+                       ? "可以覆盖目标链路。"
+                       : "暂时无法完整覆盖目标链路。");
+        bullets.append(bullet.str());
+    }
+    payload["bullets"] = bullets;
+
+    Json::Value jsonLabels(Json::arrayValue);
+    for (const auto &label : labels)
+    {
+        jsonLabels.append(label);
+    }
+    payload["labels"] = jsonLabels;
+
+    return payload;
+}
+
 Json::Value buildPlanningPayload(
     const algorithm::graph::KnowledgeGraph &graph,
     const algorithm::planner::PlanningRequest &request,
     const algorithm::planner::PlanningResult &planningResult,
-    const std::string &message)
+    const std::string &message,
+    const std::string &learnerCode)
 {
     Json::Value path(Json::arrayValue);
     for (const auto &item : planningResult.path)
@@ -306,7 +596,7 @@ Json::Value buildPlanningPayload(
         pathItem["explanation"] = buildExplanationPayload(explanation);
         pathItem["learningResources"] =
             services::LearningResourceService::buildResourcesForLearningPathItem(
-                item);
+                item, learnerCode);
         path.append(pathItem);
     }
 
@@ -332,9 +622,11 @@ Json::Value buildPlanningPayload(
     payload["summary"]["targetReachableWithinBudget"] =
         planningResult.targetReachableWithinBudget;
     payload["path"] = path;
+    payload["overallExplanation"] =
+        buildOverallExplanationPayload(graph, request, planningResult);
     payload["resourceRecommendations"] =
         services::LearningResourceService::buildResourceRecommendations(
-            planningResult.path);
+            planningResult.path, learnerCode);
 
     return payload;
 }
@@ -455,18 +747,24 @@ namespace services
 Json::Value PathPlanningService::buildPathPayload(const Json::Value &requestJson)
 {
     const auto request = parsePlanningRequest(requestJson);
+    const auto learnerCode = resolvePlanningLearnerCode(requestJson);
     const auto graph = KnowledgeGraphService::loadKnowledgeGraph();
     const auto planningResult =
         algorithm::planner::generateLearningPath(graph, request);
 
     return buildPlanningPayload(
-        graph, request, planningResult, "已生成最小版个性化学习路径。");
+        graph,
+        request,
+        planningResult,
+        "已生成最小版个性化学习路径。",
+        learnerCode);
 }
 
 Json::Value PathPlanningService::buildAdjustedPathPayload(
     const Json::Value &requestJson)
 {
     const auto baseRequest = parsePlanningRequest(requestJson);
+    const auto learnerCode = resolvePlanningLearnerCode(requestJson);
     const auto feedbackItems = parseFeedbackItems(requestJson);
     const auto graph = KnowledgeGraphService::loadKnowledgeGraph();
     const auto adjustmentResult = algorithm::adjuster::adjustLearningPath(
@@ -474,7 +772,8 @@ Json::Value PathPlanningService::buildAdjustedPathPayload(
 
     auto payload = buildPlanningPayload(graph, adjustmentResult.updatedRequest,
                                         adjustmentResult.adjustedPlan,
-                                        "已根据学习反馈调整推荐路径。");
+                                        "已根据学习反馈调整推荐路径。",
+                                        learnerCode);
 
     Json::Value updatedMasteryByCode;
     for (const auto &[code, mastery] : adjustmentResult.updatedRequest.masteryByCode)
@@ -518,6 +817,7 @@ Json::Value PathPlanningService::buildDetailPathPayload(
 {
     const auto scopeCode = parseDetailScopeCode(requestJson);
     auto request = parseDetailPlanningRequest(requestJson);
+    const auto learnerCode = resolvePlanningLearnerCode(requestJson);
     const auto scopePayload = KnowledgeGraphService::buildGraphPayload(scopeCode);
     const auto scopeGraph = buildScopedGraphFromPayload(scopePayload);
 
@@ -534,7 +834,11 @@ Json::Value PathPlanningService::buildDetailPathPayload(
     const auto planningResult =
         algorithm::planner::generateLearningPath(scopeGraph, request);
     auto payload = buildPlanningPayload(
-        scopeGraph, request, planningResult, "已生成当前细化图谱范围内的学习路径。");
+        scopeGraph,
+        request,
+        planningResult,
+        "已生成当前细化图谱范围内的学习路径。",
+        learnerCode);
 
     payload["scope"] = scopePayload["view"];
     payload["breadcrumbs"] = scopePayload["breadcrumbs"];
@@ -548,6 +852,15 @@ Json::Value PathPlanningService::buildAdjustedDetailPathPayload(
 {
     const auto scopeCode = parseDetailScopeCode(requestJson);
     auto baseRequest = parseDetailPlanningRequest(requestJson);
+    const auto learnerCode = resolvePlanningLearnerCode(requestJson);
+    const auto learner =
+        repositories::LearnerProfileRepository::findLearnerByCode(
+            learnerCode.empty() ? readDefaultLearnerCode() : learnerCode);
+    if (!learner.has_value())
+    {
+        throw std::invalid_argument("未找到指定学习者，无法保存细化学习反馈。");
+    }
+
     const auto feedbackItems = parseFeedbackItems(requestJson);
     const auto scopePayload = KnowledgeGraphService::buildGraphPayload(scopeCode);
     const auto scopeGraph = buildScopedGraphFromPayload(scopePayload);
@@ -564,10 +877,38 @@ Json::Value PathPlanningService::buildAdjustedDetailPathPayload(
 
     const auto adjustmentResult = algorithm::adjuster::adjustLearningPath(
         scopeGraph, baseRequest, feedbackItems);
+    const auto feedbackBatchId = drogon::utils::getUuid();
+    services::DetailLearningProgressService::persistScopeMasteryAndSyncParents(
+        learner->id,
+        learner->targetCourseId,
+        scopeCode,
+        adjustmentResult.updatedRequest.masteryByCode);
+
+    std::unordered_map<std::string, double> selfRatedMasteryByCode;
+    selfRatedMasteryByCode.reserve(feedbackItems.size());
+    for (const auto &item : feedbackItems)
+    {
+        selfRatedMasteryByCode[item.code] = item.selfRatedMastery;
+    }
+    for (const auto &detail : adjustmentResult.adjustmentDetails)
+    {
+        repositories::DetailLearningRepository::insertDetailFeedbackRecord(
+            repositories::DetailFeedbackRecordWrite{
+                learner->id,
+                scopeCode,
+                detail.code,
+                detail.completionStatus,
+                selfRatedMasteryByCode[detail.code],
+                detail.previousMastery,
+                detail.updatedMastery,
+                detail.ruleApplied,
+                feedbackBatchId});
+    }
 
     auto payload = buildPlanningPayload(
         scopeGraph, adjustmentResult.updatedRequest, adjustmentResult.adjustedPlan,
-        "已根据本范围学习反馈调整局部学习路径。");
+        "已根据本范围学习反馈调整局部学习路径。",
+        learnerCode);
 
     Json::Value updatedMasteryByCode;
     for (const auto &[code, mastery] : adjustmentResult.updatedRequest.masteryByCode)
@@ -603,6 +944,8 @@ Json::Value PathPlanningService::buildAdjustedDetailPathPayload(
         adjustmentResult.completedCount;
     payload["feedbackSummary"]["partialCount"] = adjustmentResult.partialCount;
     payload["feedbackSummary"]["blockedCount"] = adjustmentResult.blockedCount;
+    payload["feedbackSummary"]["persistedToLearnerProfile"] = true;
+    payload["feedbackBatchId"] = feedbackBatchId;
     payload["updatedMasteryByCode"] = updatedMasteryByCode;
     payload["adjustments"] = adjustmentDetails;
 

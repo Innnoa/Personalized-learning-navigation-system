@@ -44,6 +44,8 @@ class KnowledgeGraphRepository
   public:
     static std::optional<CourseRecord> findCourseByName(
         const std::string &courseName);
+    static std::optional<KnowledgePointRecord> findKnowledgePointByCourseIdAndCode(
+        int courseId, const std::string &knowledgePointCode);
     static std::vector<KnowledgePointRecord> listKnowledgePointsByCourseId(
         int courseId);
     static std::vector<KnowledgeDependencyRecord> listDependenciesByCourseId(

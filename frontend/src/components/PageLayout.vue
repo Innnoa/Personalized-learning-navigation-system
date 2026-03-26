@@ -11,6 +11,35 @@
           <RouterLink to="/" class="page-nav-link">
             首页
           </RouterLink>
+          <RouterLink to="/learning-graph" class="page-nav-link">
+            学习图谱
+          </RouterLink>
+          <RouterLink
+            v-if="detailLearningNavTarget"
+            :to="detailLearningNavTarget"
+            class="page-nav-link"
+            :class="{
+              'page-nav-link--active': isDetailLearningNavActive,
+            }"
+          >
+            细化学习
+          </RouterLink>
+          <span v-else class="page-nav-link page-nav-link--disabled">
+            细化学习
+          </span>
+          <RouterLink
+            v-if="resourceNavTarget"
+            :to="resourceNavTarget"
+            class="page-nav-link"
+            :class="{
+              'page-nav-link--active': isResourceNavActive,
+            }"
+          >
+            推荐资源
+          </RouterLink>
+          <span v-else class="page-nav-link page-nav-link--disabled">
+            推荐资源
+          </span>
           <RouterLink to="/learner-profile" class="page-nav-link">
             学习者画像
           </RouterLink>
@@ -26,6 +55,11 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+
+import { useNavigationStore } from "../stores/navigationStore";
+
 defineProps({
   eyebrow: {
     type: String,
@@ -38,9 +72,83 @@ defineProps({
   description: {
     type: String,
     default:
-      "当前课程已固定为“数据结构”，本页用于承接前端首页、后端健康检查、知识图谱预览与后续路径规划结果展示。",
+      "当前课程固定为“数据结构”，页面按路径规划、学习图谱、推荐资源和学习者画像组织，便于分模块演示。",
   },
 });
+
+const route = useRoute();
+const navigationStore = useNavigationStore();
+
+const detailLearningNavTarget = computed(() => {
+  const currentScopeCode = String(route.query?.scope || "");
+  if (
+    route.name === "detail-learning" &&
+    currentScopeCode &&
+    navigationStore.detailLearningSectionByScopeCode(currentScopeCode)
+  ) {
+    return {
+      name: "detail-learning",
+      query: {
+        scope: currentScopeCode,
+      },
+    };
+  }
+
+  const fallbackScopeCode =
+    navigationStore.detailLearningSummary?.selectedScopeCode ||
+    navigationStore.detailLearningSections[0]?.scopeCode ||
+    "";
+  if (!fallbackScopeCode) {
+    return null;
+  }
+
+  return {
+    name: "detail-learning",
+    query: {
+      scope: fallbackScopeCode,
+    },
+  };
+});
+
+const resourceNavCode = computed(() => {
+  const currentCode = String(route.params?.code || "");
+  if (currentCode) {
+    return currentCode;
+  }
+
+  return navigationStore.resourceRecommendationSections[0]?.code || "";
+});
+
+const resourceNavLevel = computed(() => {
+  const currentLevel = String(route.query?.level || "");
+  if (currentLevel === "detail" || currentLevel === "main") {
+    return currentLevel;
+  }
+
+  return navigationStore.resourceRecommendationSummary?.contextMode || "main";
+});
+
+const resourceNavTarget = computed(() => {
+  if (!resourceNavCode.value) {
+    return null;
+  }
+
+  return {
+    name: "resource-recommendation",
+    params: {
+      code: resourceNavCode.value,
+    },
+    query: {
+      level: resourceNavLevel.value,
+    },
+  };
+});
+
+const isDetailLearningNavActive = computed(() => route.name === "detail-learning");
+
+const isResourceNavActive = computed(
+  () => route.name === "resource-recommendation" || Boolean(route.params?.code),
+);
 </script>
 
 <style scoped>
@@ -107,11 +215,30 @@ h1 {
   background: rgba(12, 106, 113, 0.08);
 }
 
-.page-nav-link.router-link-active {
+.page-nav-link.router-link-exact-active {
   background: linear-gradient(135deg, #0c6a71, #1b828b);
   color: #ffffff;
   border-color: transparent;
-  box-shadow: 0 12px 24px rgba(12, 106, 113, 0.18);
+  box-shadow: var(--panel-shadow-strong);
+}
+
+.page-nav-link--active {
+  background: linear-gradient(135deg, #0c6a71, #1b828b);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: var(--panel-shadow-strong);
+}
+
+.page-nav-link--disabled {
+  background: rgba(241, 245, 247, 0.92);
+  color: #93a0aa;
+  border-color: rgba(147, 160, 170, 0.26);
+  cursor: not-allowed;
+}
+
+.page-nav-link--disabled:hover {
+  transform: none;
+  background: rgba(241, 245, 247, 0.92);
 }
 
 .content {

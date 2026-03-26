@@ -98,3 +98,64 @@ CREATE INDEX IF NOT EXISTS idx_learning_feedback_records_learner
 
 CREATE INDEX IF NOT EXISTS idx_learning_feedback_records_learner_batch
     ON learning_feedback_records(learner_id, feedback_batch_id, recorded_at DESC);
+
+CREATE TABLE IF NOT EXISTS learner_detail_mastery (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    learner_id INTEGER NOT NULL,
+    scope_code TEXT NOT NULL,
+    node_code TEXT NOT NULL,
+    mastery_score REAL NOT NULL DEFAULT 0.0 CHECK (mastery_score BETWEEN 0.0 AND 1.0),
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (learner_id) REFERENCES learners(id) ON DELETE CASCADE,
+    UNIQUE (learner_id, scope_code, node_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_learner_detail_mastery_learner_scope
+    ON learner_detail_mastery(learner_id, scope_code, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS detail_learning_feedback_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    learner_id INTEGER NOT NULL,
+    scope_code TEXT NOT NULL,
+    node_code TEXT NOT NULL,
+    feedback_batch_id TEXT NOT NULL DEFAULT '',
+    completion_status TEXT NOT NULL CHECK (
+        completion_status IN ('completed', 'partial', 'blocked')
+    ),
+    self_rated_mastery REAL NOT NULL CHECK (self_rated_mastery BETWEEN 0.0 AND 1.0),
+    previous_mastery REAL NOT NULL CHECK (previous_mastery BETWEEN 0.0 AND 1.0),
+    updated_mastery REAL NOT NULL CHECK (updated_mastery BETWEEN 0.0 AND 1.0),
+    rule_applied TEXT NOT NULL DEFAULT '',
+    recorded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (learner_id) REFERENCES learners(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_detail_learning_feedback_records_learner_scope
+    ON detail_learning_feedback_records(learner_id, scope_code, recorded_at DESC);
+
+CREATE TABLE IF NOT EXISTS learning_resource_view_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    learner_id INTEGER NOT NULL,
+    knowledge_point_id INTEGER NOT NULL,
+    resource_title TEXT NOT NULL,
+    resource_url TEXT NOT NULL,
+    resource_type TEXT NOT NULL DEFAULT '',
+    resource_source TEXT NOT NULL DEFAULT '',
+    resource_layer TEXT NOT NULL DEFAULT '',
+    recommended_phase TEXT NOT NULL DEFAULT '',
+    source_context TEXT NOT NULL DEFAULT '',
+    scope_code TEXT NOT NULL DEFAULT '',
+    linked_reason_summary TEXT NOT NULL DEFAULT '',
+    interaction_type TEXT NOT NULL DEFAULT 'opened' CHECK (
+        interaction_type IN ('opened', 'viewed', 'completed', 'save_for_later')
+    ),
+    recorded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (learner_id) REFERENCES learners(id) ON DELETE CASCADE,
+    FOREIGN KEY (knowledge_point_id) REFERENCES knowledge_points(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_learning_resource_view_records_learner
+    ON learning_resource_view_records(learner_id, recorded_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_learning_resource_view_records_learner_point
+    ON learning_resource_view_records(learner_id, knowledge_point_id, recorded_at DESC);

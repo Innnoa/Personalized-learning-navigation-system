@@ -22,6 +22,134 @@
           "recommendedUsage": "适合在看完视频后快速回顾，用来支撑第一章概念型节点的解释。",
           "recommendedPhase": "巩固",
           "focusTags": ["分类方法", "逻辑结构", "存储映射"]
+        },
+        {
+          "title": "数据结构 | 爱编程的大丙",
+          "type": "article",
+          "source": "爱编程的大丙",
+          "url": "https://subingwen.cn/data-structure/",
+          "description": "按专题整合了数据结构基础篇入口，适合在一级节点层面快速建立课程全貌，再回到细化图谱逐点学习。",
+          "recommendedUsage": "适合在首页首次规划“数据结构基本概念”时阅读，用来建立本章知识边界和后续节点位置感。",
+          "recommendedPhase": "预习",
+          "focusTags": ["课程总览", "基础篇入口", "章节定位"]
+        },
+        {
+          "title": "【哈工大】数据结构与算法（全44讲）李秀坤 张岩 刘扬",
+          "type": "video",
+          "source": "哔哩哔哩 · 哈工大课程",
+          "url": "https://www.bilibili.com/video/BV1Gz7bzcEXU/",
+          "description": "课程前两讲覆盖“数据结构基本概念及研究对象”“抽象数据型、算法分析”，适合补强定义层理解。",
+          "recommendedUsage": "适合在已有课堂材料之外做一次系统化补听，重点看 1.1 和 1.2 两讲来补牢概念与 ADT 表达。",
+          "recommendedPhase": "延伸学习",
+          "focusTags": ["基本概念", "研究对象", "抽象数据类型"]
+        },
+        {
+          "title": "零基础经典数据结构教程(上)",
+          "type": "video",
+          "source": "哔哩哔哩 · 课程实录",
+          "url": "https://www.bilibili.com/video/BV1kW4y1E7Qi/",
+          "description": "视频对“数据”这一最基础概念有课程式讲解，适合对应“数据”节点。",
+          "recommendedUsage": "建议在细化学习开始时先看，用来统一“什么是数据”这一最底层概念。",
+          "recommendedPhase": "预习",
+          "focusTags": ["数据", "信息载体", "基础概念"],
+          "focusNodeCode": "ds-intro-data",
+          "focusNodeLabel": "数据"
+        },
+        {
+          "title": "零基础经典数据结构教程(上)",
+          "type": "video",
+          "source": "哔哩哔哩 · 课程实录",
+          "url": "https://www.bilibili.com/video/BV1kW4y1E7Qi/",
+          "description": "课程会区分数据元素与记录、结点等说法，适合对应“数据元素”节点。",
+          "recommendedUsage": "适合在理解数据概念后观看，用来把握数据元素作为基本单位的含义。",
+          "recommendedPhase": "主学",
+          "focusTags": ["数据元素", "基本单位", "记录结点"],
+          "focusNodeCode": "ds-intro-data-element",
+          "focusNodeLabel": "数据元素"
+        },
+        {
+          "title": "零基础经典数据结构教程(上)",
+          "type": "video",
+          "source": "哔哩哔哩 · 课程实录",
+          "url": "https://www.bilibili.com/video/BV1kW4y1E7Qi/",
+          "description": "对数据项这一最小不可分单位有直接说明，适合对应“数据项”节点。",
+          "recommendedUsage": "适合在区分数据元素和其内部属性时观看，用来避免概念混淆。",
+          "recommendedPhase": "主学",
+          "focusTags": ["数据项", "最小单位", "属性字段"],
+          "focusNodeCode": "ds-intro-data-item",
+          "focusNodeLabel": "数据项"
+        },
+        {
+          "title": "零基础经典数据结构教程(上)",
+          "type": "video",
+          "source": "哔哩哔哩 · 课程实录",
+          "url": "https://www.bilibili.com/video/BV1kW4y1E7Qi/",
+          "description": "视频会说明同类数据元素集合这一对象层概念，适合对应“数据对象”节点。",
+          "recommendedUsage": "适合在掌握数据元素后继续看，用来理解研究对象范围如何确定。",
+          "recommendedPhase": "主学",
+          "focusTags": ["数据对象", "同类元素集合", "研究范围"],
+          "focusNodeCode": "ds-intro-data-object",
+          "focusNodeLabel": "数据对象"
+        },
+        {
+          "title": "Hello 算法 · 数据结构分类",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_data_structure/classification_of_data_structure/",
+          "description": "从组织关系与存储方式两层理解数据结构，适合对应“数据结构”节点。",
+          "recommendedUsage": "建议在基础对象概念掌握后阅读，用来理解数据结构到底研究什么。",
+          "recommendedPhase": "主学",
+          "focusTags": ["数据结构", "组织关系", "研究内容"],
+          "focusNodeCode": "ds-intro-data-structure",
+          "focusNodeLabel": "数据结构"
+        },
+        {
+          "title": "Hello 算法 · 数据结构分类",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_data_structure/classification_of_data_structure/",
+          "description": "对线性、树形、图等关系类型说明清楚，适合对应“逻辑结构”节点。",
+          "recommendedUsage": "适合在理解数据结构后阅读，用来区分逻辑关系和物理存储的差异。",
+          "recommendedPhase": "主学",
+          "focusTags": ["逻辑结构", "线性与非线性", "关系类型"],
+          "focusNodeCode": "ds-intro-logical-structure",
+          "focusNodeLabel": "逻辑结构"
+        },
+        {
+          "title": "Hello 算法 · 数据结构分类",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_data_structure/classification_of_data_structure/",
+          "description": "对连续与分散存储的区分较直观，适合对应“存储结构”节点。",
+          "recommendedUsage": "适合在逻辑结构掌握后阅读，用来理解逻辑关系如何落到物理表示上。",
+          "recommendedPhase": "主学",
+          "focusTags": ["存储结构", "连续存储", "分散存储"],
+          "focusNodeCode": "ds-intro-storage-structure",
+          "focusNodeLabel": "存储结构"
+        },
+        {
+          "title": "零基础经典数据结构教程(上)",
+          "type": "video",
+          "source": "哔哩哔哩 · 课程实录",
+          "url": "https://www.bilibili.com/video/BV1kW4y1E7Qi/",
+          "description": "课程会从值域与操作集合角度解释数据类型，适合对应“数据类型”节点。",
+          "recommendedUsage": "适合在结构概念学完后观看，用来把数据类型和语言内置类型联系起来。",
+          "recommendedPhase": "主学",
+          "focusTags": ["数据类型", "值集合", "操作集合"],
+          "focusNodeCode": "ds-intro-data-type",
+          "focusNodeLabel": "数据类型"
+        },
+        {
+          "title": "零基础经典数据结构教程(上)",
+          "type": "video",
+          "source": "哔哩哔哩 · 课程实录",
+          "url": "https://www.bilibili.com/video/BV1kW4y1E7Qi/",
+          "description": "视频会强调“做什么”与“怎么做”的分离，适合对应“抽象数据类型”节点。",
+          "recommendedUsage": "适合在数据类型概念掌握后观看，用来建立 ADT 的抽象层意识。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["抽象数据类型", "接口抽象", "逻辑与实现分离"],
+          "focusNodeCode": "ds-intro-adt",
+          "focusNodeLabel": "抽象数据类型"
         }
       ]
     },
@@ -47,6 +175,146 @@
           "recommendedUsage": "适合在做复杂度案例或答辩讲解前阅读，用来整理定义与量级对比。",
           "recommendedPhase": "巩固",
           "focusTags": ["量级分析", "复杂度比较", "案例理解"]
+        },
+        {
+          "title": "算法复杂度 | 爱编程的大丙",
+          "type": "article",
+          "source": "爱编程的大丙",
+          "url": "https://subingwen.cn/data-structure/complexity/",
+          "description": "围绕大 O 表示法、时间复杂度和空间复杂度展开，示例清楚，适合一级节点阶段做整体回顾。",
+          "recommendedUsage": "适合在首页生成“算法分析”路径后阅读，用来把时间复杂度、空间复杂度和量级判断串成一条主线。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["大O表示法", "时间复杂度", "空间复杂度"]
+        },
+        {
+          "title": "25王道数据结构课后习题（各章重点必刷）精讲【已完结】",
+          "type": "video",
+          "source": "哔哩哔哩 · 图领计算机考研",
+          "url": "https://www.bilibili.com/video/BV18z421m7zG/",
+          "description": "包含“第一章-2 算法”专题，适合用考研题讲解的方式强化算法特性与评价标准。",
+          "recommendedUsage": "适合在理解基础定义后补做例题化训练，重点看第一章算法与算法评价相关内容。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["算法特性", "算法评价", "题目训练"]
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "视频从“算法是什么”切入，适合对应“算法定义”节点。",
+          "recommendedUsage": "建议在算法分析细化学习开始时先看，用来建立算法章节的整体对象认识。",
+          "recommendedPhase": "预习",
+          "focusTags": ["算法定义", "操作序列", "求解过程"],
+          "focusNodeCode": "algorithm-analysis-definition",
+          "focusNodeLabel": "算法定义"
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "课程会说明算法必须有明确输入与输出，适合对应“输入与输出”节点。",
+          "recommendedUsage": "适合在理解算法定义后观看，用来把输入输出作为求解边界条件记牢。",
+          "recommendedPhase": "主学",
+          "focusTags": ["输入", "输出", "边界条件"],
+          "focusNodeCode": "algorithm-analysis-input-output",
+          "focusNodeLabel": "输入与输出"
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "对算法必须在有限步骤结束这一要求有清晰说明，适合对应“有穷性”节点。",
+          "recommendedUsage": "适合在算法基本特性部分观看，用来区分算法与无限过程。",
+          "recommendedPhase": "主学",
+          "focusTags": ["有穷性", "有限步骤", "终止性"],
+          "focusNodeCode": "algorithm-analysis-finiteness",
+          "focusNodeLabel": "有穷性"
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "同一输入下步骤和结果应明确可复现，这一点在视频中有解释，适合对应“确定性”节点。",
+          "recommendedUsage": "适合在算法特性部分观看，用来理解为什么算法要避免歧义。",
+          "recommendedPhase": "主学",
+          "focusTags": ["确定性", "可复现", "无歧义步骤"],
+          "focusNodeCode": "algorithm-analysis-determinism",
+          "focusNodeLabel": "确定性"
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "视频对“每一步都应可执行”这一要求有直接说明，适合对应“可行性”节点。",
+          "recommendedUsage": "适合在算法特性部分观看，用来理解抽象步骤也必须能落到具体操作。",
+          "recommendedPhase": "主学",
+          "focusTags": ["可行性", "基本操作", "可执行性"],
+          "focusNodeCode": "algorithm-analysis-feasibility",
+          "focusNodeLabel": "可行性"
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "围绕正确性、效率等维度说明如何衡量算法优劣，适合对应“评价标准”节点。",
+          "recommendedUsage": "适合在算法特性掌握后观看，用来把为什么要做复杂度分析讲清楚。",
+          "recommendedPhase": "主学",
+          "focusTags": ["评价标准", "正确性", "效率"],
+          "focusNodeCode": "algorithm-analysis-evaluation",
+          "focusNodeLabel": "评价标准"
+        },
+        {
+          "title": "Hello 算法 · 时间复杂度",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_computational_complexity/time_complexity/",
+          "description": "从统计关键操作执行次数切入复杂度分析，适合对应“语句频度”节点。",
+          "recommendedUsage": "建议在开始做复杂度推导前阅读，用来把频度与规模表达式对应起来。",
+          "recommendedPhase": "主学",
+          "focusTags": ["语句频度", "操作次数", "规模表达式"],
+          "focusNodeCode": "algorithm-analysis-frequency",
+          "focusNodeLabel": "语句频度"
+        },
+        {
+          "title": "Hello 算法 · 时间复杂度",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_computational_complexity/time_complexity/",
+          "description": "系统解释大 O 表示法和增长趋势，适合对应“时间复杂度”节点。",
+          "recommendedUsage": "适合在语句频度掌握后重点阅读，用来完成从频度到复杂度的抽象提升。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["大O表示法", "增长趋势", "时间复杂度"],
+          "focusNodeCode": "algorithm-analysis-time-complexity",
+          "focusNodeLabel": "时间复杂度"
+        },
+        {
+          "title": "时间复杂度和空间复杂度，大O表示法〖数据结构和算法入门2〗",
+          "type": "video",
+          "source": "哔哩哔哩 · 图灵星球 TuringPlanet",
+          "url": "https://www.bilibili.com/video/BV14j411f7DJ/",
+          "description": "视频同时介绍空间复杂度的基本含义，适合对应“空间复杂度”节点。",
+          "recommendedUsage": "适合在时间复杂度掌握后观看，用来对照时间与空间两个评价维度。",
+          "recommendedPhase": "主学",
+          "focusTags": ["空间复杂度", "额外空间", "效率维度"],
+          "focusNodeCode": "algorithm-analysis-space-complexity",
+          "focusNodeLabel": "空间复杂度"
+        },
+        {
+          "title": "Hello 算法 · 时间复杂度",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_computational_complexity/time_complexity/",
+          "description": "文中有多种循环和嵌套结构案例，适合对应“复杂度案例解析”节点。",
+          "recommendedUsage": "适合在概念掌握后反复阅读，用来练习从代码结构推导复杂度。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["循环案例", "嵌套结构", "复杂度推导"],
+          "focusNodeCode": "algorithm-analysis-case-study",
+          "focusNodeLabel": "复杂度案例解析"
         }
       ]
     },
@@ -72,6 +340,134 @@
           "recommendedUsage": "适合在学习路径从线性表下钻到顺序表、链表前阅读。",
           "recommendedPhase": "巩固",
           "focusTags": ["抽象列表", "统一视角", "结构过渡"]
+        },
+        {
+          "title": "数据结构与算法 - 线性表",
+          "type": "article",
+          "source": "稀土掘金",
+          "url": "https://juejin.cn/post/6844903743230590983",
+          "description": "从线性表概述一路串到顺序表、链表、栈和队列，适合在一级节点先建立“同一逻辑结构、不同实现方式”的整体视图。",
+          "recommendedUsage": "建议在线性表总节点阶段通读，用来把后续要下钻的各类结构先放进同一张知识地图。",
+          "recommendedPhase": "预习",
+          "focusTags": ["总览", "顺序表与链表", "线性结构"]
+        },
+        {
+          "title": "数据结构-线性表-原创手记",
+          "type": "article",
+          "source": "慕课网手记",
+          "url": "https://m.imooc.com/article/details?article_id=322903",
+          "description": "按定义、顺序存储和链式存储的顺序梳理线性表，适合在学完若干细化节点后回收总结共同约束。",
+          "recommendedUsage": "适合在顺序表和链表都学过之后回看，用来总结线性表的前驱后继关系与两种存储思路。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["定义回顾", "顺序/链式对照", "结构总结"]
+        },
+        {
+          "title": "数据结构（严蔚敏版）第二章 ——线性表（一）",
+          "type": "article",
+          "source": "阿里云开发者社区",
+          "url": "https://developer.aliyun.com/article/1030591",
+          "description": "文章按课程章节梳理线性表定义、前驱后继关系和顺序表示，适合对应“线性表定义”节点建立标准表述。",
+          "recommendedUsage": "建议在开始细化学习时先读定义部分，用来统一“有限序列、同类型、前驱后继”这些关键词。",
+          "recommendedPhase": "预习",
+          "focusTags": ["定义", "有限序列", "前驱后继"],
+          "focusNodeCode": "linear-list-definition",
+          "focusNodeLabel": "线性表定义"
+        },
+        {
+          "title": "线性数据结构",
+          "type": "article",
+          "source": "菜鸟教程",
+          "url": "https://www.runoob.com/data-structures/dsa-linear-data-structures.html",
+          "description": "用线性结构对比视角解释一对一关系、前驱后继和常见结构分类，适合理解线性表的典型特点。",
+          "recommendedUsage": "适合在掌握定义后阅读，用来区分线性表特点与数组、链表、栈、队列等实现或变体的关系。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["一对一关系", "结构特点", "线性结构"],
+          "focusNodeCode": "linear-list-characteristics",
+          "focusNodeLabel": "线性表特点"
+        },
+        {
+          "title": "数据结构（严蔚敏版）第二章 ——线性表（一）",
+          "type": "article",
+          "source": "阿里云开发者社区",
+          "url": "https://developer.aliyun.com/article/1030591",
+          "description": "文章包含初始化、查找、插入、删除等线性表基本操作及顺序表实现，适合对照“基本操作”节点。",
+          "recommendedUsage": "建议在学习基本操作节点时重点看操作集合与前置条件，后续再进入具体实现。",
+          "recommendedPhase": "主学",
+          "focusTags": ["初始化", "插入删除", "查找取值"],
+          "focusNodeCode": "linear-list-basic-operations",
+          "focusNodeLabel": "基本操作"
+        },
+        {
+          "title": "【数据结构】线性表的抽象数据类型",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2403758",
+          "description": "围绕 ADT 的数据对象、关系和操作集合展开，适合把线性表从“具体实现”提升到“抽象接口”层理解。",
+          "recommendedUsage": "适合在理解定义和基本操作后阅读，用来解释为什么顺序表和链表都能实现同一个线性表 ADT。",
+          "recommendedPhase": "主学",
+          "focusTags": ["ADT", "操作集合", "抽象层次"],
+          "focusNodeCode": "linear-list-adt",
+          "focusNodeLabel": "抽象数据类型"
+        },
+        {
+          "title": "数据结构—线性表的应用",
+          "type": "article",
+          "source": "博客园 · Santariki",
+          "url": "https://www.cnblogs.com/Santariki/p/16814440.html",
+          "description": "从集合并集和有序表归并场景切入，能帮助把“合并问题”先看成输入输出与约束条件的建模问题。",
+          "recommendedUsage": "建议在进入合并算法前先读问题描述部分，明确无序合并、有序合并以及是否去重这些区别。",
+          "recommendedPhase": "主学",
+          "focusTags": ["问题建模", "有序表", "归并场景"],
+          "focusNodeCode": "linear-list-merge-problem",
+          "focusNodeLabel": "合并问题"
+        },
+        {
+          "title": "【算法与数据结构实战】线性表操作-合并两个线性表中的元素",
+          "type": "article",
+          "source": "阿里云开发者社区",
+          "url": "https://developer.aliyun.com/article/610914",
+          "description": "以双指针合并两个有序线性表为主线，适合对应“合并算法设计”节点理解比较、写入与收尾处理。",
+          "recommendedUsage": "适合在明确合并问题后阅读，用来对照算法步骤、边界处理和复杂度分析。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["双指针", "归并流程", "边界处理"],
+          "focusNodeCode": "linear-list-merge-algorithm",
+          "focusNodeLabel": "合并算法设计"
+        },
+        {
+          "title": "Hello 算法 · 数组",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_array_and_linkedlist/array/",
+          "description": "从连续存储、随机访问和插入删除代价角度解释数组，适合对应“顺序表示”节点建立底层直觉。",
+          "recommendedUsage": "适合在顺序表示节点主学阶段阅读，用来理解为什么顺序表访问快但中间修改成本高。",
+          "recommendedPhase": "主学",
+          "focusTags": ["连续存储", "随机访问", "搬移代价"],
+          "focusNodeCode": "linear-list-sequential-representation",
+          "focusNodeLabel": "顺序表示"
+        },
+        {
+          "title": "Hello 算法 · 链表",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_array_and_linkedlist/linked_list/",
+          "description": "对结点、指针和按序访问机制解释清楚，适合对应“链式表示”节点理解非连续存储与指针连接。",
+          "recommendedUsage": "建议在进入链式表示节点时阅读，用来对照结点结构、next 指针和访问方式。",
+          "recommendedPhase": "主学",
+          "focusTags": ["结点结构", "指针连接", "按序访问"],
+          "focusNodeCode": "linear-list-linked-representation",
+          "focusNodeLabel": "链式表示"
+        },
+        {
+          "title": "【数据结构实战】线性表的应用",
+          "type": "article",
+          "source": "技术栈",
+          "url": "https://jishuzhan.net/article/2035351139886104578",
+          "description": "围绕有序顺序表合并、单链表合并等案例展开，适合把线性表知识落到典型应用题和代码实现上。",
+          "recommendedUsage": "适合在“应用实例”节点使用，用来从题型视角复盘线性表为何既能顺序实现也能链式实现。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["应用题", "顺序表合并", "单链表合并"],
+          "focusNodeCode": "linear-list-applications",
+          "focusNodeLabel": "应用实例"
         }
       ]
     },
@@ -97,6 +493,134 @@
           "recommendedUsage": "适合在顺序表操作节点前阅读，用来理解为什么插入删除会有整体搬移代价。",
           "recommendedPhase": "巩固",
           "focusTags": ["连续存储", "随机访问", "搬移代价"]
+        },
+        {
+          "title": "【初探数据结构】线性表———顺序表的详解和实现",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2509240",
+          "description": "从顺序表的概念、静态/动态结构到增删查改接口完整展开，适合作为一级节点的主线补充材料。",
+          "recommendedUsage": "建议在顺序表总节点阶段阅读，用来同时建立结构定义、容量管理和基本操作的整体认识。",
+          "recommendedPhase": "主学",
+          "focusTags": ["动态顺序表", "接口实现", "复杂度"]
+        },
+        {
+          "title": "顺序表示",
+          "type": "article",
+          "source": "计算机考研杂货铺",
+          "url": "https://csgraduates.com/data_structure/linearlist/sequential/",
+          "description": "围绕顺序表定义、顺序访问优势和插删代价展开，适合在一级节点阶段快速形成考试与课程双重视角。",
+          "recommendedUsage": "适合在看完总览视频后阅读，用来抓住顺序表最常考的结构特征与操作代价。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["定义", "随机访问", "插删代价"]
+        },
+        {
+          "title": "【数据结构】线性表----顺序表详解",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com.cn/developer/article/2429240?policyId=1003",
+          "description": "围绕顺序表的连续存储、数组实现和逻辑结构展开，适合对应“顺序存储表示”节点建立整体直觉。",
+          "recommendedUsage": "建议在进入顺序表细化学习开头先读，用来理解为什么顺序表必须依赖一段连续空间。",
+          "recommendedPhase": "预习",
+          "focusTags": ["连续存储", "数组实现", "顺序结构"],
+          "focusNodeCode": "sequence-list-storage",
+          "focusNodeLabel": "顺序存储表示"
+        },
+        {
+          "title": "线性表的顺序存储结构：顺序表",
+          "type": "article",
+          "source": "C++算法编程指南",
+          "url": "https://majorli.github.io/algo_guide/ch03/sec01/311_sequence_list.html",
+          "description": "展示顺序表的数据封装、长度变量和结构定义，适合对应“存储结构定义”节点理解 data / size 等字段职责。",
+          "recommendedUsage": "适合在阅读完顺序存储表示后继续看，用来把抽象概念落到结构体定义层面。",
+          "recommendedPhase": "主学",
+          "focusTags": ["结构封装", "length", "data数组"],
+          "focusNodeCode": "sequence-list-structure-definition",
+          "focusNodeLabel": "存储结构定义"
+        },
+        {
+          "title": "Hello 算法 · 数组",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_array_and_linkedlist/array/",
+          "description": "从数组索引访问和连续地址映射解释 O(1) 访问来源，适合支撑“随机访问特点”节点。",
+          "recommendedUsage": "建议在顺序表基础概念学完后阅读，用来解释顺序表为何适合高频按位置访问。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["索引访问", "O(1)访问", "地址连续"],
+          "focusNodeCode": "sequence-list-random-access",
+          "focusNodeLabel": "随机访问特点"
+        },
+        {
+          "title": "【数据结构】线性表----顺序表详解",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com.cn/developer/article/2429240?policyId=1003",
+          "description": "文章同时讨论静态顺序表和动态顺序表，以及 size / capacity 的约束关系，适合理解容量限制。",
+          "recommendedUsage": "适合在学习插入、合并之前先看，用来明确为什么顺序表需要先判满或扩容。",
+          "recommendedPhase": "主学",
+          "focusTags": ["capacity", "判满", "扩容代价"],
+          "focusNodeCode": "sequence-list-capacity",
+          "focusNodeLabel": "容量约束"
+        },
+        {
+          "title": "线性表的顺序存储结构：顺序表",
+          "type": "article",
+          "source": "C++算法编程指南",
+          "url": "https://majorli.github.io/algo_guide/ch03/sec01/311_sequence_list.html",
+          "description": "对顺序表初始化、长度置零和结构封装的说明较清楚，适合对应“初始化”节点。",
+          "recommendedUsage": "建议在开始做顺序表基本操作前阅读，用来统一“空表初始化”这一前置步骤。",
+          "recommendedPhase": "主学",
+          "focusTags": ["初始化", "空表", "size置零"],
+          "focusNodeCode": "sequence-list-init",
+          "focusNodeLabel": "初始化"
+        },
+        {
+          "title": "【数据结构】线性表----顺序表详解",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com.cn/developer/article/2429240?policyId=1003",
+          "description": "文章对尾插、头插、指定位置插入和扩容检查都有示例，适合对应“插入操作”节点。",
+          "recommendedUsage": "适合在开始学顺序表插入时重点阅读，用来对照位置合法性、后移元素和容量检查。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["位置合法性", "后移元素", "扩容检查"],
+          "focusNodeCode": "sequence-list-insert",
+          "focusNodeLabel": "插入操作"
+        },
+        {
+          "title": "线性表的顺序存储结构：顺序表",
+          "type": "article",
+          "source": "C++算法编程指南",
+          "url": "https://majorli.github.io/algo_guide/ch03/sec01/311_sequence_list.html",
+          "description": "文中对删除操作的规则、元素前移和边界处理说明完整，适合对应“删除操作”节点。",
+          "recommendedUsage": "适合与插入操作对照学习，用来理解删除后为什么必须维持表中元素连续。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["前移元素", "边界处理", "保持连续"],
+          "focusNodeCode": "sequence-list-delete",
+          "focusNodeLabel": "删除操作"
+        },
+        {
+          "title": "【算法与数据结构实战】线性表操作-合并两个线性表中的元素",
+          "type": "article",
+          "source": "阿里云开发者社区",
+          "url": "https://developer.aliyun.com/article/610914",
+          "description": "以有序顺序表合并为核心，展示双指针比较、写入结果表和处理剩余元素的过程。",
+          "recommendedUsage": "适合在顺序表插删掌握后阅读，用来把多个基本操作串起来理解合并过程。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["双指针", "有序合并", "剩余元素处理"],
+          "focusNodeCode": "sequence-list-merge",
+          "focusNodeLabel": "合并操作"
+        },
+        {
+          "title": "顺序表与带头双向循环链表的优缺点比较",
+          "type": "article",
+          "source": "百度开发者中心",
+          "url": "https://developer.baidu.com/article/details/3036201",
+          "description": "从随机访问、扩容开销和插删代价对比顺序表与链表，适合支撑“适用场景”节点。",
+          "recommendedUsage": "建议在顺序表操作节点学完后阅读，用来总结什么场景更适合顺序表而不是链表。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["适用场景", "随机访问", "结构选择"],
+          "focusNodeCode": "sequence-list-scenarios",
+          "focusNodeLabel": "适用场景"
         }
       ]
     },
@@ -122,6 +646,146 @@
           "recommendedUsage": "适合在掌握链表基本结构后，用来巩固节点访问与插入删除流程。",
           "recommendedPhase": "巩固",
           "focusTags": ["单链表", "双向链表", "基本操作"]
+        },
+        {
+          "title": "链表（链式存储）基本原理",
+          "type": "article",
+          "source": "labuladong",
+          "url": "https://labuladong.online/zh/algo/data-structure-basic/linkedlist-basic/",
+          "description": "从为什么需要链表、结点如何连接，到查找与插删复杂度都讲得很直观，适合作为一级节点总览文章。",
+          "recommendedUsage": "建议在链表总节点先读，用来建立“非连续存储 + 指针重连 + 顺序访问”的整体认知。",
+          "recommendedPhase": "预习",
+          "focusTags": ["非连续存储", "结点连接", "复杂度对比"]
+        },
+        {
+          "title": "链表_数据结构入门教程",
+          "type": "article",
+          "source": "慕课网教程",
+          "url": "https://m.imooc.com/wiki/datalesson-list4",
+          "description": "从单链表到双向链表逐步解释结构与优缺点，适合在一级节点阶段梳理链表家族与典型应用场景。",
+          "recommendedUsage": "适合在进入头插法、尾插法和有序表合并前阅读，用来先把链表类型和适用场景讲清楚。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["单链表", "双向链表", "应用场景"]
+        },
+        {
+          "title": "链表基础知识（一、单链表、头插、尾插、头删、尾删、查找、删除、插入）",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2383821",
+          "description": "从数据域和指针域两部分解释单链表结点组成，适合对应“结点结构”节点。",
+          "recommendedUsage": "建议在链表细化学习开始时先读，先把结点长什么样、为何需要 next 指针搞清楚。",
+          "recommendedPhase": "预习",
+          "focusTags": ["数据域", "指针域", "结点组成"],
+          "focusNodeCode": "linked-list-node-structure",
+          "focusNodeLabel": "结点结构"
+        },
+        {
+          "title": "2.2 链表",
+          "type": "article",
+          "source": "Data Structure 文档",
+          "url": "https://data-structure.readthedocs.io/zh-cn/latest/%E7%AC%AC2%E7%AB%A0%20%E7%BA%BF%E6%80%A7%E8%A1%A8/2.2%20%E5%8D%95%E9%93%BE%E8%A1%A8/",
+          "description": "对头结点、首元结点和头指针等概念界定清楚，适合对应“相关概念”节点。",
+          "recommendedUsage": "适合在认识结点结构后继续阅读，用来避免把头结点、头指针和首元结点混淆。",
+          "recommendedPhase": "主学",
+          "focusTags": ["头指针", "头结点", "首元结点"],
+          "focusNodeCode": "linked-list-basic-concepts",
+          "focusNodeLabel": "相关概念"
+        },
+        {
+          "title": "2.2 链表",
+          "type": "article",
+          "source": "Data Structure 文档",
+          "url": "https://data-structure.readthedocs.io/zh-cn/latest/%E7%AC%AC2%E7%AB%A0%20%E7%BA%BF%E6%80%A7%E8%A1%A8/2.2%20%E5%8D%95%E9%93%BE%E8%A1%A8/",
+          "description": "文中强调链表访问第 i 个结点必须顺序遍历，适合支撑“查找操作”节点理解 O(n) 查找特征。",
+          "recommendedUsage": "适合在学习链表查找时阅读，用来对照顺序表的随机访问优势。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["顺序遍历", "O(n)查找", "不支持随机访问"],
+          "focusNodeCode": "linked-list-search",
+          "focusNodeLabel": "查找操作"
+        },
+        {
+          "title": "链表基础知识（一、单链表、头插、尾插、头删、尾删、查找、删除、插入）",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2383821",
+          "description": "给出在指定位置前插入结点的思路和代码，适合对应“插入操作”节点。",
+          "recommendedUsage": "建议在学习插入操作时重点看前驱定位和指针重连顺序，避免先断链后连链的错误。",
+          "recommendedPhase": "主学",
+          "focusTags": ["前驱定位", "指针重连", "指定位置插入"],
+          "focusNodeCode": "linked-list-insert",
+          "focusNodeLabel": "插入操作"
+        },
+        {
+          "title": "链表基础知识（一、单链表、头插、尾插、头删、尾删、查找、删除、插入）",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2383821",
+          "description": "涵盖删除指定位置结点、释放结点和维护前驱后继的过程，适合对应“删除操作”节点。",
+          "recommendedUsage": "适合与插入操作一起学习，用来理解删除时为什么仍然需要先定位前驱结点。",
+          "recommendedPhase": "主学",
+          "focusTags": ["删除结点", "释放空间", "维护链接"],
+          "focusNodeCode": "linked-list-delete",
+          "focusNodeLabel": "删除操作"
+        },
+        {
+          "title": "链表的学习：链表的头插法和尾插法以及HashMap中链表结点的插入方式",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/1863642",
+          "description": "专门讲单链表头插法，适合对应“头插法建表”节点理解新结点先连旧表头的顺序。",
+          "recommendedUsage": "建议在建表方式部分重点阅读，用来理解为什么头插法会改变最终元素次序。",
+          "recommendedPhase": "主学",
+          "focusTags": ["头插法", "新结点先连", "逆序建表"],
+          "focusNodeCode": "linked-list-head-insert",
+          "focusNodeLabel": "头插法建表"
+        },
+        {
+          "title": "链表的学习：链表的头插法和尾插法以及HashMap中链表结点的插入方式",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/1863642",
+          "description": "同文对尾插法也有专门说明，适合对应“尾插法建表”节点理解保持输入顺序的原因。",
+          "recommendedUsage": "适合和头插法对照阅读，用来理解为什么尾插法更适合按输入顺序构造链表。",
+          "recommendedPhase": "主学",
+          "focusTags": ["尾插法", "保持顺序", "尾结点连接"],
+          "focusNodeCode": "linked-list-tail-insert",
+          "focusNodeLabel": "尾插法建表"
+        },
+        {
+          "title": "【数据结构实战】线性表的应用",
+          "type": "article",
+          "source": "技术栈",
+          "url": "https://jishuzhan.net/article/2035351139886104578",
+          "description": "包含有序单链表原地合并的实现与复杂度分析，适合对应“有序表合并”节点。",
+          "recommendedUsage": "建议在链表插删掌握后阅读，用来理解为什么链表合并可以通过指针重连减少元素搬移。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["有序链表合并", "原地重连", "O(1)额外空间"],
+          "focusNodeCode": "linked-list-merge",
+          "focusNodeLabel": "有序表合并"
+        },
+        {
+          "title": "顺序表与带头双向循环链表的优缺点比较",
+          "type": "article",
+          "source": "百度开发者中心",
+          "url": "https://developer.baidu.com/article/details/3036201",
+          "description": "从随机访问、插删代价和空间开销比较顺序表与链表，适合支撑“与顺序表比较”节点。",
+          "recommendedUsage": "适合在链表核心操作学完后阅读，用来整理答辩时最常被问到的“为什么不用顺序表”。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["结构比较", "插删代价", "空间开销"],
+          "focusNodeCode": "linked-list-vs-sequence",
+          "focusNodeLabel": "与顺序表比较"
+        },
+        {
+          "title": "线性表，双向链表，静态链表，循环链表(约瑟夫环)",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2477009",
+          "description": "系统讲双向链表、循环链表和静态链表，适合对应“其他链表形式”节点做扩展阅读。",
+          "recommendedUsage": "适合在单链表主线掌握后再看，用来建立链表扩展形态的整体视图。",
+          "recommendedPhase": "延伸学习",
+          "focusTags": ["双向链表", "循环链表", "静态链表"],
+          "focusNodeCode": "linked-list-variants",
+          "focusNodeLabel": "其他链表形式"
         }
       ]
     },
@@ -147,6 +811,134 @@
           "recommendedUsage": "适合在学习递归工作栈或表达式求值前阅读。",
           "recommendedPhase": "巩固",
           "focusTags": ["栈操作", "递归工作栈", "表达式求值"]
+        },
+        {
+          "title": "【初阶数据结构】详解栈和队列",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2459215",
+          "description": "把栈的概念、实现选择和代码接口放在课程化语境里讲解，适合作为一级节点的补充主学材料。",
+          "recommendedUsage": "建议在栈总节点阶段阅读，用来统一后进先出、顺序栈/链栈选择和常见操作集合。",
+          "recommendedPhase": "主学",
+          "focusTags": ["后进先出", "实现选择", "接口实现"]
+        },
+        {
+          "title": "数据结构与算法 · 栈和队列",
+          "type": "article",
+          "source": "浙江大学课程资料",
+          "url": "https://sgool.zju.edu.cn/download/ds/chapter3.html",
+          "description": "课程资料把栈定义、ADT、顺序栈、链栈、表达式计算和递归都连在一起，适合答辩前整理知识主线。",
+          "recommendedUsage": "适合在学完栈的细化节点后回看，用来把实现、应用和递归关系串成一条完整叙述线。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["ADT", "表达式计算", "递归"]
+        },
+        {
+          "title": "3.1 栈",
+          "type": "article",
+          "source": "Data Structure 文档",
+          "url": "https://data-structure.readthedocs.io/zh-cn/latest/%E7%AC%AC3%E7%AB%A0%20%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/3.1%20%E6%A0%88/",
+          "description": "按课程结构讲清栈的定义、后进先出特点和基本术语，适合对应“定义与特点”节点。",
+          "recommendedUsage": "建议在栈细化学习开始时先读，用来统一栈的基本概念与逻辑约束。",
+          "recommendedPhase": "预习",
+          "focusTags": ["后进先出", "基本术语", "逻辑约束"],
+          "focusNodeCode": "stack-definition",
+          "focusNodeLabel": "定义与特点"
+        },
+        {
+          "title": "栈和队列",
+          "type": "article",
+          "source": "看云",
+          "url": "https://www.kancloud.cn/yayun0516/data-structure0516/116596",
+          "description": "从逻辑层面整理栈的操作集合、数据对象和判空判满条件，适合对应“抽象数据类型”节点。",
+          "recommendedUsage": "适合在理解栈定义后阅读，用来区分抽象接口和具体实现。",
+          "recommendedPhase": "主学",
+          "focusTags": ["ADT", "操作集合", "判空判满"],
+          "focusNodeCode": "stack-adt",
+          "focusNodeLabel": "抽象数据类型"
+        },
+        {
+          "title": "3.1 栈",
+          "type": "article",
+          "source": "Data Structure 文档",
+          "url": "https://data-structure.readthedocs.io/zh-cn/latest/%E7%AC%AC3%E7%AB%A0%20%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/3.1%20%E6%A0%88/",
+          "description": "围绕数组空间、栈顶指针和顺序存储结构说明顺序栈实现思路，适合对应“顺序栈表示”节点。",
+          "recommendedUsage": "建议在学习具体实现前阅读，用来建立顺序栈的底层表示直觉。",
+          "recommendedPhase": "主学",
+          "focusTags": ["顺序存储", "栈顶指针", "数组实现"],
+          "focusNodeCode": "stack-seq-structure",
+          "focusNodeLabel": "顺序栈表示"
+        },
+        {
+          "title": "栈的顺序表示与基本操作",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2440359?policyId=1003",
+          "description": "文章把空栈建立、栈顶初值和容量信息初始化讲得较清楚，适合对应“顺序栈初始化”节点。",
+          "recommendedUsage": "适合在开始写顺序栈代码前阅读，用来统一空栈状态的建立方式。",
+          "recommendedPhase": "主学",
+          "focusTags": ["初始化", "空栈状态", "top指针"],
+          "focusNodeCode": "stack-seq-init",
+          "focusNodeLabel": "顺序栈初始化"
+        },
+        {
+          "title": "栈的顺序表示与基本操作",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2440359?policyId=1003",
+          "description": "结合代码说明入栈前判满、压入元素和栈顶更新过程，适合对应“入栈操作”节点。",
+          "recommendedUsage": "建议在学习顺序栈基本算法时重点看，用来避免漏掉判满与 top 更新顺序。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["入栈", "判满", "栈顶上移"],
+          "focusNodeCode": "stack-push",
+          "focusNodeLabel": "入栈操作"
+        },
+        {
+          "title": "栈的顺序表示与基本操作",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.cn/developer/article/2440359?policyId=1003",
+          "description": "对出栈、取栈顶和空栈判断有连续示例，适合对应“出栈与取栈顶”节点。",
+          "recommendedUsage": "适合与入栈操作对照学习，用来梳理空栈判断和返回值处理。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["出栈", "取栈顶", "判空"],
+          "focusNodeCode": "stack-pop-top",
+          "focusNodeLabel": "出栈与取栈顶"
+        },
+        {
+          "title": "数据结构（严蔚敏版）第三章 栈和队列",
+          "type": "article",
+          "source": "阿里云开发者社区",
+          "url": "https://developer.aliyun.com/article/1047693",
+          "description": "对链栈结点组织、入栈出栈流程和动态扩展优势说明较完整，适合对应“链栈”节点。",
+          "recommendedUsage": "适合在顺序栈掌握后阅读，用来比较链栈与顺序栈的空间管理差异。",
+          "recommendedPhase": "主学",
+          "focusTags": ["链栈", "结点连接", "动态扩展"],
+          "focusNodeCode": "stack-linked",
+          "focusNodeLabel": "链栈"
+        },
+        {
+          "title": "栈和队列",
+          "type": "article",
+          "source": "看云",
+          "url": "https://www.kancloud.cn/yayun0516/data-structure0516/116596",
+          "description": "结合函数调用过程解释递归中的压栈与退栈思想，适合对应“递归工作栈”节点。",
+          "recommendedUsage": "建议在学习递归与非递归转换时阅读，用来理解系统栈如何保存现场。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["递归调用", "系统栈", "函数返回"],
+          "focusNodeCode": "stack-recursion",
+          "focusNodeLabel": "递归工作栈"
+        },
+        {
+          "title": "Hello 算法 · 栈",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_stack_and_queue/stack/",
+          "description": "对括号匹配、表达式求值和数制转换等典型案例讲解直观，适合对应“典型应用”节点。",
+          "recommendedUsage": "适合在栈的基本操作学完后阅读，用来把抽象结构落到具体题型。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["括号匹配", "表达式求值", "数制转换"],
+          "focusNodeCode": "stack-applications",
+          "focusNodeLabel": "典型应用"
         }
       ]
     },
@@ -171,9 +963,27 @@
           "description": "图文说明清晰，包含循环队列的判空、判满与下标回绕思想，适合配合代码理解。",
           "recommendedUsage": "适合在看完视频后用来整理笔记，巩固顺序队列与循环队列。",
           "recommendedPhase": "巩固",
-          "focusTags": ["队列实现", "基本操作", "循环队列"],
-          "focusNodeCode": "queue-circular",
-          "focusNodeLabel": "循环队列"
+          "focusTags": ["队列实现", "基本操作", "循环队列"]
+        },
+        {
+          "title": "数据结构 模块四 第9讲 队列的顺序存储（循环队列）",
+          "type": "video",
+          "source": "网易公开课",
+          "url": "https://www.163.com/opencourse/detail/video-JHL5M9FIE-EHL5MHP4N",
+          "description": "课程视频聚焦循环队列的顺序存储、回绕更新和队列应用，适合给一级节点增加一条课堂风格资源。",
+          "recommendedUsage": "建议在掌握队列基本概念后观看，用来强化循环队列这条最容易卡住的主线。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["循环队列", "顺序存储", "课堂讲解"]
+        },
+        {
+          "title": "数据结构精讲：从零到一搞懂队列与循环队列的底层实现",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://developer.cloud.tencent.com/article/2616110",
+          "description": "围绕队列定义、假溢出、循环队列和链式队列展开，适合作为一级节点的系统性补充文章。",
+          "recommendedUsage": "适合在一级节点阶段阅读，用来把顺序队列、循环队列和链队列为何并存讲清楚。",
+          "recommendedPhase": "主学",
+          "focusTags": ["先进先出", "假溢出", "链式队列"]
         },
         {
           "title": "【尚硅谷】数据结构与算法（含数组模拟环形队列）",
@@ -186,6 +996,102 @@
           "focusTags": ["循环队列", "front/rear更新", "假溢出"],
           "focusNodeCode": "queue-circular",
           "focusNodeLabel": "循环队列"
+        },
+        {
+          "title": "队列的实现与应用",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/queue/",
+          "description": "从先进先出特征、队头队尾角色和基本术语入手，适合对应“基本概念”节点。",
+          "recommendedUsage": "建议在队列细化学习开始时先读，用来建立队列的整体认知框架。",
+          "recommendedPhase": "预习",
+          "focusTags": ["先进先出", "队头队尾", "基本术语"],
+          "focusNodeCode": "queue-definition",
+          "focusNodeLabel": "基本概念"
+        },
+        {
+          "title": "队列详解与实现",
+          "type": "article",
+          "source": "稀土掘金",
+          "url": "https://juejin.cn/post/7140135965380575245",
+          "description": "围绕入队、出队、判空等接口整理队列的逻辑抽象，适合对应“抽象数据类型”节点。",
+          "recommendedUsage": "适合在理解基本概念后阅读，用来区分逻辑接口与存储实现。",
+          "recommendedPhase": "主学",
+          "focusTags": ["ADT", "操作集合", "逻辑抽象"],
+          "focusNodeCode": "queue-adt",
+          "focusNodeLabel": "抽象数据类型"
+        },
+        {
+          "title": "队列详解：顺序队列、循环队列、链队列",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://developer.cloud.tencent.com/article/2616110",
+          "description": "对普通顺序队列的结构、空间浪费问题和实现思路说明完整，适合对应“顺序队列”节点。",
+          "recommendedUsage": "建议在理解队列抽象后阅读，用来明确顺序队列为何会引出循环队列。",
+          "recommendedPhase": "主学",
+          "focusTags": ["顺序存储", "队头队尾指针", "空间复用问题"],
+          "focusNodeCode": "queue-seq",
+          "focusNodeLabel": "顺序队列"
+        },
+        {
+          "title": "队列的实现与应用",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/queue/",
+          "description": "文章对空队列建立、front/rear 初值和初始化步骤说明清楚，适合对应“队列初始化”节点。",
+          "recommendedUsage": "适合在学习队列基本算法前阅读，用来避免初始化状态设置错误。",
+          "recommendedPhase": "主学",
+          "focusTags": ["初始化", "front", "rear"],
+          "focusNodeCode": "queue-init",
+          "focusNodeLabel": "队列初始化"
+        },
+        {
+          "title": "队列详解：顺序队列、循环队列、链队列",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://developer.cloud.tencent.com/article/2616110",
+          "description": "结合顺序队列与循环队列说明入队时的判满和队尾更新，适合对应“入队操作”节点。",
+          "recommendedUsage": "建议在初始化掌握后重点阅读，用来梳理元素入队和 rear 更新顺序。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["入队", "判满", "rear更新"],
+          "focusNodeCode": "queue-enqueue",
+          "focusNodeLabel": "入队操作"
+        },
+        {
+          "title": "队列详解：顺序队列、循环队列、链队列",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://developer.cloud.tencent.com/article/2616110",
+          "description": "对出队、取队头和 front 更新过程有直接示例，适合对应“出队操作”节点。",
+          "recommendedUsage": "适合与入队操作对照学习，用来整理判空和队头移动的关键细节。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["出队", "判空", "front更新"],
+          "focusNodeCode": "queue-dequeue",
+          "focusNodeLabel": "出队操作"
+        },
+        {
+          "title": "队列的实现与应用",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/queue/",
+          "description": "对链队列中头尾指针协同维护和动态扩展场景说明清晰，适合对应“链队列”节点。",
+          "recommendedUsage": "适合在顺序队列和循环队列掌握后阅读，用来比较链队列的实现取舍。",
+          "recommendedPhase": "主学",
+          "focusTags": ["链队列", "头尾指针", "动态扩展"],
+          "focusNodeCode": "queue-linked",
+          "focusNodeLabel": "链队列"
+        },
+        {
+          "title": "队列的实现与应用",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/queue/",
+          "description": "结合排队处理、任务调度等场景解释队列思想，适合对应“典型应用”节点。",
+          "recommendedUsage": "适合在队列基本操作学完后阅读，用来把先进先出约束落到具体应用问题。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["排队系统", "任务调度", "应用场景"],
+          "focusNodeCode": "queue-applications",
+          "focusNodeLabel": "典型应用"
         }
       ]
     },
@@ -211,12 +1117,138 @@
           "recommendedUsage": "适合在做模式匹配前阅读，用来统一字符串相关概念。",
           "recommendedPhase": "巩固",
           "focusTags": ["前缀后缀", "字符串存储", "基础术语"]
+        },
+        {
+          "title": "数据结构：串(String)【详解】",
+          "type": "article",
+          "source": "CSDN · Real_Fool_",
+          "url": "https://blog.csdn.net/Real_Fool_/article/details/113877781",
+          "description": "把串的定义、存储结构、朴素匹配和 KMP 放在同一篇文章里展开，适合作为一级节点的完整主线材料。",
+          "recommendedUsage": "建议在串总节点阶段阅读，用来先把“基本概念 + 存储实现 + 匹配问题”连成一条线。",
+          "recommendedPhase": "主学",
+          "focusTags": ["串定义", "存储结构", "模式匹配"]
+        },
+        {
+          "title": "模式匹配",
+          "type": "article",
+          "source": "计算机考研杂货铺",
+          "url": "https://www.csgraduates.com/data_structure/strings/match/",
+          "description": "从主串、模式串、朴素匹配一路过渡到 KMP 与 next 数组，适合作为一级节点的算法线补充资源。",
+          "recommendedUsage": "适合在串的基本概念学完后阅读，用来明确为什么串章节最终会自然过渡到 KMP。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["主串/模式串", "朴素匹配", "KMP过渡"]
+        },
+        {
+          "title": "串（String）",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://www.subingwen.cn/data-structure/string/",
+          "description": "从主串、子串和字符序列对象出发讲解串的基本概念，适合对应“定义与基本概念”节点。",
+          "recommendedUsage": "建议在串细化学习开始时先读，用来统一串相关术语与对象边界。",
+          "recommendedPhase": "预习",
+          "focusTags": ["主串", "子串", "字符序列"],
+          "focusNodeCode": "string-definition",
+          "focusNodeLabel": "定义与基本概念"
+        },
+        {
+          "title": "数据结构学习笔记：串",
+          "type": "article",
+          "source": "博客园 · Aurora-hu",
+          "url": "https://www.cnblogs.com/Aurora-hu/p/15866263.html",
+          "description": "围绕求长度、比较、连接、取子串等接口展开，适合对应“基本操作”节点。",
+          "recommendedUsage": "适合在理解串定义后阅读，用来整理串最常用的操作集合。",
+          "recommendedPhase": "主学",
+          "focusTags": ["求长度", "比较", "取子串"],
+          "focusNodeCode": "string-basic-ops",
+          "focusNodeLabel": "基本操作"
+        },
+        {
+          "title": "数据结构学习笔记：串",
+          "type": "article",
+          "source": "博客园 · Aurora-hu",
+          "url": "https://www.cnblogs.com/Aurora-hu/p/15866263.html",
+          "description": "文章把串的数据对象与操作集合统一整理，适合对应“抽象数据类型”节点。",
+          "recommendedUsage": "适合在基本操作掌握后阅读，用来解释为什么不同存储方式都服务于同一串 ADT。",
+          "recommendedPhase": "主学",
+          "focusTags": ["ADT", "数据对象", "操作集合"],
+          "focusNodeCode": "string-adt",
+          "focusNodeLabel": "抽象数据类型"
+        },
+        {
+          "title": "数据结构学习笔记：串",
+          "type": "article",
+          "source": "博客园 · Aurora-hu",
+          "url": "https://www.cnblogs.com/Aurora-hu/p/15866263.html",
+          "description": "对定长数组存串、长度限制和连续存储特点说明清楚，适合对应“定长顺序存储”节点。",
+          "recommendedUsage": "建议在学习串的具体实现时阅读，用来理解定长顺序存储的优缺点。",
+          "recommendedPhase": "主学",
+          "focusTags": ["定长数组", "连续存储", "长度限制"],
+          "focusNodeCode": "string-fixed-storage",
+          "focusNodeLabel": "定长顺序存储"
+        },
+        {
+          "title": "数据结构学习笔记：串",
+          "type": "article",
+          "source": "博客园 · Aurora-hu",
+          "url": "https://www.cnblogs.com/Aurora-hu/p/15866263.html",
+          "description": "从动态申请空间的角度说明串的堆分配存储，适合对应“堆分配存储”节点。",
+          "recommendedUsage": "适合与定长顺序存储对照学习，用来理解可变长度场景下的实现取舍。",
+          "recommendedPhase": "主学",
+          "focusTags": ["动态空间", "可变长度", "存储取舍"],
+          "focusNodeCode": "string-heap-storage",
+          "focusNodeLabel": "堆分配存储"
+        },
+        {
+          "title": "数据结构之串",
+          "type": "article",
+          "source": "稀土掘金",
+          "url": "https://juejin.cn/post/7204712464642637861",
+          "description": "结合结点组织和访问方式介绍串的链式存储，适合对应“链式存储”节点。",
+          "recommendedUsage": "适合在顺序存储思路掌握后阅读，用来比较链式存储在串上的适用性。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["链式存储", "结点组织", "访问方式"],
+          "focusNodeCode": "string-linked-storage",
+          "focusNodeLabel": "链式存储"
+        },
+        {
+          "title": "串（String）",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://www.subingwen.cn/data-structure/string/",
+          "description": "文章把主串中查找模式串的位置问题单独展开，适合对应“模式匹配问题”节点。",
+          "recommendedUsage": "建议在理解串的基本操作后阅读，用来进入模式匹配这一算法主线。",
+          "recommendedPhase": "主学",
+          "focusTags": ["主串", "模式串", "定位问题"],
+          "focusNodeCode": "string-matching-problem",
+          "focusNodeLabel": "模式匹配问题"
+        },
+        {
+          "title": "数据结构之串",
+          "type": "article",
+          "source": "稀土掘金",
+          "url": "https://juejin.cn/post/7204712464642637861",
+          "description": "围绕逐位比较和失配回退重新开始的思路解释 BF 算法，适合对应“简单模式匹配”节点。",
+          "recommendedUsage": "适合在进入 KMP 前重点阅读，用来理解简单匹配为何会产生重复比较。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["BF算法", "逐位比较", "重复比较"],
+          "focusNodeCode": "string-naive-match",
+          "focusNodeLabel": "简单模式匹配"
         }
       ]
     },
     {
       "knowledgePointCode": "kmp",
       "resources": [
+        {
+          "title": "懒猫老师-数据结构-(14)字符串匹配-KMP算法1(模式匹配)",
+          "type": "video",
+          "source": "哔哩哔哩 · 懒猫老师",
+          "url": "https://www.bilibili.com/video/av96254929",
+          "description": "先从 KMP 主流程和失配回退直觉切入，适合作为一级节点的主入口视频。",
+          "recommendedUsage": "建议在进入 next 数组定义前先看，用来先理解 KMP 为什么能减少重复比较。",
+          "recommendedPhase": "预习",
+          "focusTags": ["KMP主流程", "失配回退", "减少重复比较"]
+        },
         {
           "title": "懒猫老师-数据结构-(15)KMP算法2-next数组(模式匹配,字符串匹配)",
           "type": "video",
@@ -238,6 +1270,16 @@
           "recommendedUsage": "适合在实现或讲解 KMP 时查阅，用来整理定义和步骤。",
           "recommendedPhase": "答辩复盘",
           "focusTags": ["前缀函数", "算法步骤", "术语整理"]
+        },
+        {
+          "title": "28. 实现 strStr() | 代码随想录",
+          "type": "article",
+          "source": "代码随想录",
+          "url": "https://programmercarl.com/0028.%E5%AE%9E%E7%8E%B0strStr.html",
+          "description": "从匹配问题实战出发讲解前缀表与 next 数组，适合把 KMP 从“会背模板”推进到“理解为什么”。",
+          "recommendedUsage": "适合在看完主流程视频后阅读，用来把前缀表、next 数组和匹配过程放到一道经典题里串起来。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["strStr", "前缀表", "next数组"]
         }
       ]
     },
@@ -263,6 +1305,122 @@
           "recommendedUsage": "适合在看完课程视频后用来回顾术语、性质和基本结构。",
           "recommendedPhase": "巩固",
           "focusTags": ["节点关系", "树性质", "结构特征"]
+        },
+        {
+          "title": "数据结构二叉树介绍",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://developer.cloud.tencent.com/article/2627912",
+          "description": "从树的概念、树的术语到二叉树特点与特殊形态逐步展开，适合一级节点阶段统一术语。",
+          "recommendedUsage": "适合在树章节刚开始时阅读，用来把树、二叉树、满二叉树、完全二叉树这些基础对象一次理顺。",
+          "recommendedPhase": "预习",
+          "focusTags": ["树的概念", "二叉树特点", "特殊二叉树"]
+        },
+        {
+          "title": "【Python数据结构系列】☀️《树与二叉树-基础知识》——知识点讲解+代码实现☀️",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/1867244",
+          "description": "兼顾概念解释和结构表示，覆盖树、二叉树、存储方式与遍历入口，适合作为基础综述材料。",
+          "recommendedUsage": "适合在准备答辩或补概念时通读，用来把“定义-性质-存储-后续应用”串成完整脉络。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["基础综述", "树与二叉树", "存储与遍历入口"]
+        },
+        {
+          "title": "树的定义和树的存储结构",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/tree/",
+          "description": "围绕根、孩子、兄弟、叶子、度等基本术语展开，适合对应“树的定义与术语”节点。",
+          "recommendedUsage": "建议在树与二叉树基础细化学习开始时先读，用来统一树结构的术语体系。",
+          "recommendedPhase": "预习",
+          "focusTags": ["根结点", "孩子兄弟", "叶子与度"],
+          "focusNodeCode": "tree-basic-tree-definition",
+          "focusNodeLabel": "树的定义与术语"
+        },
+        {
+          "title": "树的定义和树的存储结构",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/tree/",
+          "description": "从树的对象特征和常见表示法切入，适合对应“树的抽象数据类型”节点理解逻辑层抽象。",
+          "recommendedUsage": "适合在理解树的定义后阅读，用来区分树的逻辑结构与存储实现。",
+          "recommendedPhase": "主学",
+          "focusTags": ["ADT", "层次结构", "逻辑抽象"],
+          "focusNodeCode": "tree-basic-tree-adt",
+          "focusNodeLabel": "树的抽象数据类型"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "对二叉树定义、左右子树顺序和基本形态讲解清晰，适合对应“二叉树定义与特点”节点。",
+          "recommendedUsage": "建议在一般树概念掌握后阅读，用来把握二叉树为什么是有序树。",
+          "recommendedPhase": "主学",
+          "focusTags": ["左右子树", "有序树", "结构特点"],
+          "focusNodeCode": "tree-basic-binary-definition",
+          "focusNodeLabel": "二叉树定义与特点"
+        },
+        {
+          "title": "Hello 算法 · 二叉树",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_tree/binary_tree/",
+          "description": "从结点、左右孩子与递归结构角度说明二叉树这一对象，适合对应“二叉树抽象数据类型”节点。",
+          "recommendedUsage": "适合在理解二叉树定义后阅读，用来整理二叉树的逻辑对象与基本操作边界。",
+          "recommendedPhase": "主学",
+          "focusTags": ["递归结构", "左右孩子", "逻辑对象"],
+          "focusNodeCode": "tree-basic-binary-adt",
+          "focusNodeLabel": "二叉树抽象数据类型"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "系统列出层结点数、总结点数、叶子结点数等性质，适合对应“二叉树性质”节点。",
+          "recommendedUsage": "建议在学习遍历与存储前重点看，用来建立后续推导常用公式。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["层结点数", "总结点数", "叶子结点性质"],
+          "focusNodeCode": "tree-basic-binary-properties",
+          "focusNodeLabel": "二叉树性质"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "同时覆盖顺序存储和链式存储两种表示方式，适合对应“二叉树存储结构”节点。",
+          "recommendedUsage": "适合在性质掌握后阅读，用来比较数组表示和链式结点表示的适用场景。",
+          "recommendedPhase": "主学",
+          "focusTags": ["顺序存储", "链式存储", "结构选择"],
+          "focusNodeCode": "tree-basic-binary-storage",
+          "focusNodeLabel": "二叉树存储结构"
+        },
+        {
+          "title": "数据结构-树与二叉树",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2621174",
+          "description": "文章把一般树和二叉树放在同一上下文中说明，适合对应“树与二叉树关系”节点。",
+          "recommendedUsage": "适合在树和二叉树两个概念都掌握后阅读，用来整理它们的联系与区别。",
+          "recommendedPhase": "巩固",
+          "focusTags": ["联系与区别", "一般树", "二叉树桥梁"],
+          "focusNodeCode": "tree-basic-tree-binary-relation",
+          "focusNodeLabel": "树与二叉树关系"
+        },
+        {
+          "title": "Hello 算法 · 二叉树",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_tree/binary_tree/",
+          "description": "能够自然衔接二叉树类型、存储和后续遍历主题，适合对应“应用入口”节点。",
+          "recommendedUsage": "适合在本节收尾时阅读，用来把基础概念过渡到遍历、搜索树等后续内容。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["后续过渡", "遍历入口", "结构前提"],
+          "focusNodeCode": "tree-basic-application-entry",
+          "focusNodeLabel": "应用入口"
         }
       ]
     },
@@ -287,9 +1445,123 @@
           "description": "对深度优先和广度优先遍历过程给出图示与代码，适合巩固遍历顺序与实现逻辑。",
           "recommendedUsage": "适合在看完视频后用于对照先序、中序、后序和层序的区别。",
           "recommendedPhase": "巩固",
-          "focusTags": ["层序遍历", "队列", "访问顺序"],
+          "focusTags": ["层序遍历", "队列", "访问顺序"]
+        },
+        {
+          "title": "玩透二叉树(Binary-Tree)及前序（先序）、中序、后序【递归和非递归】遍历",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/1683670",
+          "description": "同时覆盖递归与非递归遍历，并配有顺序图解，适合一级节点阶段做整体梳理。",
+          "recommendedUsage": "适合在首页看到“二叉树遍历”路径后阅读，用来把三种 DFS 顺序与显式栈实现放到同一框架中理解。",
+          "recommendedPhase": "主学",
+          "focusTags": ["先中后序", "递归与非递归", "图解理解"]
+        },
+        {
+          "title": "数据结构与算法基础--第08周04--5.5遍历二叉树和线索二叉树6--二叉树的遍历算法--层次遍历算法",
+          "type": "video",
+          "source": "哔哩哔哩 · 王卓老师",
+          "url": "https://www.bilibili.com/video/av35339967",
+          "description": "课程式讲解层次遍历和队列驱动过程，适合在一级节点阶段补一条偏课堂风格的视频资源。",
+          "recommendedUsage": "适合在掌握先中后序后补看，用来强化层序遍历与队列之间的关系。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["层次遍历", "队列驱动", "课堂讲解"]
+        },
+        {
+          "title": "Hello 算法 · 二叉树遍历",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_tree/binary_tree_traversal/",
+          "description": "从访问所有结点且仅访问一次的目标出发解释遍历原则，适合对应“遍历定义与策略”节点。",
+          "recommendedUsage": "建议在二叉树遍历细化学习开始时先读，用来统一遍历的目标和顺序意识。",
+          "recommendedPhase": "预习",
+          "focusTags": ["访问一次", "遍历目标", "访问策略"],
+          "focusNodeCode": "binary-tree-traversal-definition",
+          "focusNodeLabel": "遍历定义与策略"
+        },
+        {
+          "title": "Hello 算法 · 二叉树遍历",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_tree/binary_tree_traversal/",
+          "description": "结合二叉树递归结构解释递归遍历框架，适合对应“递归遍历思想”节点。",
+          "recommendedUsage": "适合在理解遍历定义后阅读，用来建立“根与左右子树”统一递归模板。",
+          "recommendedPhase": "主学",
+          "focusTags": ["递归框架", "左右子树", "统一模板"],
+          "focusNodeCode": "binary-tree-traversal-recursive",
+          "focusNodeLabel": "递归遍历思想"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "对“根-左-右”访问顺序和递归写法有直观示例，适合对应“先序遍历”节点。",
+          "recommendedUsage": "适合在递归遍历思想掌握后阅读，用来记住先序遍历的访问顺序和典型用途。",
+          "recommendedPhase": "主学",
+          "focusTags": ["根左右", "递归访问", "结构输出"],
+          "focusNodeCode": "binary-tree-traversal-preorder",
+          "focusNodeLabel": "先序遍历"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "对“左-根-右”访问顺序和中序结果特征讲解清楚，适合对应“中序遍历”节点。",
+          "recommendedUsage": "适合在对照先序、后序时阅读，用来理解中序为何常被用在有序输出场景。",
+          "recommendedPhase": "主学",
+          "focusTags": ["左根右", "访问顺序", "有序输出"],
+          "focusNodeCode": "binary-tree-traversal-inorder",
+          "focusNodeLabel": "中序遍历"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "结合“左-右-根”顺序解释先处理子问题再处理整体的思想，适合对应“后序遍历”节点。",
+          "recommendedUsage": "适合在三种深度优先遍历对比时阅读，用来抓住后序遍历的核心语义。",
+          "recommendedPhase": "主学",
+          "focusTags": ["左右根", "后处理整体", "深度优先"],
+          "focusNodeCode": "binary-tree-traversal-postorder",
+          "focusNodeLabel": "后序遍历"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "文章直接给出基于队列的逐层访问过程，适合对应“层序遍历”节点。",
+          "recommendedUsage": "适合在理解 DFS 三种顺序后阅读，用来区分层序遍历与递归遍历的实现差异。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["层序", "队列", "逐层访问"],
           "focusNodeCode": "binary-tree-traversal-level-order",
           "focusNodeLabel": "层序遍历"
+        },
+        {
+          "title": "二叉树以及它的形态、性质、存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/binary-tree/",
+          "description": "文章同时展示栈实现的中序等代码，适合对应“非递归遍历思想”节点。",
+          "recommendedUsage": "建议在递归遍历掌握后阅读，用来理解如何把系统调用栈改写成显式栈流程。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["显式栈", "迭代流程", "状态维护"],
+          "focusNodeCode": "binary-tree-traversal-iterative",
+          "focusNodeLabel": "非递归遍历思想"
+        },
+        {
+          "title": "Hello 算法 · 二叉树遍历",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_tree/binary_tree_traversal/",
+          "description": "便于把不同遍历方式映射到查找、统计和输出等任务，适合对应“应用入口”节点。",
+          "recommendedUsage": "适合在本节收尾时阅读，用来整理不同遍历方式分别适合什么应用场景。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["查找统计", "输出任务", "场景映射"],
+          "focusNodeCode": "binary-tree-traversal-application-entry",
+          "focusNodeLabel": "应用入口"
         }
       ]
     },
@@ -315,6 +1587,122 @@
           "recommendedUsage": "适合在实现编码译码或整理答辩术语时查阅。",
           "recommendedPhase": "答辩复盘",
           "focusTags": ["最优前缀码", "编码译码", "理论依据"]
+        },
+        {
+          "title": "哈夫曼树（赫夫曼树、最优树）详解",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2477017",
+          "description": "从最优二叉树、WPL 到构造流程逐步展开，适合把哈夫曼树的评价标准和构造原则讲清楚。",
+          "recommendedUsage": "适合在一级节点阶段阅读，用来补足“为什么它是最优二叉树”这一理论依据。",
+          "recommendedPhase": "主学",
+          "focusTags": ["最优二叉树", "WPL", "构造原理"]
+        },
+        {
+          "title": "深入理解哈夫曼树：从原理到编码应用",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2611145",
+          "description": "覆盖构建步骤、编码生成和压缩应用场景，适合一级节点阶段补强“概念到应用”的完整链路。",
+          "recommendedUsage": "适合在理解基本定义后阅读，用来把构造过程和编码应用连成一条完整故事线。",
+          "recommendedPhase": "延伸学习",
+          "focusTags": ["编码应用", "构建步骤", "压缩场景"]
+        },
+        {
+          "title": "霍夫曼树 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/ds/huffman-tree/",
+          "description": "从带权路径长度定义出发解释哈夫曼树的评价指标，适合对应“带权路径长度”节点。",
+          "recommendedUsage": "建议在哈夫曼树细化学习开始时先读，用来建立 WPL 与最优性的联系。",
+          "recommendedPhase": "预习",
+          "focusTags": ["WPL", "路径长度", "评价指标"],
+          "focusNodeCode": "huffman-tree-wpl",
+          "focusNodeLabel": "带权路径长度"
+        },
+        {
+          "title": "霍夫曼树 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/ds/huffman-tree/",
+          "description": "文章说明最优二叉树为何追求带权路径长度最小，适合对应“最优二叉树”节点。",
+          "recommendedUsage": "适合在理解 WPL 后阅读，用来明确哈夫曼树的理论前置概念。",
+          "recommendedPhase": "主学",
+          "focusTags": ["最优二叉树", "最小WPL", "理论前置"],
+          "focusNodeCode": "huffman-tree-optimal-binary-tree",
+          "focusNodeLabel": "最优二叉树"
+        },
+        {
+          "title": "霍夫曼树 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/ds/huffman-tree/",
+          "description": "对哈夫曼树定义和用途有系统说明，适合对应“哈夫曼树定义”节点。",
+          "recommendedUsage": "适合在最优二叉树概念掌握后阅读，用来统一哈夫曼树的标准表述。",
+          "recommendedPhase": "主学",
+          "focusTags": ["定义", "最优前缀码", "用途"],
+          "focusNodeCode": "huffman-tree-definition",
+          "focusNodeLabel": "哈夫曼树定义"
+        },
+        {
+          "title": "懒猫老师-数据结构-(34)哈夫曼树(Huffman Tree,霍夫曼树,赫夫曼树)",
+          "type": "video",
+          "source": "哔哩哔哩 · 懒猫老师",
+          "url": "https://www.bilibili.com/video/BV1MK411j7CR/",
+          "description": "视频对每轮选择最小权值结点再合并的思路讲得直观，适合对应“构造思想”节点。",
+          "recommendedUsage": "建议在理解哈夫曼树定义后观看，用来建立贪心合并的过程直觉。",
+          "recommendedPhase": "主学",
+          "focusTags": ["贪心合并", "最小权值", "构造思想"],
+          "focusNodeCode": "huffman-tree-construction-idea",
+          "focusNodeLabel": "构造思想"
+        },
+        {
+          "title": "懒猫老师-数据结构-(34)哈夫曼树(Huffman Tree,霍夫曼树,赫夫曼树)",
+          "type": "video",
+          "source": "哔哩哔哩 · 懒猫老师",
+          "url": "https://www.bilibili.com/video/BV1MK411j7CR/",
+          "description": "视频按轮次演示结点集合更新与父结点生成，适合对应“构造过程”节点。",
+          "recommendedUsage": "适合在构造思想掌握后重点观看，用来对照每一步集合变化和树形成过程。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["逐轮合并", "父结点生成", "树形成过程"],
+          "focusNodeCode": "huffman-tree-construction-process",
+          "focusNodeLabel": "构造过程"
+        },
+        {
+          "title": "霍夫曼树 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/ds/huffman-tree/",
+          "description": "对前缀码唯一可译性的由来和哈夫曼编码约束有明确说明，适合对应“前缀编码约束”节点。",
+          "recommendedUsage": "适合在进入编码生成前阅读，用来理解为什么不能让一个编码成为另一个编码的前缀。",
+          "recommendedPhase": "主学",
+          "focusTags": ["前缀码", "唯一可译", "编码约束"],
+          "focusNodeCode": "huffman-tree-prefix-code",
+          "focusNodeLabel": "前缀编码约束"
+        },
+        {
+          "title": "霍夫曼树 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/ds/huffman-tree/",
+          "description": "文章对编码生成和按路径译码的过程均有说明，适合对应“哈夫曼编码与译码”节点。",
+          "recommendedUsage": "适合在构造完成后阅读，用来串起编码、译码和压缩效果解释。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["编码生成", "译码过程", "路径解释"],
+          "focusNodeCode": "huffman-tree-code-decode",
+          "focusNodeLabel": "哈夫曼编码与译码"
+        },
+        {
+          "title": "霍夫曼树 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/ds/huffman-tree/",
+          "description": "可自然衔接数据压缩与通信编码场景，适合对应“应用入口”节点。",
+          "recommendedUsage": "适合在本节收尾时阅读，用来整理哈夫曼树为什么在实际系统中有价值。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["数据压缩", "通信编码", "应用价值"],
+          "focusNodeCode": "huffman-tree-application-entry",
+          "focusNodeLabel": "应用入口"
         }
       ]
     },
@@ -354,6 +1742,26 @@
           "focusTags": ["顶点边", "图表示", "概念定义"]
         },
         {
+          "title": "图详解第一篇：图的基本概念及其存储结构（邻接矩阵和邻接表）",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2382582",
+          "description": "从图的基本概念出发，系统过渡到邻接矩阵和邻接表，适合一级节点阶段做结构性学习。",
+          "recommendedUsage": "适合在首页规划到“图基础”时阅读，用来统一图的定义、分类和两种主流存储表示。",
+          "recommendedPhase": "主学",
+          "focusTags": ["图的概念", "邻接矩阵", "邻接表"]
+        },
+        {
+          "title": "C语言图结构总结（一）",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2240126",
+          "description": "把图的定义、存储结构、DFS、BFS 与后续图算法放在同一篇材料里，适合做课程级回顾。",
+          "recommendedUsage": "适合在学完图的存储后阅读，用来串联图结构、遍历方法与后续最短路、最小生成树等应用入口。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["图结构总结", "DFS", "BFS"]
+        },
+        {
           "title": "Hello 算法 · 图的遍历",
           "type": "article",
           "source": "Hello 算法",
@@ -364,6 +1772,90 @@
           "focusTags": ["广度优先遍历", "访问标记", "实现流程"],
           "focusNodeCode": "graph-basic-bfs",
           "focusNodeLabel": "广度优先遍历"
+        },
+        {
+          "title": "图的存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/graph/",
+          "description": "从顶点、边、路径和回路等术语切入图结构，适合对应“图定义与基本术语”节点。",
+          "recommendedUsage": "建议在图细化学习开始时先读，用来统一图的核心术语和对象认识。",
+          "recommendedPhase": "预习",
+          "focusTags": ["顶点边", "路径回路", "基本术语"],
+          "focusNodeCode": "graph-basic-definition",
+          "focusNodeLabel": "图定义与基本术语"
+        },
+        {
+          "title": "Hello 算法 · 图",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_graph/graph/",
+          "description": "对有向图、无向图、带权图以及连通性的区分较直观，适合对应“图的分类与连通性”节点。",
+          "recommendedUsage": "适合在理解图定义后阅读，用来建立分类和连通性分析的整体框架。",
+          "recommendedPhase": "主学",
+          "focusTags": ["有向无向", "带权图", "连通性"],
+          "focusNodeCode": "graph-basic-category-connectivity",
+          "focusNodeLabel": "图的分类与连通性"
+        },
+        {
+          "title": "Hello 算法 · 图",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_graph/graph/",
+          "description": "从图对象和基本操作角度整理图的抽象结构，适合对应“图的抽象数据类型”节点。",
+          "recommendedUsage": "适合在图的分类掌握后阅读，用来区分图的逻辑接口与具体存储形式。",
+          "recommendedPhase": "主学",
+          "focusTags": ["ADT", "顶点集合", "边集合"],
+          "focusNodeCode": "graph-basic-adt",
+          "focusNodeLabel": "图的抽象数据类型"
+        },
+        {
+          "title": "图的存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/graph/",
+          "description": "详细说明二维数组如何表示顶点连接关系，适合对应“邻接矩阵存储”节点。",
+          "recommendedUsage": "建议在图存储部分先看，用来理解稠密图场景下邻接矩阵的优势。",
+          "recommendedPhase": "主学",
+          "focusTags": ["二维数组", "边存在性", "稠密图"],
+          "focusNodeCode": "graph-basic-adjacency-matrix",
+          "focusNodeLabel": "邻接矩阵存储"
+        },
+        {
+          "title": "图的存储结构和遍历",
+          "type": "article",
+          "source": "Subingwen",
+          "url": "https://subingwen.cn/data-structure/graph/",
+          "description": "系统介绍顶点表和边表组织方式，适合对应“邻接表存储”节点。",
+          "recommendedUsage": "适合与邻接矩阵对照学习，用来理解稀疏图为何更适合邻接表。",
+          "recommendedPhase": "主学",
+          "focusTags": ["顶点表", "边表", "稀疏图"],
+          "focusNodeCode": "graph-basic-adjacency-list",
+          "focusNodeLabel": "邻接表存储"
+        },
+        {
+          "title": "Hello 算法 · 图的遍历",
+          "type": "article",
+          "source": "Hello 算法",
+          "url": "https://www.hello-algo.com/chapter_graph/graph_traversal/",
+          "description": "对递归/栈驱动的深度优先搜索过程讲解清晰，适合对应“深度优先遍历”节点。",
+          "recommendedUsage": "建议在掌握图存储后阅读，用来理解沿一条路径不断深入再回溯的搜索过程。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["深度优先", "回溯", "访问标记"],
+          "focusNodeCode": "graph-basic-dfs",
+          "focusNodeLabel": "深度优先遍历"
+        },
+        {
+          "title": "拓扑排序 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/graph/topo/",
+          "description": "能把图的表示与遍历自然过渡到连通性分析、拓扑排序等后续算法，适合对应“应用入口”节点。",
+          "recommendedUsage": "适合在图的存储与遍历学完后阅读，用来理解这些基础为何是后续图算法的入口。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["后续图算法", "拓扑排序入口", "基础桥梁"],
+          "focusNodeCode": "graph-basic-application-entry",
+          "focusNodeLabel": "应用入口"
         }
       ]
     },
@@ -378,9 +1870,7 @@
           "description": "本科课程风格的拓扑排序讲解，适合和毕设答辩中的“先修关系”语义直接对应。",
           "recommendedUsage": "建议先用它建立 AOV 网与拓扑排序的课堂式理解，再细看算法流程。",
           "recommendedPhase": "主学",
-          "focusTags": ["入度表", "零入度顶点", "输出序列"],
-          "focusNodeCode": "topological-sort-algorithm",
-          "focusNodeLabel": "拓扑排序算法"
+          "focusTags": ["入度表", "零入度顶点", "输出序列"]
         },
         {
           "title": "懒猫老师-数据结构-(52)AOE网与关键路径",
@@ -402,9 +1892,111 @@
           "description": "系统说明 DAG、拓扑排序、Kahn 算法以及 AOE 网与关键路径相关概念。",
           "recommendedUsage": "适合作为文字版参考资料，用于整理算法步骤和答辩术语。",
           "recommendedPhase": "答辩复盘",
-          "focusTags": ["拓扑排序算法", "Kahn算法", "环检测"],
+          "focusTags": ["拓扑排序算法", "Kahn算法", "环检测"]
+        },
+        {
+          "title": "拓扑排序(上)_有向无环图_AOV网",
+          "type": "video",
+          "source": "哔哩哔哩 · 站长数据结构",
+          "url": "https://www.bilibili.com/video/BV1mY4y1V7kH",
+          "description": "对 DAG 与 AOV 网的前置概念讲得直观，适合在一级节点阶段先建立“为什么能排出序”的整体理解。",
+          "recommendedUsage": "建议在进入算法步骤前先看，用来把 DAG、AOV 网和拓扑序列的关系先建立起来。",
+          "recommendedPhase": "预习",
+          "focusTags": ["DAG", "AOV网", "拓扑序列"]
+        },
+        {
+          "title": "数据结构与算法（十五）——图的拓扑排序和关键路径",
+          "type": "article",
+          "source": "腾讯云开发者社区",
+          "url": "https://cloud.tencent.com/developer/article/2023513",
+          "description": "把 AOV 网、拓扑排序、AOE 网和关键路径放在一条工程应用主线中，适合一级节点阶段整体理解。",
+          "recommendedUsage": "适合在掌握基本定义后阅读，用来把“课程依赖排序”和“关键路径分析”两条应用线一起串起来。",
+          "recommendedPhase": "主学",
+          "focusTags": ["AOV网", "AOE网", "关键路径"]
+        },
+        {
+          "title": "拓扑排序 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/graph/topo/",
+          "description": "从有向无环图的约束结构出发解释拓扑排序前提，适合对应“有向无环图”节点。",
+          "recommendedUsage": "建议在拓扑排序细化学习开始时先读，用来明确为什么一旦有环就无法给出合法序列。",
+          "recommendedPhase": "预习",
+          "focusTags": ["DAG", "无环前提", "依赖约束"],
+          "focusNodeCode": "topological-sort-dag",
+          "focusNodeLabel": "有向无环图"
+        },
+        {
+          "title": "《数据结构》〖重理工〗—6图-6.9图的拓扑排序",
+          "type": "video",
+          "source": "哔哩哔哩 · 重庆理工大学课程实录",
+          "url": "https://www.bilibili.com/s/video/BV1tZ4y187QE",
+          "description": "课程式讲解 AOV 网的建模语义，适合对应“AOV 网”节点。",
+          "recommendedUsage": "适合在理解 DAG 后观看，用来把任务先后关系映射到图模型中。",
+          "recommendedPhase": "主学",
+          "focusTags": ["AOV网", "活动顶点", "先后关系"],
+          "focusNodeCode": "topological-sort-aov",
+          "focusNodeLabel": "AOV 网"
+        },
+        {
+          "title": "拓扑排序 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/graph/topo/",
+          "description": "对拓扑序列的合法性含义有标准表述，适合对应“拓扑排序定义”节点。",
+          "recommendedUsage": "适合在 AOV 网建模后阅读，用来统一拓扑排序的课堂定义和判定标准。",
+          "recommendedPhase": "主学",
+          "focusTags": ["拓扑序列", "前驱约束", "合法顺序"],
+          "focusNodeCode": "topological-sort-definition",
+          "focusNodeLabel": "拓扑排序定义"
+        },
+        {
+          "title": "拓扑排序 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/graph/topo/",
+          "description": "围绕入度为 0 的顶点、删除边和环检测说明算法流程，适合对应“拓扑排序算法”节点。",
+          "recommendedUsage": "适合在掌握定义后重点阅读，用来梳理 Kahn 算法的核心步骤。",
+          "recommendedPhase": "难点突破",
+          "focusTags": ["入度表", "零入度顶点", "环检测"],
           "focusNodeCode": "topological-sort-algorithm",
           "focusNodeLabel": "拓扑排序算法"
+        },
+        {
+          "title": "懒猫老师-数据结构-(52)AOE网与关键路径",
+          "type": "video",
+          "source": "哔哩哔哩 · 懒猫老师",
+          "url": "https://www.bilibili.com/video/BV1BZ4y1p7Jb/",
+          "description": "视频对事件、活动和工期语义解释清晰，适合对应“AOE 网”节点。",
+          "recommendedUsage": "适合在拓扑排序算法掌握后观看，用来区分 AOV 网与 AOE 网的建模差异。",
+          "recommendedPhase": "主学",
+          "focusTags": ["AOE网", "事件与活动", "工期语义"],
+          "focusNodeCode": "topological-sort-aoe",
+          "focusNodeLabel": "AOE 网"
+        },
+        {
+          "title": "拓扑排序 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/graph/topo/",
+          "description": "对关键路径、关键活动和松弛时间等概念有系统说明，适合对应“关键路径概念”节点。",
+          "recommendedUsage": "适合在理解 AOE 网后阅读，用来建立关键路径分析的术语框架。",
+          "recommendedPhase": "主学",
+          "focusTags": ["关键路径", "关键活动", "松弛时间"],
+          "focusNodeCode": "topological-sort-critical-path-concept",
+          "focusNodeLabel": "关键路径概念"
+        },
+        {
+          "title": "拓扑排序 - OI Wiki",
+          "type": "article",
+          "source": "OI Wiki",
+          "url": "https://oi-wiki.org/graph/topo/",
+          "description": "能自然过渡到课程安排、工程调度和任务编排等场景，适合对应“应用入口”节点。",
+          "recommendedUsage": "适合在本节收尾时阅读，用来整理拓扑排序与关键路径在真实问题中的落地方式。",
+          "recommendedPhase": "答辩复盘",
+          "focusTags": ["课程安排", "工程调度", "任务编排"],
+          "focusNodeCode": "topological-sort-application-entry",
+          "focusNodeLabel": "应用入口"
         }
       ]
     }

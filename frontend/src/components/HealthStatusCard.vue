@@ -28,6 +28,10 @@
         <dd>{{ health.timestamp }}</dd>
       </div>
     </dl>
+
+    <div class="actions">
+      <slot name="actions" />
+    </div>
   </section>
 </template>
 
@@ -52,18 +56,18 @@ const message = computed(() => {
     return props.health.message;
   }
 
-  return props.error || "后端尚未启动，当前页面展示的是前端骨架与演示图谱。";
+  return props.error || "后端尚未启动。当前页面仅展示前端静态结构。";
 });
 </script>
 
 <style scoped>
 .card {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(22, 32, 42, 0.08);
+  background: var(--panel-surface);
+  border: var(--panel-border);
   border-radius: 24px;
   padding: 22px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 50px rgba(22, 32, 42, 0.08);
+  box-shadow: var(--panel-shadow);
+  contain: paint;
 }
 
 .card-head {
@@ -96,6 +100,12 @@ h2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin: 18px 0 0;
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 dt {

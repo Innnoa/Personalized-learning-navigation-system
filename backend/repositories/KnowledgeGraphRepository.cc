@@ -42,6 +42,40 @@ std::optional<CourseRecord> KnowledgeGraphRepository::findCourseByName(
         row["target_audience"].as<std::string>()};
 }
 
+std::optional<KnowledgePointRecord>
+KnowledgeGraphRepository::findKnowledgePointByCourseIdAndCode(
+    int courseId, const std::string &knowledgePointCode)
+{
+    const auto result = getClient()->execSqlSync(
+        "select id, code, name, chapter_no, chapter_name, node_type, "
+        "difficulty_level, estimated_minutes, display_order, is_core, "
+        "description "
+        "from knowledge_points "
+        "where course_id = ? and code = ? "
+        "limit 1",
+        courseId,
+        knowledgePointCode);
+
+    if (result.empty())
+    {
+        return std::nullopt;
+    }
+
+    const auto &row = result.front();
+    return KnowledgePointRecord{
+        row["id"].as<int>(),
+        row["code"].as<std::string>(),
+        row["name"].as<std::string>(),
+        row["chapter_no"].as<int>(),
+        row["chapter_name"].as<std::string>(),
+        row["node_type"].as<std::string>(),
+        row["difficulty_level"].as<int>(),
+        row["estimated_minutes"].as<int>(),
+        row["display_order"].as<int>(),
+        row["is_core"].as<int>() == 1,
+        row["description"].as<std::string>()};
+}
+
 std::vector<KnowledgePointRecord>
 KnowledgeGraphRepository::listKnowledgePointsByCourseId(int courseId)
 {
