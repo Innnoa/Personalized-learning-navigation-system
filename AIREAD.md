@@ -1,6 +1,6 @@
 # AIREAD
 
-最后更新：2026-03-26
+最后更新：2026-03-30
 
 ## 1. 项目定位
 
@@ -2841,3 +2841,225 @@
 - 验证方式：
   1. 文档中引用命令与现有脚本一致（`demo_check / demo_down / demo_reset`）。
   2. 在 README 可直接定位到 `docs/demo-runbook.md`。
+
+### [2026-03-30] 补齐 stack / queue / string 细化节点专属资源
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 在 `backend/config/learning_resources.json` 中继续补齐三条高频细化分支的二级节点专属资源：
+     - `stack`：为 `stack-definition`、`stack-adt`、`stack-seq-structure`、`stack-seq-init`、`stack-push`、`stack-pop-top`、`stack-linked`、`stack-recursion`、`stack-applications` 增加第二条焦点资源。
+     - `queue`：为 `queue-definition`、`queue-adt`、`queue-seq`、`queue-circular`、`queue-init`、`queue-enqueue`、`queue-dequeue`、`queue-linked`、`queue-applications` 增加第二条焦点资源。
+     - `string`：为 `string-definition`、`string-basic-ops`、`string-adt`、`string-fixed-storage`、`string-heap-storage`、`string-linked-storage`、`string-matching-problem`、`string-naive-match` 增加第二条焦点资源。
+  2. 新增资源来源优先复用当前项目中已使用且风格稳定的站点，并补入 `OI Wiki`、`Hello 算法` 等更适合答辩讲解的图文材料。
+  3. 在 `backend/tests/PathPlanningServiceTest.cc` 中新增定向测试，约束关键细化节点至少存在两条 `focused` 类型资源，防止后续资源池再次退化为“只靠继承资源兜底”。
+- 变更原因：
+  当前细化学习页与资源页链路已经可用，但 `stack / queue / string` 这三条答辩高频分支的大量二级节点仍主要依赖上层继承资源，导致“节点有资源但不够像节点专属资源”。本次补齐的目标是让细化学习页进入资源页后，更明显地体现“当前节点有自己的配套学习材料”。
+- 影响范围：
+  `backend/config/learning_resources.json`、`backend/tests/PathPlanningServiceTest.cc`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口语义、数据库结构与路径规划算法；仅增强资源候选池与资源覆盖约束测试。
+- 验证方式：
+  1. 执行 `ctest -R LearningResourceService --output-on-failure`，6 个资源相关测试全部通过。
+  2. 新增测试 `LearningResourceServiceProvidesMultipleFocusedResourcesForKeyDetailNodes` 通过，确认 `stack-push`、`queue-enqueue`、`string-matching-problem` 至少有两条焦点资源。
+
+### [2026-03-30] 补齐 graph-basic / topological-sort / tree-basic 细化节点专属资源
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 在 `backend/config/learning_resources.json` 中继续补齐三条后段章节细化分支的二级节点专属资源：
+     - `tree-basic`：为 8 个二级节点全部补入第二条 `focusNodeCode` 绑定资源。
+     - `graph-basic`：为除 `graph-basic-bfs` 外其余 7 个二级节点补入第二条焦点资源，使整个 scope 的 8 个节点都达到 2 条焦点资源。
+     - `topological-sort`：为 `dag / aov / definition / algorithm / aoe / critical-path-concept / critical-path-solve / application-entry` 8 个二级节点全部补入第二条焦点资源。
+  2. 资源来源继续控制在当前项目已采用的稳定课程风格范围内，优先复用：
+     - `Hello 算法`
+     - `OI Wiki`
+     - `腾讯云开发者社区`
+     - 已在当前项目出现过的课程视频链接
+  3. 复用既有后端测试 `LearningResourceServiceProvidesMultipleFocusedResourcesForKeyDetailNodes`，把关键校验节点扩展到 `tree-basic-binary-storage`、`graph-basic-definition`、`topological-sort-algorithm`。
+- 变更原因：
+  在补完前三章高频节点后，课程后半段如果仍大量依赖继承资源，会导致整体图谱覆盖不均，答辩时也容易显得“前半部分细、后半部分薄”。本次补齐的目的是把“图结构与图算法”这条后段主线也提升到与前段分支接近的资源厚度。
+- 影响范围：
+  `backend/config/learning_resources.json`、`backend/tests/PathPlanningServiceTest.cc`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口语义、数据库结构与路径规划算法；仅增强资源候选池与覆盖约束。
+- 验证方式：
+  1. 执行 `node` 脚本统计二级节点焦点资源数量，确认 `graph-basic`、`topological-sort`、`tree-basic` 各二级节点均达到 2 条。
+  2. 执行 `ctest -R LearningResourceService --output-on-failure`，6 个资源相关测试全部通过。
+
+### [2026-03-30] 新增答辩材料收口文档与固定导出样例
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 新增 `docs/demo-snapshots/README.md`，固定答辩截图的命名、页面、操作步骤与用途，统一截图范围。
+  2. 新增 `docs/thesis/defense-material-pack.md`，把演示脚本、截图清单、导出样例和论文模块说明整合成一份答辩材料入口说明。
+  3. 新增 `docs/thesis/thesis-module-mapping.md`，将当前项目实现与论文章节对应起来，覆盖“绪论、需求分析、总体设计、数据库设计、功能实现、测试与结果分析、总结与展望”。
+  4. 新增两份固定导出样例：
+     - `docs/thesis/sample-learning-path-export.txt`
+     - `docs/thesis/sample-detail-learning-path-export.txt`
+  5. 更新 `README.md`，把截图清单、答辩材料包和论文模块说明加入项目入口。
+- 变更原因：
+  当前系统功能链路已经完整，下一步重点从“继续加功能”切换到“可答辩、可附录、可复用”的材料收口。新增上述文档后，截图、导出文本和论文说明三条线可以保持一致，减少后期写 PPT 和论文时的漂移。
+- 影响范围：
+  `docs/demo-snapshots/README.md`、`docs/thesis/defense-material-pack.md`、`docs/thesis/thesis-module-mapping.md`、`docs/thesis/sample-learning-path-export.txt`、`docs/thesis/sample-detail-learning-path-export.txt`、`README.md`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口、数据库和算法逻辑；仅新增答辩与论文材料文档及固定导出样例。
+- 验证方式：
+  1. 检查 `docs/demo-snapshots/` 与 `docs/thesis/` 下新增文件均可被项目直接检索。
+  2. 检查 `README.md` 已新增三条入口文档说明。
+  3. 两份导出样例内容已按当前前端导出格式生成，可直接用于论文附录。
+
+### [2026-03-30] 新增 demo_check 专用停止脚本
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 新增 `scripts/demo_check_down.sh`，用于回收 `demo_check.sh` 默认使用的独立演示环境端口。
+  2. `demo_check_down.sh` 直接按端口停止 `18080 / 5174`，同时支持通过 `DEMO_CHECK_BACKEND_PORT`、`DEMO_CHECK_FRONTEND_PORT` 覆盖端口。
+  3. 更新 `scripts/demo_check.sh` 的结束提示，显式给出 `./scripts/demo_check_down.sh` 作为回收命令。
+  4. 更新 `README.md` 与 `docs/demo-runbook.md`，把 `demo_check` 的关闭方式与 `demo_up/demo_down` 的关闭方式分开说明。
+- 变更原因：
+  `demo_check.sh` 默认跑在 `18080 / 5174`，而现有 `demo_down.sh` 主要依赖 `.demo-runtime` 中的 pid 文件。在端口已被历史进程占用、pid 文件缺失或复用已有服务的情况下，用户不容易判断应该如何关闭演示环境。本次增加专用停服脚本，是为了让答辩演示和本地调试的“启动 / 停止”入口更直接、更稳定。
+- 影响范围：
+  `scripts/demo_check_down.sh`、`scripts/demo_check.sh`、`README.md`、`docs/demo-runbook.md`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口、数据库和算法逻辑；仅增强演示脚本链路与文档说明。
+- 验证方式：
+  1. 执行 `bash -n scripts/demo_check_down.sh scripts/demo_check.sh scripts/demo_up.sh scripts/demo_down.sh`，确认脚本语法通过。
+  2. 检查 `README.md` 与 `docs/demo-runbook.md`，确认 `demo_check` 已显式提供独立停止入口。
+
+### [2026-03-30] 修复 demo_check 前端代理端口与后端端口不一致问题
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 调整 `frontend/vite.config.js`，将开发环境 `/api` 代理目标改为读取 `VITE_DEV_PROXY_TARGET`，默认仍为 `http://127.0.0.1:8080`。
+  2. 调整 `scripts/demo_up.sh`，在启动演示前端时自动注入 `VITE_DEV_PROXY_TARGET=${API_BASE_URL}`，确保 `demo_check` 场景下前端会把接口代理到 `18080`。
+  3. 调整 `scripts/run_frontend.sh`，支持通过 `FRONTEND_API_PROXY_TARGET` 指定前端 dev 代理后端地址，并在启动时打印当前代理目标。
+- 变更原因：
+  `demo_check.sh` 默认启动前端 `5174` 和后端 `18080`，但此前前端 Vite 代理被固定写死为 `8080`。这会导致页面虽然能打开，但首页健康检查与接口请求仍落到错误端口，表现为“前端提示后端未启动”。本次修复的核心是让演示链路中的前端代理目标与实际后端端口保持一致。
+- 影响范围：
+  `frontend/vite.config.js`、`scripts/demo_up.sh`、`scripts/run_frontend.sh`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口语义、数据库结构和算法逻辑；仅修正开发态前端代理配置与演示脚本联动行为。
+- 验证方式：
+  1. 执行 `bash -n scripts/demo_up.sh scripts/run_frontend.sh scripts/demo_check.sh scripts/demo_check_down.sh`，确认脚本语法通过。
+  2. 执行 `npm run build`，确认前端构建通过。
+  3. 执行 `node --input-type=module ...` 导入 `vite.config.js`，确认 `VITE_DEV_PROXY_TARGET=http://127.0.0.1:18080` 时，`/api` 代理目标确认为 `http://127.0.0.1:18080`。
+
+### [2026-03-30] 调整首页扩展区布局以固定操作摘要
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 调整 `frontend/src/components/PathPlannerPanel.vue` 的首页扩展区结构，将“路径变化”模块从外层独立卡片并入左侧主列。
+  2. 保持右侧“操作摘要”模块继续使用 `sticky`，但其可固定的作用范围扩展为“学习反馈 + 路径变化”整块区域，而不是仅跟随反馈面板那一行。
+  3. 同步收敛相关样式，取消 `planner-section-card--comparison` 作为全宽卡片的布局角色，避免右侧摘要在继续向下滚动时提早脱离固定状态。
+- 变更原因：
+  之前“操作摘要”虽然使用了 `sticky`，但它所在父容器只覆盖“学习反馈”这一行，下面的“路径变化”属于同级外层区域。结果是页面继续向下滚动时，摘要会随着父容器一起滑走，视觉上像“没有固定住”。本次通过调整扩展区层级，让摘要在整个反馈区内持续固定，行为更符合首页侧栏摘要的预期。
+- 影响范围：
+  `frontend/src/components/PathPlannerPanel.vue`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口、数据库与算法；仅调整首页扩展区的前端布局结构与滚动行为。
+- 验证方式：
+  1. 执行 `npm run test -- src/components/PathPlannerPanel.test.js`，确认路径规划面板单测通过。
+  2. 执行 `npm run build`，确认前端构建通过。
+
+### [2026-03-30] 将首页操作摘要提升为路径规划页顶层固定侧栏
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 继续调整 `frontend/src/components/PathPlannerPanel.vue` 结构，将“操作摘要”从扩展区内部右栏提升为 `PathPlannerPanel` 顶层右侧栏。
+  2. 顶层右侧栏在桌面端与“路径规划主卡片 + 反馈区”并列，并使用 `sticky` 固定，使其在从“路径规划”滚动到“学习反馈 / 路径变化”的整个主页面区域内都保持固定。
+  3. 首页扩展区内部不再承担“操作摘要”定位责任，仅保留“学习反馈”和“路径变化”主内容。
+- 变更原因：
+  上一轮修复只把“操作摘要”固定范围扩大到扩展区内部，仍无法覆盖“路径规划主卡片 -> 学习反馈”之间的滚动区间。用户需要的是首页主页面右侧真正固定的摘要栏，而不是只在扩展区内部 sticky。因此本轮把摘要模块提升到 `PathPlannerPanel` 顶层，使其固定行为与用户视觉预期一致。
+- 影响范围：
+  `frontend/src/components/PathPlannerPanel.vue`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口、数据库与算法；仅调整首页路径规划页的前端布局层级与滚动行为。
+- 验证方式：
+  1. 执行 `npm run test -- src/components/PathPlannerPanel.test.js`，确认路径规划面板单测通过。
+  2. 执行 `npm run build`，确认前端构建通过。
+
+### [2026-03-30] 默认显示首页操作摘要并改为稳定双列布局
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 继续整理 `frontend/src/components/PathPlannerPanel.vue`，将首页路径规划区改为稳定的“双列布局”：左侧为主内容列，右侧为固定摘要列。
+  2. “操作摘要”不再依赖是否已经提交反馈才渲染，而是默认显示。
+  3. 当还没有当前页面会话内的反馈/回退记录时，右侧摘要栏展示默认空态说明，明确提示后续会出现的摘要内容。
+  4. 新增 `frontend/src/components/PathPlannerPanel.test.js` 定向测试，约束“操作摘要默认可见 + 默认空态存在”。
+- 变更原因：
+  上一轮虽然把摘要栏提升到了首页顶层，但仍然通过“有摘要才显示”的条件控制布局，导致用户进入首页时摘要栏不出现，且布局体验不稳定。本轮修正的目标是让操作摘要作为首页路径规划区的固定组成部分，默认就可见、默认就占位，避免交互前后页面结构跳变。
+- 影响范围：
+  `frontend/src/components/PathPlannerPanel.vue`、`frontend/src/components/PathPlannerPanel.test.js`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口、数据库与算法；仅调整首页路径规划区的前端布局、空态展示与测试约束。
+- 验证方式：
+  1. 执行 `npm run test -- src/components/PathPlannerPanel.test.js`，确认路径规划面板单测 8 项通过。
+  2. 执行 `npm run build`，确认前端构建通过。
+
+### [2026-03-30] 回退首页操作摘要相关布局试验
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 按用户要求，将 `frontend/src/components/PathPlannerPanel.vue` 回退到本日围绕“操作摘要固定/默认显示”修改之前的版本。
+  2. 同步删除为该试验新增的 `frontend/src/components/PathPlannerPanel.test.js` 默认摘要空态测试，恢复到原有 7 项测试集。
+- 变更原因：
+  用户明确要求放弃今天针对“操作摘要”组件做的连续布局试验，回到修改前的稳定版本，避免继续影响首页当前使用体验。
+- 影响范围：
+  `frontend/src/components/PathPlannerPanel.vue`、`frontend/src/components/PathPlannerPanel.test.js`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口、数据库与算法；仅撤回首页路径规划区今日新增的前端布局与测试改动。
+- 验证方式：
+  1. 执行 `git diff -- frontend/src/components/PathPlannerPanel.vue frontend/src/components/PathPlannerPanel.test.js`，确认组件与测试已回退为无差异状态。
+  2. 执行 `npm run test -- src/components/PathPlannerPanel.test.js`，确认 7 项测试通过。
+  3. 执行 `npm run build`，确认前端构建通过。
+
+### [2026-03-30] 增强学习反馈中“完成情况-掌握度-当前掌握度”联动
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 调整前端反馈规则工具 `frontend/src/utils/feedbackQuickPreset.js`，补充统一的状态掌握度区间：
+     - `completed`：`80% - 100%`
+     - `partial`：`40% - 80%`
+     - `blocked`：`0% - 35%`
+  2. 首页路径规划反馈面板 `frontend/src/components/PathPlannerPanel.vue` 与细化学习反馈面板 `frontend/src/components/DetailLearningWorkspace.vue` 改为使用同一套区间规则：
+     - 切换“完成情况”时，滑块区间同步变化
+     - 提示当前可调区间
+     - 保存前再次按状态区间做前端归一化
+  3. 后端 `backend/algorithm/adjuster/LearningPathAdjuster.cc` 同步增加按状态约束 `selfRatedMastery` 的规则，保证即使前端绕过限制，后端仍按相同区间裁剪。
+  4. 补充测试：
+     - `frontend/src/utils/feedbackQuickPreset.test.js`：新增状态区间与归一化测试
+     - `frontend/src/components/PathPlannerPanel.test.js`：新增首页反馈状态切换联动测试
+     - `backend/tests/PathAdjusterTest.cc`：新增后端按状态裁剪自评掌握度测试
+- 变更原因：
+  原先反馈面板中的“完成情况”和“学习后掌握度”联动过弱，前端滑块始终允许 `0% - 100%`，只在快捷按钮里隐含了推荐值；而后端虽然有规则兜底，但界面并未显式体现，用户很难直观看到“已完成 / 部分完成 / 学习受阻”对应的掌握度语义边界。本次调整后，前后端规则一致，反馈更符合毕设演示时的解释逻辑。
+- 影响范围：
+  `frontend/src/utils/feedbackQuickPreset.js`、`frontend/src/utils/feedbackQuickPreset.test.js`、`frontend/src/components/PathPlannerPanel.vue`、`frontend/src/components/PathPlannerPanel.test.js`、`frontend/src/components/DetailLearningWorkspace.vue`、`backend/algorithm/adjuster/LearningPathAdjuster.cc`、`backend/tests/PathAdjusterTest.cc`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口字段与数据库结构；会增强反馈调整算法的输入约束，并让前端反馈表单与后端掌握度更新规则更一致。
+- 验证方式：
+  1. 执行 `npm run test -- src/utils/feedbackQuickPreset.test.js src/components/PathPlannerPanel.test.js`，确认前端相关 15 项测试通过。
+  2. 执行 `npm run build`，确认前端构建通过。
+  3. 执行 `./backend_test -r FeedbackUpdateRulesClampSelfRatedMasteryByCompletionStatus`，确认后端定向规则测试通过。
+
+### [2026-03-30] 调整“部分完成”反馈为允许小幅回退
+
+- 变更类型：系统改动
+- 变更内容：
+  1. 调整 `backend/algorithm/adjuster/LearningPathAdjuster.cc` 中 `partial` 状态的掌握度更新规则，不再固定为“只升不降”。
+  2. `partial` 现在改为“允许在巩固区间内小幅上调，也允许小幅回退”：
+     - 当本次自评高于当前掌握度时，仍会向上推进，但上限保持在 `80%`
+     - 当本次自评低于当前掌握度时，允许回退，但单次回退幅度限制为 `15%`
+     - 无论升降，都不会越出 `40% - 80%` 的 `partial` 语义区间
+  3. 新增后端测试覆盖：
+     - `previousMastery=60%`、`selfRated=50%` 时，允许下调到 `50%`
+     - `previousMastery=70%`、`selfRated=42%` 时，不会直接跌到 `42%`，而是限制在 `55%`
+- 变更原因：
+  用户认为“部分完成”在真实学习过程中也可能代表“学过后发现自己其实没有原先以为的那么会”，如果系统仍然只允许上调，会削弱反馈的真实性与解释力。本次调整后，`partial` 更贴近真实教学语义，同时仍与 `blocked` 的明显下调语义保持区分。
+- 影响范围：
+  `backend/algorithm/adjuster/LearningPathAdjuster.cc`、`backend/tests/PathAdjusterTest.cc`、`AI_GUIDE.md`、`AIREAD.md`
+- 是否影响既有接口/数据库/算法：
+  不影响接口字段与数据库结构；会细化后端掌握度更新算法中 `partial` 状态的更新语义。
+- 验证方式：
+  1. 执行 `cmake --build . -j$(nproc)`，确认后端构建通过。
+  2. 执行 `./backend_test -r FeedbackUpdateRulesClampSelfRatedMasteryByCompletionStatus`，确认原有状态区间裁剪规则仍通过。
+  3. 执行 `./backend_test -r FeedbackUpdateRulesAllowPartialToSlightlyLowerMastery`，确认“部分完成允许小幅回退”的新规则通过。

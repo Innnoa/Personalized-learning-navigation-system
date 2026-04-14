@@ -8,6 +8,9 @@
 - 课程范围文档位于 `docs/course-scope.md`
 - 开发顺序文档位于 `docs/development-plan.md`
 - 答辩演示脚本位于 `docs/demo-runbook.md`
+- 固定截图清单位于 `docs/demo-snapshots/README.md`
+- 答辩材料收口说明位于 `docs/thesis/defense-material-pack.md`
+- 论文模块对应说明位于 `docs/thesis/thesis-module-mapping.md`
 
 ## 固定技术栈
 
@@ -116,6 +119,7 @@
 
 ```bash
 ./scripts/demo_check.sh
+./scripts/demo_check_down.sh
 ```
 
 说明：
@@ -142,6 +146,7 @@
   1. 执行 `demo_up` 启动演示环境
   2. 检查前后端可访问性
   3. 复用当前后端执行 `smoke_demo_flow` 主链路冒烟
+- `demo_check_down.sh` 用于回收 `demo_check.sh` 默认使用的演示端口环境，会按端口直接停止 `18080 / 5174`（或你通过环境变量覆盖后的端口）
 - `demo_check.sh` 常用参数：
   - `DEMO_CHECK_AUTO_UP`：是否自动执行 `demo_up`（默认 `1`）
   - `DEMO_CHECK_RUN_SMOKE`：是否执行冒烟链路（默认 `1`）
@@ -149,6 +154,9 @@
   - `DEMO_CHECK_REUSE_EXISTING`：是否复用已有服务（默认 `0`，推荐保持）
   - `DEMO_CHECK_BACKEND_PORT` / `DEMO_CHECK_FRONTEND_PORT`：验收使用端口（默认 `18080` / `5174`）
   - `DEMO_CHECK_TARGET_CODE` / `DEMO_CHECK_AVAILABLE_MINUTES`：冒烟目标与预算（默认 `topological-sort` / `90`）
+- `demo_check_down.sh` 常用参数：
+  - `DEMO_CHECK_BACKEND_PORT` / `DEMO_CHECK_FRONTEND_PORT`：要回收的演示端口（默认 `18080` / `5174`）
+  - `DEMO_CHECK_DOWN_TIMEOUT_SEC`：优雅停止等待秒数（默认 `6`）
 
 说明：
 

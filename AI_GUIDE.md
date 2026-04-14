@@ -1,6 +1,6 @@
 # AI_GUIDE
 
-最后更新：2026-03-26 14:04 CST
+最后更新：2026-03-30 15:35 CST
 
 <!-- AI_GUIDE:SUMMARY:BEGIN -->
 ## 0. 文件说明
@@ -16,7 +16,7 @@
 - 技术栈：Vue + Drogon(C++) + SQLite + Cytoscape.js
 - 当前课程范围：数据结构
 - 当前主要页面：首页、学习图谱、细化学习、推荐资源、学习者画像
-- 当前已知能力：路径规划、学习反馈、演示重置、资源推荐、资源页一级/二级双层导航、细化节点资源兜底、资源来源显式标注、同层关联资源补充、资源多样性排序、图谱多层下钻、学习图谱状态记忆、学习路径结果导出、路径总说明、二级细化学习导航、细化学习分支状态记忆、细化路径结果导出、细化学习掌握度持久化、父节点进度聚合联动
+- 当前已知能力：路径规划、学习反馈、演示重置、资源推荐、资源页一级/二级双层导航、细化节点资源兜底、资源来源显式标注、同层关联资源补充、资源多样性排序、图谱多层下钻、学习图谱状态记忆、学习路径结果导出、路径总说明、二级细化学习导航、细化学习分支状态记忆、细化路径结果导出、细化学习掌握度持久化、父节点进度聚合联动、反馈状态与掌握度区间联动
 - 后端验证入口：`cmake -S .. -B .`、`cmake --build . -j$(nproc)`、`ctest --output-on-failure`
 - 前端验证入口：`npm run test -- --run`、`npm run build`
 
@@ -27,18 +27,20 @@
 - 当前仓库原先只有 `AIREAD.md`，没有 `AI_GUIDE.md`；本文件于本轮会话补建。
 - “恢复演示初始状态”目前依赖后端硬编码基线，不是从数据库中的独立快照表恢复。
 - 后端全量 `ctest --output-on-failure` 已恢复为 71/71 通过；当前未发现已知阻塞型失败用例。
+- 学习反馈中的“学习后掌握度”现在同时受完成情况区间和当前掌握度影响；前端负责显式约束输入区间，后端仍以 `previousMastery` 参与最终掌握度更新，其中 `partial` 已允许小幅回退。
 
 ## 3. 最近一次会话摘要
 
-- 目标：补齐答辩可照读的演示脚本文档（`docs/demo-runbook.md`）。
+- 目标：让 `partial` 状态也能表达“学后发现仍有不足”的小幅回退语义。
 - 结果：
-  - 新增 `docs/demo-runbook.md`，覆盖“演示前准备、5~8 分钟主流程、现场兜底命令、演示结束回收”完整流程。
-  - Runbook 默认采用 `demo_check` 独立实例策略（`18080/5174`），规避复用实例引发的只读数据库问题。
-  - `README.md` 当前基线已新增 `docs/demo-runbook.md` 入口。
+  - 后端 `partial` 更新规则改为允许在 `40%-80%` 的巩固区间内小幅上调或小幅回退。
+  - 当本次自评低于当前掌握度时，系统允许下调，但单次回退幅度限制为 `15%`，避免和 `blocked` 语义混淆。
+  - 已完成与学习受阻的规则不变，继续分别承担“只升不降”和“明显下调”的语义。
 - 验证：
-  - Runbook 中命令与现有脚本对齐：`demo_check.sh`、`demo_down.sh`、`/api/demo/reset`。
-  - README 已可直接定位到 Runbook。
-- 未完成：Runbook 目前为文本流程版，后续如需更强答辩材料可补页面截图与固定样例输出快照。
+  - `cmake --build . -j$(nproc)`
+  - `./backend_test -r FeedbackUpdateRulesClampSelfRatedMasteryByCompletionStatus`
+  - `./backend_test -r FeedbackUpdateRulesAllowPartialToSlightlyLowerMastery`
+- 未完成：无，本轮语义调整已完成。
 <!-- AI_GUIDE:SUMMARY:END -->
 
 <!-- AI_GUIDE:READ_ANCHOR ts=2026-03-25 11:16 CST id=session-20260325-111600 -->
@@ -55,8 +57,356 @@
 <!-- AI_GUIDE:READ_ANCHOR ts=2026-03-26 12:13 CST id=session-20260326-121300 -->
 <!-- AI_GUIDE:READ_ANCHOR ts=2026-03-26 13:31 CST id=session-20260326-133100 -->
 <!-- AI_GUIDE:READ_ANCHOR ts=2026-03-26 14:04 CST id=session-20260326-140400 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 17:42 CST id=session-20260330-174200 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 19:06 CST id=session-20260330-190600 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 19:18 CST id=session-20260330-191800 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 19:34 CST id=session-20260330-193400 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 11:39 CST id=session-20260330-113900 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 11:45 CST id=session-20260330-114500 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 12:01 CST id=session-20260330-120100 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 14:18 CST id=session-20260330-141800 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 14:28 CST id=session-20260330-142800 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 14:41 CST id=session-20260330-144100 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 14:48 CST id=session-20260330-144800 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 15:17 CST id=session-20260330-151700 -->
+<!-- AI_GUIDE:READ_ANCHOR ts=2026-03-30 15:35 CST id=session-20260330-153500 -->
 
 ## 4. 执行记录
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 15:35 CST id=session-20260330-153500 -->
+### 2026-03-30 15:35 CST
+
+- 会话类型：反馈语义细化 / 后端规则微调
+- 用户问题：确认“学习后掌握度是否可以比当前掌握度低，相当于发现仍有不足”，并要求将该语义落到系统实现中。
+- 修改文件：
+  - `backend/algorithm/adjuster/LearningPathAdjuster.cc`
+  - `backend/tests/PathAdjusterTest.cc`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 将 `partial` 的后端掌握度更新规则从“只升不降”调整为“允许小幅上调，也允许小幅回退”。
+  - 当 `selfRatedMastery >= previousMastery` 时，仍按巩固语义向上推进，但上限保持在 `80%`。
+  - 当 `selfRatedMastery < previousMastery` 时，允许回退，但单次最多回退 `15%`，且不低于 `40%`。
+  - `completed` 与 `blocked` 语义不变，继续分别表示“已掌握提升”和“明显受阻回落”。
+- 验证命令：
+  - `cmake --build . -j$(nproc)`
+  - `./backend_test -r FeedbackUpdateRulesClampSelfRatedMasteryByCompletionStatus`
+  - `./backend_test -r FeedbackUpdateRulesAllowPartialToSlightlyLowerMastery`
+- 验证结论：
+  - 后端构建通过。
+  - 原有状态区间裁剪测试通过。
+  - 新增“部分完成允许小幅回退”测试通过。
+- 残留观察：
+  - 这一轮只调整后端更新语义，没有改动前端区间，因为前端 `partial=40%-80%` 的输入边界本身已经允许用户表达“比当前略低”的判断。
+  - 目前的 `15%` 回退上限是面向毕设演示的稳妥值，后续若需要更贴近真实课程数据，可再依据教师经验微调。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 15:35 CST id=session-20260330-153500 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 15:17 CST id=session-20260330-151700 -->
+### 2026-03-30 15:17 CST
+
+- 会话类型：反馈规则收口 / 前后端联动增强
+- 用户问题：认为学习反馈模块中的“学习情况”和“学习后掌握度”联动过弱，希望“已完成 / 部分完成 / 学习受阻”分别只允许在合理区间内调整，并确认学习后掌握度是否与当前掌握度有关联。
+- 修改文件：
+  - `frontend/src/utils/feedbackQuickPreset.js`
+  - `frontend/src/utils/feedbackQuickPreset.test.js`
+  - `frontend/src/components/PathPlannerPanel.vue`
+  - `frontend/src/components/PathPlannerPanel.test.js`
+  - `frontend/src/components/DetailLearningWorkspace.vue`
+  - `backend/algorithm/adjuster/LearningPathAdjuster.cc`
+  - `backend/tests/PathAdjusterTest.cc`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 前端统一三档反馈掌握度区间：`completed=80%-100%`、`partial=40%-80%`、`blocked=0%-35%`。
+  - 首页与细化学习页切换完成情况后，滑块区间会同步变化，当前草稿值会自动归一化到对应区间，并显式提示可调范围。
+  - 后端在应用反馈更新规则前，先按完成情况裁剪 `selfRatedMastery`，防止前后端语义不一致。
+  - 当前掌握度仍参与最终更新：`previousMastery` 会与本次自评掌握度共同影响结果，而不是完全被本次输入覆盖。
+- 验证命令：
+  - `npm run test -- src/utils/feedbackQuickPreset.test.js src/components/PathPlannerPanel.test.js`
+  - `cmake --build . -j$(nproc)`
+  - `./backend_test -r FeedbackUpdateRulesClampSelfRatedMasteryByCompletionStatus`
+  - `npm run build`
+- 验证结论：
+  - 前端定向测试 15/15 通过。
+  - 后端构建通过，定向规则测试通过。
+  - 前端构建通过。
+- 残留观察：
+  - 当前规则是面向毕设演示的三档轻量语义约束，足够解释“完成情况”和“学习后掌握度”的关系。
+  - 如果后续还要更细分教学语义，可以再加“完成但仍需巩固”等档位，但当前不建议继续加复杂度。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 15:17 CST id=session-20260330-151700 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 14:48 CST id=session-20260330-144800 -->
+### 2026-03-30 14:48 CST
+
+- 会话类型：前端回退 / 组件恢复
+- 用户问题：要求回退到今天开始修改“操作摘要”组件之前的版本。
+- 修改文件：
+  - `frontend/src/components/PathPlannerPanel.vue`
+  - `frontend/src/components/PathPlannerPanel.test.js`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 回退 `PathPlannerPanel.vue` 今日围绕“操作摘要固定/默认显示”做的所有布局试验。
+  - 删除为该试验新增的默认摘要空态测试，恢复到原始 7 项测试集。
+- 验证命令：
+  - `git diff -- frontend/src/components/PathPlannerPanel.vue frontend/src/components/PathPlannerPanel.test.js`
+  - `npm run test -- src/components/PathPlannerPanel.test.js`
+  - `npm run build`
+- 验证结论：
+  - 组件与测试文件已回退为无差异状态。
+  - 路径规划面板相关单测 7/7 通过。
+  - 前端构建通过。
+- 残留观察：
+  - 审计文件中仍保留了今天多次试验的历史记录，这是留痕，不代表当前运行代码仍保留那些改动。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 14:48 CST id=session-20260330-144800 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 14:41 CST id=session-20260330-144100 -->
+### 2026-03-30 14:41 CST
+
+- 会话类型：前端布局修复 / 首页默认固定摘要栏
+- 用户问题：希望“操作摘要”默认就出现并固定住，而不是提交反馈后才出现。
+- 修改文件：
+  - `frontend/src/components/PathPlannerPanel.vue`
+  - `frontend/src/components/PathPlannerPanel.test.js`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 将首页路径规划区整理为稳定双列布局，左侧为主内容，右侧为固定摘要栏。
+  - 操作摘要默认渲染，未发生最近操作时显示默认空态说明。
+  - 新增定向测试，约束“默认显示摘要空态”的行为，降低后续回归风险。
+- 验证命令：
+  - `npm run test -- src/components/PathPlannerPanel.test.js`
+  - `npm run build`
+- 验证结论：
+  - 路径规划面板相关单测 8/8 通过。
+  - 前端构建通过。
+- 残留观察：
+  - 当前默认空态只说明“本次会话内还没有最近操作”，并不回读历史反馈的详细摘要；这符合当前接口能力边界。
+  - 若后续需要首页一加载就展示“数据库中的最近一次反馈摘要”，则需要后端新增“最近一次反馈摘要查询”接口。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 14:41 CST id=session-20260330-144100 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 14:28 CST id=session-20260330-142800 -->
+### 2026-03-30 14:28 CST
+
+- 会话类型：前端布局修复 / 首页右侧固定摘要栏
+- 用户问题：首页“操作摘要”模块仍会在“学习反馈 -> 路径规划”区间内滑动，希望其作为主页面固定右栏存在。
+- 修改文件：
+  - `frontend/src/components/PathPlannerPanel.vue`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 将“操作摘要”从扩展区内部右栏提升到 `PathPlannerPanel` 顶层右侧栏。
+  - 路径规划主卡片与反馈区保持在左侧主列，摘要栏在桌面端作为独立右栏 `sticky` 固定。
+  - 扩展区内部仅保留“学习反馈”和“路径变化”主体，避免摘要固定范围继续受扩展区容器限制。
+- 验证命令：
+  - `npm run test -- src/components/PathPlannerPanel.test.js`
+  - `npm run build`
+- 验证结论：
+  - 路径规划面板相关单测 7/7 通过。
+  - 前端构建通过。
+- 残留观察：
+  - 这次修复针对的是首页主页面层级，不再依赖扩展区内部容器。
+  - 若浏览器仍看到旧表现，需要刷新当前前端页面或等待热更新完成。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 14:28 CST id=session-20260330-142800 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 14:18 CST id=session-20260330-141800 -->
+### 2026-03-30 14:18 CST
+
+- 会话类型：前端布局修复 / 首页扩展区
+- 用户问题：首页“操作摘要”模块会随着滚轮滚动而滑动，希望将其固定住。
+- 修改文件：
+  - `frontend/src/components/PathPlannerPanel.vue`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 调整 `PathPlannerPanel` 扩展区结构，将“路径变化”模块并入左侧主列。
+  - 保留右侧“操作摘要”使用 `sticky`，但把其固定作用范围扩展到整块“反馈 + 路径变化”区域，避免继续下滚时摘要过早滑走。
+- 验证命令：
+  - `npm run test -- src/components/PathPlannerPanel.test.js`
+  - `npm run build`
+- 验证结论：
+  - 路径规划面板相关单测 7/7 通过。
+  - 前端构建通过。
+- 残留观察：
+  - 这次修复针对的是首页扩展区的结构性原因，不是简单改 `top` 或随意改 `position`。
+  - 如果后续还要进一步强化“完全固定不动”的视觉效果，可以再评估是否要把侧栏做成更独立的页面级两列布局，但当前版本已经能解决摘要过早滑走的问题。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 14:18 CST id=session-20260330-141800 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 12:01 CST id=session-20260330-120100 -->
+### 2026-03-30 12:01 CST
+
+- 会话类型：演示链路缺陷修复 / 前端代理配置
+- 用户问题：`demo_check.sh` 显示通过，但打开 `http://127.0.0.1:5174` 后前端提示“后端未启动”。
+- 修改文件：
+  - `frontend/vite.config.js`
+  - `scripts/demo_up.sh`
+  - `scripts/run_frontend.sh`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 修复前端开发代理配置，支持通过环境变量动态指定后端地址。
+  - 修复 `demo_up.sh` 与前端代理的联动，确保 `demo_check` 的 `5174 -> 18080` 链路一致。
+  - 为手动前端启动脚本补充代理目标参数，减少后续同类问题。
+- 验证命令：
+  - `bash -n scripts/demo_up.sh scripts/run_frontend.sh scripts/demo_check.sh scripts/demo_check_down.sh`
+  - `npm run build`
+  - `node --input-type=module -e "process.env.VITE_DEV_PROXY_TARGET='http://127.0.0.1:18080'; ..."`
+- 验证结论：
+  - 脚本语法通过。
+  - 前端构建通过。
+  - Vite 配置在 `VITE_DEV_PROXY_TARGET=http://127.0.0.1:18080` 时，`/api` 代理目标解析正确。
+- 残留观察：
+  - 已经在运行的旧前端 dev server 不会自动热更新代理配置，必须重启前端或重新执行 `demo_check` 才能生效。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 12:01 CST id=session-20260330-120100 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 11:45 CST id=session-20260330-114500 -->
+### 2026-03-30 11:45 CST
+
+- 会话类型：演示脚本增强 / 文档同步
+- 用户问题：`./demo_check.sh` 跑起来后不好关闭，希望能单独做一个关闭脚本。
+- 修改文件：
+  - `scripts/demo_check_down.sh`
+  - `scripts/demo_check.sh`
+  - `README.md`
+  - `docs/demo-runbook.md`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 新增 `demo_check_down.sh`，按端口回收 `demo_check` 默认使用的 `18080 / 5174` 独立演示环境。
+  - `demo_check.sh` 成功后会明确打印 `./scripts/demo_check_down.sh` 作为手动停止命令。
+  - README 与答辩 runbook 已同步更新停止说明，减少脚本使用歧义。
+- 验证命令：
+  - `bash -n scripts/demo_check_down.sh scripts/demo_check.sh scripts/demo_up.sh scripts/demo_down.sh`
+  - `sed -n '100,170p' README.md`
+  - `sed -n '1,140p' docs/demo-runbook.md`
+- 验证结论：
+  - 四个脚本语法可通过。
+  - 文档中 `demo_check` 的启动与停止入口已经成对出现。
+- 残留观察：
+  - `demo_check_down.sh` 是按端口停止，适合当前毕设演示链路；如果后续并行启动多组演示实例，再考虑是否要做更细的实例标识。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 11:45 CST id=session-20260330-114500 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 11:39 CST id=session-20260330-113900 -->
+### 2026-03-30 11:39 CST
+
+- 会话类型：演示环境排障 / 仅分析
+- 用户问题：`./scripts/demo_check.sh` 报告 `18080` 端口已被后端服务占用，询问如何关闭该服务。
+- 修改文件：
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 确认 `scripts/demo_down.sh` 依赖 `.demo-runtime/backend.pid` 与 `.demo-runtime/frontend.pid` 停止进程。
+  - 形成按端口排查与关闭的建议，优先使用 `fuser 18080/tcp` 查看占用，再用 `fuser -k 18080/tcp` 直接结束监听进程。
+- 验证命令：
+  - `sed -n '1,220p' scripts/demo_down.sh`
+  - `date '+%Y-%m-%d %H:%M CST'`
+- 验证结论：
+  - 当前已确认脚本的停服前提与端口冲突场景下更直接的处理手段。
+- 残留观察：
+  - 若该端口服务不是当前仓库启动的实例，`demo_down.sh` 可能无效，仍需按端口关闭。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 11:39 CST id=session-20260330-113900 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 19:34 CST id=session-20260330-193400 -->
+### 2026-03-30 19:34 CST
+
+- 会话类型：答辩材料收口 / 文档落地
+- 用户问题：转去做答辩材料收口，比如固定截图、导出样例、论文模块对应说明。
+- 修改文件：
+  - `docs/demo-snapshots/README.md`
+  - `docs/thesis/defense-material-pack.md`
+  - `docs/thesis/thesis-module-mapping.md`
+  - `docs/thesis/sample-learning-path-export.txt`
+  - `docs/thesis/sample-detail-learning-path-export.txt`
+  - `README.md`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 落地固定截图清单，统一了截图顺序、命名、页面和用途。
+  - 落地两份固定路径导出样例，可直接用于论文附录或答辩展示。
+  - 落地论文模块对应说明，把代码实现与论文章节逐项对应。
+  - README 顶部已补答辩材料入口，降低后续查找成本。
+- 验证命令：
+  - `find docs/demo-snapshots docs/thesis -maxdepth 2 -type f | sort`
+  - `sed -n '1,40p' README.md`
+- 验证结论：
+  - 新增文档文件已存在且入口可见。
+  - 当前答辩材料链路已从“散落在项目里”推进为“有入口、有样例、有映射”的可复用状态。
+- 残留观察：
+  - 真实截图文件尚未生成；当前提供的是固定截图清单和命名规范。
+  - 若后续页面视觉再调整，需要优先更新截图和导出样例，避免材料漂移。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 19:34 CST id=session-20260330-193400 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 19:18 CST id=session-20260330-191800 -->
+### 2026-03-30 19:18 CST
+
+- 会话类型：资源覆盖补齐 + 定向回归
+- 用户问题：继续补细化资源。
+- 修改文件：
+  - `backend/config/learning_resources.json`
+  - `backend/tests/PathPlanningServiceTest.cc`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 为 `tree-basic / graph-basic / topological-sort` 三条后段章节分支补入第二批焦点资源。
+  - 当前 `graph-basic`、`topological-sort`、`tree-basic` 各自所有二级节点都达到至少 2 条 `focused` 资源。
+  - 复用既有资源数量约束测试，并将关键校验节点扩展到后段章节。
+- 验证命令：
+  - `node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('backend/config/learning_resources.json','utf8')); console.log('learning_resources.json OK')"`
+  - `node` 统计脚本：检查 `graph-basic / topological-sort / tree-basic` 各二级节点焦点资源计数
+  - `cmake --build . -j$(nproc)`
+  - `ctest -R LearningResourceService --output-on-failure`
+- 验证结论：
+  - JSON 解析通过。
+  - 三个后段章节 scope 的二级节点焦点资源计数均达到 2。
+  - 后端构建通过，资源相关测试 6/6 通过。
+- 残留观察：
+  - 课程主图对应的二级细化资源覆盖已经比较均衡。
+  - 如果继续做资源补齐，下一步更值得转向三级细化节点，而不是继续重复加厚二级节点。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 19:18 CST id=session-20260330-191800 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 19:06 CST id=session-20260330-190600 -->
+### 2026-03-30 19:06 CST
+
+- 会话类型：资源覆盖补齐 + 定向回归
+- 用户问题：继续回到当前毕设任务，优先做“细化资源继续补齐”。
+- 修改文件：
+  - `backend/config/learning_resources.json`
+  - `backend/tests/PathPlanningServiceTest.cc`
+  - `AIREAD.md`
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 为 `stack / queue / string` 三条高频细化分支的二级节点补入第二条焦点资源，提升节点专属资源厚度。
+  - 继续优先复用当前项目里已经采用的课程风格资源与稳定图文来源，避免引入风格漂移明显的资源池。
+  - 新增定向测试，约束 `stack-push`、`queue-enqueue`、`string-matching-problem` 至少保有两条 `focused` 资源。
+- 验证命令：
+  - `node -e "JSON.parse(require('fs').readFileSync('backend/config/learning_resources.json','utf8')); console.log('learning_resources.json OK')"`
+  - `cmake --build . -j$(nproc)`
+  - `ctest -R LearningResourceService --output-on-failure`
+- 验证结论：
+  - JSON 解析通过。
+  - 后端构建通过。
+  - 资源相关测试 6/6 通过，新加覆盖测试通过。
+- 残留观察：
+  - 当前高频细化分支已从“主要靠继承资源兜底”推进到“关键节点有两条焦点资源”。
+  - 后续若继续补资源，更适合优先推进 `graph-basic`、`topological-sort`、`tree-basic` 等后段章节，而不是重复扩充已有前三章分支。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 19:06 CST id=session-20260330-190600 -->
+
+<!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-30 17:42 CST id=session-20260330-174200 -->
+### 2026-03-30 17:42 CST
+
+- 会话类型：论文材料支持 / 文献核对
+- 用户问题：确认继续，要求开题报告参考文献满足“10 篇、近三年优先、不超过 5 年、至少一篇期刊、至少一篇英文”。
+- 修改文件：
+  - `AI_GUIDE.md`
+- 实现结果：
+  - 基于已完成项目主题，整理并核对了一组与教育知识图谱、个性化学习路径、资源推荐和可解释推荐直接相关的中英文参考文献。
+  - 本轮未改动项目代码、数据库和脚本，仅进行文献范围核对与材料支持。
+- 验证命令：
+  - 文献网页来源核对（标题 / 年份 / 期刊 / 主题相关性）。
+- 验证结论：
+  - 当前候选文献集合可用于开题报告参考文献部分，时间范围与中英文要求均满足。
+- 残留观察：
+  - 若学校要求极严格的参考文献格式，后续仍建议再统一做一版 GB/T 7714 排版。
+<!-- AI_GUIDE:ENTRY:END ts=2026-03-30 17:42 CST id=session-20260330-174200 -->
 
 <!-- AI_GUIDE:ENTRY:BEGIN ts=2026-03-26 14:04 CST id=session-20260326-140400 -->
 ### 2026-03-26 14:04 CST
@@ -1449,6 +1799,15 @@
 ## 5. 修改标记 / 审计轨迹
 
 - 本轮新增：`AI_GUIDE.md`
+- 本轮反馈语义细化改动：
+  - `backend/algorithm/adjuster/LearningPathAdjuster.cc`：将 `partial` 更新规则改为允许小幅上调与小幅回退，单次回退上限为 `15%`
+  - `backend/tests/PathAdjusterTest.cc`：新增“部分完成允许小幅回退”用例，覆盖真实教学语义下的回退边界
+- 本轮反馈联动改动：
+  - `frontend/src/utils/feedbackQuickPreset.js`：抽出完成情况对应的掌握度区间、默认草稿与归一化逻辑，统一首页与细化学习页的反馈规则
+  - `frontend/src/components/PathPlannerPanel.vue`：首页反馈滑块改为按状态动态限制区间，并显式显示可调范围
+  - `frontend/src/components/DetailLearningWorkspace.vue`：细化学习反馈滑块同步接入同一套状态区间规则
+  - `backend/algorithm/adjuster/LearningPathAdjuster.cc`：后端在应用反馈更新前按完成情况裁剪 `selfRatedMastery`
+  - `backend/tests/PathAdjusterTest.cc`、`frontend/src/utils/feedbackQuickPreset.test.js`、`frontend/src/components/PathPlannerPanel.test.js`：补充前后端联动规则的回归测试
 - 本轮前端状态管理改动：
   - `frontend/src/stores/navigationStore.js`：新增学习图谱状态持久化
   - `frontend/src/components/LearnerLearningGraph.vue`：新增图谱页恢复与写回逻辑
@@ -1478,6 +1837,8 @@
   - `backend/config/learning_resources.json`：为 `linear-list` 的 9 个二级细化节点补齐按 `focusNodeCode` 绑定的焦点资源
   - `backend/config/learning_resources.json`：为 `sequence-list` 的 9 个二级细化节点补齐按 `focusNodeCode` 绑定的焦点资源
   - `backend/config/learning_resources.json`：为 `linked-list` 的 10 个二级细化节点补齐按 `focusNodeCode` 绑定的焦点资源
+  - `backend/config/learning_resources.json`：为 `stack` 的 9 个二级细化节点、`queue` 的 9 个二级细化节点、`string` 的 8 个二级细化节点补入第二条焦点资源
+  - `backend/tests/PathPlanningServiceTest.cc`：新增关键细化节点焦点资源数量约束测试
   - `frontend/src/views/ResourceRecommendationView.vue`：资源页新增“来自上层 / 来自关联节点”来源标签区分与统一兜底提示
   - `frontend/src/components/KnowledgeGraphPreview.vue`：局部资源区同步显示继承来源标记
   - `frontend/src/views/HomeView.vue`、`frontend/src/views/LearningGraphView.vue`、`frontend/src/views/LearnerProfileView.vue`、`frontend/src/components/PageLayout.vue`：页面说明文案压缩并统一关键异常态提示语气
@@ -1509,6 +1870,7 @@
 - 如后续继续做结构性清理，可优先审查各页面顶部说明卡与共享卡片样式是否值得做轻量复用，但不建议在当前答辩演示阶段做大抽象。
 - 资源质量细修：优先继续补“高频路径节点 + 薄弱点节点”的专属资源，逐步减少对上层继承资源的依赖。
 - 细化资源补齐建议：下一轮优先继续补 `stack`、`queue`、`string` 这类答辩里更容易演示完整学习路径的分支。
+- 细化资源补齐建议：下一轮更适合继续补 `graph-basic`、`topological-sort`、`tree-basic` 这类后段章节分支，形成更完整的全课程覆盖。
 - 演示材料整理：可把导出路径文本、资源页截图、图谱下钻截图整理进论文附录和答辩 PPT。
 - 异常态抽象：当前关键空态和错误态文案已统一，但若后续页面继续增加，可考虑抽统一状态组件，前提是不引入过度抽象。
 - 标签样式复用：如果后续首页或图谱页也出现类似的多层标签排布，可把当前资源页的堆叠样式抽成可复用片段。

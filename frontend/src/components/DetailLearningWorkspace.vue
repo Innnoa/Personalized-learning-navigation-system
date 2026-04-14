@@ -470,6 +470,7 @@
                     <span>完成情况</span>
                     <select
                       v-model="detailFeedbackDraftByCode[item.code].completionStatus"
+                      @change="handleDetailFeedbackStatusChange(item)"
                     >
                       <option value="completed">已完成</option>
                       <option value="partial">部分完成</option>
@@ -481,14 +482,18 @@
                     <span>学习后掌握度</span>
                     <div class="slider-row">
                       <input
+                        :key="`${item.code}-${detailFeedbackDraftByCode[item.code].completionStatus}`"
                         v-model.number="detailFeedbackDraftByCode[item.code].selfRatedMastery"
                         type="range"
-                        min="0"
-                        max="100"
+                        :min="getDetailFeedbackMasteryRangeForCode(item.code).min"
+                        :max="getDetailFeedbackMasteryRangeForCode(item.code).max"
                         step="5"
                       />
                       <strong>{{ detailFeedbackDraftByCode[item.code].selfRatedMastery }}%</strong>
                     </div>
+                    <p class="field-hint field-hint--feedback">
+                      当前可调区间：{{ getDetailFeedbackMasteryRangeLabel(item.code) }}
+                    </p>
                   </label>
                 </div>
               </article>
@@ -677,8 +682,12 @@ import { adjustDetailLearningPath, generateDetailLearningPath } from "../api/pat
 import { loadCytoscape } from "../graph/loadCytoscape";
 import { useNavigationStore } from "../stores/navigationStore";
 import {
+  clampFeedbackMasteryForStatus,
   feedbackQuickPresets,
+  getFeedbackMasteryRange,
+  normalizeFeedbackDraft,
   resolveFeedbackQuickPresetDraft,
+  resolveFeedbackStatusDraft,
 } from "../utils/feedbackQuickPreset";
 import { downloadLearningPathExport } from "../utils/learningPathExport";
 
@@ -1418,16 +1427,14 @@ function normalizeDetailMasteryPercentMap(
 }
 
 function normalizeDetailFeedbackDrafts(nodes = [], drafts = {}) {
+  const nodeByCode = new Map(nodes.map((node) => [node.code, node]));
   const allowedCodes = new Set(nodes.map((node) => node.code));
   return Object.fromEntries(
     Object.entries(drafts || {})
       .filter(([code]) => allowedCodes.has(code))
       .map(([code, value]) => [
         code,
-        {
-          completionStatus: value?.completionStatus || "completed",
-          selfRatedMastery: clampMasteryPercent(value?.selfRatedMastery ?? 0),
-        },
+        normalizeFeedbackDraft(nodeByCode.get(code), value),
       ]),
   );
 }
@@ -1611,10 +1618,7 @@ function syncDetailFeedbackDrafts() {
   detailFeedbackDraftByCode.value = Object.fromEntries(
     detailScheduledItems.value.map((item) => [
       item.code,
-      {
-        completionStatus: "completed",
-        selfRatedMastery: Math.max(item.masteryPercent, 85),
-      },
+      resolveFeedbackStatusDraft(item, "completed"),
     ]),
   );
 }
@@ -1626,13 +1630,35 @@ function applyDetailFeedbackQuickPreset(item, presetKey) {
   };
 }
 
+function getDetailFeedbackMasteryRangeForCode(code) {
+  const completionStatus =
+    detailFeedbackDraftByCode.value[code]?.completionStatus || "completed";
+  return getFeedbackMasteryRange(completionStatus);
+}
+
+function getDetailFeedbackMasteryRangeLabel(code) {
+  const range = getDetailFeedbackMasteryRangeForCode(code);
+  return `${range.min}% - ${range.max}%`;
+}
+
+function handleDetailFeedbackStatusChange(item) {
+  const currentDraft = detailFeedbackDraftByCode.value[item.code] || {};
+  detailFeedbackDraftByCode.value = {
+    ...detailFeedbackDraftByCode.value,
+    [item.code]: normalizeFeedbackDraft(item, currentDraft),
+  };
+}
+
 function buildDetailFeedbackItems() {
   return detailScheduledItems.value.map((item) => ({
     code: item.code,
     completionStatus:
-      detailFeedbackDraftByCode.value[item.code]?.completionStatus || "completed",
+      normalizeFeedbackDraft(item, detailFeedbackDraftByCode.value[item.code]).completionStatus,
     selfRatedMastery:
-      Number(detailFeedbackDraftByCode.value[item.code]?.selfRatedMastery || 0) / 100,
+      clampFeedbackMasteryForStatus(
+        normalizeFeedbackDraft(item, detailFeedbackDraftByCode.value[item.code]).completionStatus,
+        detailFeedbackDraftByCode.value[item.code]?.selfRatedMastery || 0,
+      ) / 100,
   }));
 }
 

@@ -384,6 +384,72 @@ describe("PathPlannerPanel", () => {
     });
   });
 
+  it("clamps feedback mastery to the active completion-status range", async () => {
+    fetchKnowledgeGraph.mockResolvedValue({
+      nodes: [
+        { code: "stack", label: "栈" },
+        { code: "queue", label: "队列" },
+      ],
+    });
+    generateLearningPath.mockResolvedValue({
+      summary: {
+        targetReachableWithinBudget: true,
+        scheduledCount: 1,
+        deferredCount: 0,
+        masteredCount: 0,
+        scheduledMinutes: 30,
+        totalRequiredMinutes: 30,
+        availableMinutes: 120,
+      },
+      path: [
+        {
+          code: "queue",
+          name: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          masteryPercent: 20,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["该节点与当前目标直接相关。"],
+            relevanceScore: 0.9,
+            importanceScore: 0.85,
+            timeCostPenalty: 0.2,
+          },
+        },
+      ],
+      resourceRecommendations: [],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mount(PathPlannerPanel, {
+      props: {
+        learnerCode: "demo-learner",
+        initialMasteryByCode: {
+          stack: 0.4,
+          queue: 0.2,
+        },
+        profileLoading: false,
+      },
+      global: {
+        plugins: [pinia],
+      },
+    });
+
+    await flushUi();
+
+    const statusSelect = wrapper.get("[data-testid='feedback-status-queue']");
+    await statusSelect.setValue("blocked");
+    await flushUi();
+
+    const masterySlider = wrapper.get("[data-testid='feedback-mastery-queue']");
+    expect(masterySlider.attributes("min")).toBe("0");
+    expect(masterySlider.attributes("max")).toBe("35");
+    expect(masterySlider.element.value).toBe("35");
+    expect(wrapper.text()).toContain("当前可调区间：0% - 35%");
+  });
+
   it("exports current learning path as downloadable text", async () => {
     fetchKnowledgeGraph.mockResolvedValue({
       nodes: [
@@ -536,6 +602,7 @@ describe("PathPlannerPanel", () => {
     await wrapper
       .get("[data-testid='feedback-preset-queue-partial-review']")
       .trigger("click");
+    await flushUi();
 
     expect(
       wrapper.get("[data-testid='feedback-status-queue']").element.value,

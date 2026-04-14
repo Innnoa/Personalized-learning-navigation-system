@@ -221,6 +221,59 @@ DROGON_TEST(LearningResourceServiceEnrichesDetailNodeResourcesFromMultipleScopes
     CHECK(foundInheritedTopoResource == true);
 }
 
+DROGON_TEST(LearningResourceServiceProvidesMultipleFocusedResourcesForKeyDetailNodes)
+{
+    const auto countFocusedResources =
+        [](const Json::Value &resources, const std::string &nodeCode) {
+            int count = 0;
+            for (const auto &item : resources)
+            {
+                if (item["resourceCoverageType"].asString() == "focused" &&
+                    item["focusNodeCode"].asString() == nodeCode)
+                {
+                    count += 1;
+                }
+            }
+            return count;
+        };
+
+    const auto stackResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "stack-push");
+    REQUIRE(stackResources.isArray());
+    CHECK(countFocusedResources(stackResources, "stack-push") >= 2);
+
+    const auto queueResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "queue-enqueue");
+    REQUIRE(queueResources.isArray());
+    CHECK(countFocusedResources(queueResources, "queue-enqueue") >= 2);
+
+    const auto stringResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "string-matching-problem");
+    REQUIRE(stringResources.isArray());
+    CHECK(countFocusedResources(stringResources, "string-matching-problem") >= 2);
+
+    const auto treeResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "tree-basic-binary-storage");
+    REQUIRE(treeResources.isArray());
+    CHECK(countFocusedResources(treeResources, "tree-basic-binary-storage") >= 2);
+
+    const auto graphResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "graph-basic-definition");
+    REQUIRE(graphResources.isArray());
+    CHECK(countFocusedResources(graphResources, "graph-basic-definition") >= 2);
+
+    const auto topoResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "topological-sort-algorithm");
+    REQUIRE(topoResources.isArray());
+    CHECK(countFocusedResources(topoResources, "topological-sort-algorithm") >= 2);
+}
+
 DROGON_TEST(LearningResourceServiceSortsResourcesByLearningStage)
 {
     algorithm::planner::LearningPathItem scheduledItem;

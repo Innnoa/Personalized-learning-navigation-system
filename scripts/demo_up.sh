@@ -148,7 +148,8 @@ start_frontend() {
 
   log "启动前端（端口 ${FRONTEND_PORT}）..."
   cd "${FRONTEND_DIR}"
-  nohup npm run dev -- --host --port "${FRONTEND_PORT}" >>"${FRONTEND_LOG_FILE}" 2>&1 &
+  VITE_DEV_PROXY_TARGET="${API_BASE_URL}" \
+    nohup npm run dev -- --host --port "${FRONTEND_PORT}" >>"${FRONTEND_LOG_FILE}" 2>&1 &
 
   local frontend_pid=$!
   cd "${ROOT_DIR}"

@@ -84,7 +84,7 @@ DEMO_CHECK_AUTO_DOWN=0 ./scripts/demo_check.sh
 ### 场景 A：页面卡住或状态混乱
 
 ```bash
-./scripts/demo_down.sh
+./scripts/demo_check_down.sh
 DEMO_CHECK_AUTO_DOWN=0 ./scripts/demo_check.sh
 ```
 
@@ -107,9 +107,9 @@ DEMO_CHECK_BACKEND_PORT=18082 DEMO_CHECK_FRONTEND_PORT=5176 DEMO_CHECK_AUTO_DOWN
 结束后执行：
 
 ```bash
-./scripts/demo_down.sh
+./scripts/demo_check_down.sh
 ```
 
 说明：
-- 会按 pid 尝试停止前后端进程
+- 会按端口回收 `demo_check.sh` 使用的独立演示环境
 - 幂等执行，重复执行也安全

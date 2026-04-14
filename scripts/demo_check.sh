@@ -110,7 +110,7 @@ print_summary() {
   if [[ "${AUTO_DOWN}" == "1" ]]; then
     echo "  进程回收: 已启用（结束时自动执行 demo_down）"
   else
-    echo "  进程回收: 未启用（可手动执行 ./scripts/demo_down.sh）"
+    echo "  进程回收: 未启用（可手动执行 ./scripts/demo_check_down.sh 回收 ${BACKEND_PORT}/${FRONTEND_PORT}）"
   fi
 }
 

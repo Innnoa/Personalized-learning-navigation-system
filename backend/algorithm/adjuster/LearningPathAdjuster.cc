@@ -16,6 +16,48 @@ double roundToTwoDecimals(double value)
 {
     return std::round(value * 100.0) / 100.0;
 }
+
+std::pair<double, double> resolveMasteryRangeByStatus(
+    const std::string &completionStatus)
+{
+    if (completionStatus == "completed")
+    {
+        return {0.8, 1.0};
+    }
+
+    if (completionStatus == "partial")
+    {
+        return {0.4, 0.8};
+    }
+
+    return {0.0, 0.35};
+}
+
+double clampSelfRatedMasteryByStatus(const std::string &completionStatus,
+                                     double selfRatedMastery)
+{
+    const auto [minMastery, maxMastery] =
+        resolveMasteryRangeByStatus(completionStatus);
+    return std::clamp(clampMastery(selfRatedMastery), minMastery, maxMastery);
+}
+
+double resolvePartialUpdatedMastery(double previousMastery,
+                                    double selfRatedMastery)
+{
+    constexpr double kPartialMaxMastery = 0.8;
+    constexpr double kPartialProgressFloor = 0.1;
+    constexpr double kPartialRegressionCap = 0.15;
+
+    if (selfRatedMastery >= previousMastery)
+    {
+        const double upwardCandidate =
+            std::max(selfRatedMastery, previousMastery + kPartialProgressFloor);
+        return std::min(kPartialMaxMastery, upwardCandidate);
+    }
+
+    const double lowerBound = std::max(0.4, previousMastery - kPartialRegressionCap);
+    return std::clamp(selfRatedMastery, lowerBound, previousMastery);
+}
 }
 
 namespace algorithm::adjuster
@@ -63,7 +105,9 @@ FeedbackUpdateResult applyFeedbackUpdates(
             result.updatedMasteryByCode.count(feedback.code) > 0
                 ? clampMastery(result.updatedMasteryByCode[feedback.code])
                 : 0.0;
-        const double selfRatedMastery = clampMastery(feedback.selfRatedMastery);
+        const double selfRatedMastery =
+            clampSelfRatedMasteryByStatus(feedback.completionStatus,
+                                          feedback.selfRatedMastery);
 
         double updatedMastery = previousMastery;
         std::string ruleApplied;
@@ -80,10 +124,10 @@ FeedbackUpdateResult applyFeedbackUpdates(
         else if (feedback.completionStatus == "partial")
         {
             ++result.partialCount;
-            updatedMastery = std::max(previousMastery, selfRatedMastery);
-            updatedMastery = std::min(0.8, std::max(updatedMastery, previousMastery + 0.15));
+            updatedMastery =
+                resolvePartialUpdatedMastery(previousMastery, selfRatedMastery);
             ruleApplied = "partial_keep_in_progress";
-            adjustmentReasons.push_back("该节点仅部分完成，掌握度提升但仍保留在巩固区间。");
+            adjustmentReasons.push_back("该节点仅部分完成，掌握度保留在巩固区间内小幅调整。");
             adjustmentReasons.push_back("系统会在后续规划中继续保留相关复习或补强需求。");
         }
         else

@@ -461,6 +461,7 @@
                       <select
                         :data-testid="`feedback-status-${item.code}`"
                         v-model="feedbackDraftByCode[item.code].completionStatus"
+                        @change="handleFeedbackStatusChange(item)"
                       >
                         <option value="completed">已完成</option>
                         <option value="partial">部分完成</option>
@@ -472,15 +473,19 @@
                       <span>学习后掌握度</span>
                       <div class="slider-row">
                         <input
+                          :key="`${item.code}-${feedbackDraftByCode[item.code].completionStatus}`"
                           :data-testid="`feedback-mastery-${item.code}`"
                           v-model.number="feedbackDraftByCode[item.code].selfRatedMastery"
                           type="range"
-                          min="0"
-                          max="100"
+                          :min="getFeedbackMasteryRangeForCode(item.code).min"
+                          :max="getFeedbackMasteryRangeForCode(item.code).max"
                           step="5"
                         />
                         <strong>{{ feedbackDraftByCode[item.code].selfRatedMastery }}%</strong>
                       </div>
+                      <p class="field-hint field-hint--feedback">
+                        当前可调区间：{{ getFeedbackMasteryRangeLabel(item.code) }}
+                      </p>
                     </label>
                   </div>
                 </article>
@@ -749,8 +754,12 @@ import {
 import { generateLearningPath } from "../api/path";
 import { useNavigationStore } from "../stores/navigationStore";
 import {
+  clampFeedbackMasteryForStatus,
   feedbackQuickPresets,
+  getFeedbackMasteryRange,
+  normalizeFeedbackDraft,
   resolveFeedbackQuickPresetDraft,
+  resolveFeedbackStatusDraft,
 } from "../utils/feedbackQuickPreset";
 import { downloadLearningPathExport } from "../utils/learningPathExport";
 
@@ -1262,14 +1271,22 @@ function changeBadgeClass(changeType) {
   };
 }
 
+function getFeedbackMasteryRangeForCode(code) {
+  const completionStatus =
+    feedbackDraftByCode.value[code]?.completionStatus || "completed";
+  return getFeedbackMasteryRange(completionStatus);
+}
+
+function getFeedbackMasteryRangeLabel(code) {
+  const range = getFeedbackMasteryRangeForCode(code);
+  return `${range.min}% - ${range.max}%`;
+}
+
 function syncFeedbackDrafts() {
   feedbackDraftByCode.value = Object.fromEntries(
     scheduledItems.value.map((item) => [
       item.code,
-      {
-        completionStatus: "completed",
-        selfRatedMastery: Math.max(item.masteryPercent, 85),
-      },
+      resolveFeedbackStatusDraft(item, "completed"),
     ]),
   );
 }
@@ -1278,6 +1295,14 @@ function applyFeedbackQuickPreset(item, presetKey) {
   feedbackDraftByCode.value = {
     ...feedbackDraftByCode.value,
     [item.code]: resolveFeedbackQuickPresetDraft(item, presetKey),
+  };
+}
+
+function handleFeedbackStatusChange(item) {
+  const currentDraft = feedbackDraftByCode.value[item.code] || {};
+  feedbackDraftByCode.value = {
+    ...feedbackDraftByCode.value,
+    [item.code]: normalizeFeedbackDraft(item, currentDraft),
   };
 }
 
@@ -1401,9 +1426,12 @@ function buildFeedbackItems() {
   return scheduledItems.value.map((item) => ({
     code: item.code,
     completionStatus:
-      feedbackDraftByCode.value[item.code]?.completionStatus || "completed",
+      normalizeFeedbackDraft(item, feedbackDraftByCode.value[item.code]).completionStatus,
     selfRatedMastery:
-      Number(feedbackDraftByCode.value[item.code]?.selfRatedMastery || 0) / 100,
+      clampFeedbackMasteryForStatus(
+        normalizeFeedbackDraft(item, feedbackDraftByCode.value[item.code]).completionStatus,
+        feedbackDraftByCode.value[item.code]?.selfRatedMastery || 0,
+      ) / 100,
   }));
 }
 
