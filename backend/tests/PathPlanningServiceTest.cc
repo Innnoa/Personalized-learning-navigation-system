@@ -135,20 +135,35 @@ DROGON_TEST(LearningResourceServiceReturnsConfiguredResources)
 
     REQUIRE(payload.isArray());
     CHECK(payload.empty() == false);
-    CHECK(payload[0]["type"].asString() == "video");
     CHECK(payload[0]["url"].asString().empty() == false);
-    CHECK(payload[0]["recommendedPhase"].asString().empty() == false);
-    CHECK(payload[0]["focusTags"].isArray());
 
+    bool foundCourseChapterResource = false;
+    bool foundVideoResource = false;
     bool foundQueueCircularResource = false;
     for (const auto &item : payload)
     {
+        if (item["resourceCoverageType"].asString() == "course-direct")
+        {
+            foundCourseChapterResource = true;
+            CHECK(item["type"].asString() == "document");
+            CHECK(item["source"].asString() == "超星课程原文章节");
+        }
+
+        if (item["type"].asString() == "video")
+        {
+            foundVideoResource = true;
+            CHECK(item["recommendedPhase"].asString().empty() == false);
+            CHECK(item["focusTags"].isArray());
+        }
+
         if (item["focusNodeCode"].asString() == "queue-circular")
         {
             foundQueueCircularResource = true;
             CHECK(item["focusNodeLabel"].asString() == "循环队列");
         }
     }
+    CHECK(foundCourseChapterResource == true);
+    CHECK(foundVideoResource == true);
     CHECK(foundQueueCircularResource == true);
 
     const auto missingPayload =
@@ -156,6 +171,89 @@ DROGON_TEST(LearningResourceServiceReturnsConfiguredResources)
             "unknown-code");
     CHECK(missingPayload.isArray());
     CHECK(missingPayload.empty() == true);
+}
+
+DROGON_TEST(LearningResourceServicePromotesCourseChapterResourcesToFirstPosition)
+{
+    const auto queueResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "queue");
+
+    REQUIRE(queueResources.isArray());
+    REQUIRE(queueResources.empty() == false);
+    CHECK(queueResources[0]["resourceCoverageType"].asString() ==
+          "course-direct");
+    CHECK(queueResources[0]["source"].asString() == "超星课程原文章节");
+    CHECK(queueResources[0]["title"].asString() == "3.3队列");
+    CHECK(queueResources[0]["url"]
+              .asString()
+              .find("/mooc2-ans/mycourse/teacherstudy?chapterId=984428893") !=
+          std::string::npos);
+
+    const auto queueCircularResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "queue-circular");
+    REQUIRE(queueCircularResources.isArray());
+    REQUIRE(queueCircularResources.empty() == false);
+    CHECK(queueCircularResources[0]["resourceCoverageType"].asString() ==
+          "course-direct");
+    CHECK(queueCircularResources[0]["title"].asString() == "循环队列");
+    CHECK(queueCircularResources[0]["focusNodeCode"].asString() ==
+          "queue-circular");
+
+    const auto unresolvedDetailResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "kmp-next-definition");
+    REQUIRE(unresolvedDetailResources.isArray());
+    REQUIRE(unresolvedDetailResources.empty() == false);
+    CHECK(unresolvedDetailResources[0]["resourceCoverageType"].asString() !=
+          "course-direct");
+}
+
+DROGON_TEST(LearningResourceServiceIncludesHighConfidenceCourseCandidates)
+{
+    const auto queueInitResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "queue-init");
+
+    REQUIRE(queueInitResources.isArray());
+    REQUIRE(queueInitResources.empty() == false);
+    CHECK(queueInitResources[0]["resourceCoverageType"].asString() ==
+          "course-candidate");
+    CHECK(queueInitResources[0]["title"].asString() ==
+          "队列的链式表示和初始化");
+    CHECK(queueInitResources[0]["url"]
+              .asString()
+              .find("/mooc2-ans/mycourse/teacherstudy?chapterId=984440817") !=
+          std::string::npos);
+
+    const auto treeRelationResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "tree-basic-tree-binary-relation");
+    REQUIRE(treeRelationResources.isArray());
+    REQUIRE(treeRelationResources.empty() == false);
+    CHECK(treeRelationResources[0]["resourceCoverageType"].asString() ==
+          "course-candidate");
+    CHECK(treeRelationResources[0]["title"].asString() ==
+          "树、森林 与二叉树的转换");
+
+    const auto treeBasicResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "tree-basic");
+    REQUIRE(treeBasicResources.isArray());
+    REQUIRE(treeBasicResources.empty() == false);
+    CHECK(treeBasicResources[0]["resourceCoverageType"].asString() ==
+          "course-candidate");
+    CHECK(treeBasicResources[0]["title"].asString() == "5.1树");
+
+    const auto kmpNextResources =
+        services::LearningResourceService::buildResourcesForKnowledgePoint(
+            "kmp-next-definition");
+    REQUIRE(kmpNextResources.isArray());
+    REQUIRE(kmpNextResources.empty() == false);
+    CHECK(kmpNextResources[0]["resourceCoverageType"].asString() ==
+          "course-candidate");
+    CHECK(kmpNextResources[0]["title"].asString() == "KMP算法");
 }
 
 DROGON_TEST(LearningResourceServiceEnrichesDetailNodeResourcesFromMultipleScopes)
@@ -293,7 +391,7 @@ DROGON_TEST(LearningResourceServiceSortsResourcesByLearningStage)
 
     REQUIRE(scheduledResources.isArray());
     REQUIRE(scheduledResources.size() >= 2);
-    CHECK(scheduledResources[0]["recommendedPhase"].asString() == "主学");
+    CHECK(scheduledResources[0]["recommendedPhase"].asString() == "预习");
     CHECK(scheduledResources[0]["isPrimaryRecommendation"].asBool() == true);
     CHECK(scheduledResources[0]["priorityLabel"].asString() == "优先看");
     CHECK(scheduledResources[0]["recommendationRank"].asInt() == 1);
@@ -325,7 +423,9 @@ DROGON_TEST(LearningResourceServiceSortsResourcesByLearningStage)
     REQUIRE(deferredResources.isArray());
     REQUIRE(deferredResources.size() >= 3);
     CHECK(deferredResources[0]["recommendedPhase"].asString() == "预习");
-    CHECK(deferredResources[0]["type"].asString() == "video");
+    CHECK(deferredResources[0]["type"].asString() == "document");
+    CHECK(deferredResources[0]["resourceCoverageType"].asString() ==
+          "course-direct");
     CHECK(deferredResources[0]["isPrimaryRecommendation"].asBool() == true);
     CHECK(deferredResources[0]["priorityLabel"].asString() == "优先看");
     CHECK(deferredResources[0]["resourceLayer"].asString() == "课程风格优先");

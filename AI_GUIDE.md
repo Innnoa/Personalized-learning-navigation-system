@@ -1875,3 +1875,26 @@
 - 异常态抽象：当前关键空态和错误态文案已统一，但若后续页面继续增加，可考虑抽统一状态组件，前提是不引入过度抽象。
 - 标签样式复用：如果后续首页或图谱页也出现类似的多层标签排布，可把当前资源页的堆叠样式抽成可复用片段。
 - 如后续希望支持多个演示场景，可把当前硬编码基线抽为数据库种子或配置文件。
+
+## 2026-04-14 课程原文章节直链优先接入
+
+- 用户问题：希望把超星课程内已确认的小章直链补进推荐资源，作为第一顺位；细化学习只接入明确一一对应的课程，剩余未命中项要明确列出。
+- 本轮改动：
+  - `backend/config/course_chapter_links.json`：新增课程原文章节直链配置，当前显式覆盖 12 个顶层知识点和 76 个细化焦点节点。
+  - `backend/config/course_chapter_links.json`：继续补入 2 个顶层候选和 11 个细化高置信弱匹配候选，统一标记为 `linkMode=candidate`。
+  - `backend/config/course_chapter_links.json`：新增 2 条高置信弱匹配候选（`queue-init`、`tree-basic-tree-binary-relation`），使用 `linkMode=candidate` 标记。
+  - `backend/services/LearningResourceService.cc`：新增课程直链配置读取、`course-direct` 资源注入、课程原文优先排序、课程原文选择原因说明。
+  - `backend/services/LearningResourceService.cc`：新增 `course-candidate` 排序层级与候选说明文案，高置信弱匹配会自动纳入候选资源。
+  - `backend/config/config.json`、`backend/tests/test_main.cc`：补充课程直链配置文件路径。
+  - `backend/tests/PathPlanningServiceTest.cc`：新增课程直链排首测试、高置信候选接入测试，并把原有资源排序测试更新到新行为。
+  - `docs/learn_html/url/course-chapter-link-report.json`：新增未命中报告，当前顶层正式直链仍为 12 个，但另外 2 个顶层节点已转为高置信候选；细化焦点剩余 25 个未接入，另有 13 个候选已单独列出。
+- 验证：
+  - `backend/build/tests/backend_test -r LearningResourceServiceReturnsConfiguredResources`
+  - `backend/build/tests/backend_test -r LearningResourceServicePromotesCourseChapterResourcesToFirstPosition`
+  - `backend/build/tests/backend_test -r LearningResourceServiceSortsResourcesByLearningStage`
+  - `backend/build/tests/backend_test -r PathPlanningServiceBuildsDetailScopePathResponse`
+  - `cmake -S backend -B backend/build`
+  - `ctest --test-dir backend/build/tests -R 'LearningResourceService|PathPlanningService' --output-on-failure`
+- 残留风险：
+  - 当前课程直链映射采用显式配置，不做运行时模糊匹配；后续若补更多节点，仍需继续人工核对课程标题与知识点含义。
+  - `tree-basic`、`graph-basic` 两个顶层节点暂未找到足够稳妥的一对一课程入口，因此本轮未强行接入。

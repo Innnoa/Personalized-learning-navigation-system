@@ -1,0 +1,1682 @@
+{
+  "extractedAt": "2026-04-14T03:40:40.774Z",
+  "courseId": "248275882",
+  "clazzid": "110782811",
+  "count": 279,
+  "items": [
+    {
+      "knowledgeId": "1007425781",
+      "title": "本章概述",
+      "displayIndex": "1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007425781&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982352622",
+      "title": "1.1概述",
+      "displayIndex": "1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982352622&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982352924",
+      "title": "案例导学 ——非数值计算中的数据结构问题",
+      "displayIndex": "1.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982352924&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982353267",
+      "title": "1.1.1数据结构的研究内容",
+      "displayIndex": "1.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982353267&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982353321",
+      "title": "数值计算问题的基本解决过程",
+      "displayIndex": "1.2.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982353321&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1008818915",
+      "title": "非数值计算求解的问题",
+      "displayIndex": "1.2.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1008818915&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982353330",
+      "title": "1.1.2数据结构的发展历程",
+      "displayIndex": "1.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982353330&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982356731",
+      "title": "1.2基本概念和术语",
+      "displayIndex": "1.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982356731&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982356808",
+      "title": "1.2.1数据、数据元素、数据项和数据对象",
+      "displayIndex": "1.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982356808&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982356897",
+      "title": "1.2.2数据结构、逻辑结构和存储结构",
+      "displayIndex": "1.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982356897&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982356949",
+      "title": "1.2.3数据类型和抽象数据类型",
+      "displayIndex": "1.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982356949&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357029",
+      "title": "1.3算法和算法分析",
+      "displayIndex": "1.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357029&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357032",
+      "title": "案例导学——算法时间效率的评价",
+      "displayIndex": "1.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357032&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357037",
+      "title": "1.3.1算法的定义与特性",
+      "displayIndex": "1.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357037&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357117",
+      "title": "1.3.2评价算法的基本标准",
+      "displayIndex": "1.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357117&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357161",
+      "title": "1.3.3算法时间效率的度量",
+      "displayIndex": "1.4.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357161&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357176",
+      "title": "频度",
+      "displayIndex": "1.4.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357176&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357281",
+      "title": "时间复杂度",
+      "displayIndex": "1.4.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357281&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357384",
+      "title": "时间复杂度案例解析",
+      "displayIndex": "1.4.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357384&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982357493",
+      "title": "1.3.4算法空间效率的度量",
+      "displayIndex": "1.4.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982357493&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007432786",
+      "title": "本章概述",
+      "displayIndex": "2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007432786&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982364708",
+      "title": "案例导学——有序表的合并",
+      "displayIndex": "2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982364708&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982365040",
+      "title": "2.1线性表的概念",
+      "displayIndex": "2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982365040&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982365163",
+      "title": "2.1.1线性表的定义和特点",
+      "displayIndex": "2.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982365163&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "982365234",
+      "title": "2.1.2线性表的抽象数据类型定义",
+      "displayIndex": "2.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=982365234&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416202",
+      "title": "2.1.3基于抽象数据类型的线性表合并",
+      "displayIndex": "2.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416202&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416425",
+      "title": "线性表合并基本过程",
+      "displayIndex": "2.3.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416425&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416592",
+      "title": "线性表合并算法设计",
+      "displayIndex": "2.3.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416592&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416827",
+      "title": "2.2线性表的顺序表示和实现",
+      "displayIndex": "2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416827&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416866",
+      "title": "2.2.1线性表的顺序存储表示",
+      "displayIndex": "2.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416866&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416871",
+      "title": "2.2.2顺序表的存储结构定义",
+      "displayIndex": "2.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416871&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416880",
+      "title": "2.2.3顺序表的基本操作实现",
+      "displayIndex": "2.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416880&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416905",
+      "title": "顺序表的初始化",
+      "displayIndex": "2.4.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416905&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984416910",
+      "title": "顺序表的插入",
+      "displayIndex": "2.4.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984416910&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984417054",
+      "title": "顺序表的删除",
+      "displayIndex": "2.4.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984417054&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984417120",
+      "title": "顺序表的合并",
+      "displayIndex": "2.4.3.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984417120&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984417300",
+      "title": "2.3线性表的链式表示和实现",
+      "displayIndex": "2.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984417300&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984417569",
+      "title": "2.3.1单链表的存储结构定义",
+      "displayIndex": "2.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984417569&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420010",
+      "title": "单链表的相关概念",
+      "displayIndex": "2.5.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420010&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420033",
+      "title": "单链表结构的实现",
+      "displayIndex": "2.5.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420033&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420061",
+      "title": "2.3.2单链表的基本操作实现",
+      "displayIndex": "2.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420061&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420093",
+      "title": "单链表的查找",
+      "displayIndex": "2.5.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420093&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420103",
+      "title": "单链表的插入",
+      "displayIndex": "2.5.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420103&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420134",
+      "title": "单链表的删除",
+      "displayIndex": "2.5.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420134&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420141",
+      "title": "头插法建立链表",
+      "displayIndex": "2.5.2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420141&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420186",
+      "title": "尾插法建立链表",
+      "displayIndex": "2.5.2.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420186&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420202",
+      "title": "基于单链表的有序表的合并",
+      "displayIndex": "2.5.2.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420202&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420231",
+      "title": "单链表和顺序表比较",
+      "displayIndex": "2.5.2.7",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420231&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420286",
+      "title": "2.3.3其他形式的链表",
+      "displayIndex": "2.5.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420286&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420329",
+      "title": "循环链表",
+      "displayIndex": "2.5.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420329&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420452",
+      "title": "双向链表",
+      "displayIndex": "2.5.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420452&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420661",
+      "title": "静态链表",
+      "displayIndex": "2.5.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420661&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420813",
+      "title": "2.4线性表的应用实例",
+      "displayIndex": "2.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420813&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420870",
+      "title": "2.4.1约瑟夫环问题",
+      "displayIndex": "2.6.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420870&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420819",
+      "title": "2.4.2一元多项式的表示和相加",
+      "displayIndex": "2.6.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420819&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420825",
+      "title": "一元多项式的表示",
+      "displayIndex": "2.6.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420825&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420842",
+      "title": "一元多项式相加的过程",
+      "displayIndex": "2.6.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420842&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984420852",
+      "title": "一元多项式相加算法",
+      "displayIndex": "2.6.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984420852&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007434434",
+      "title": "本章概述",
+      "displayIndex": "3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007434434&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984424618",
+      "title": "3.1栈",
+      "displayIndex": "3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984424618&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988246520",
+      "title": "案例导学-数制转换问题",
+      "displayIndex": "3.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988246520&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007434468",
+      "title": "3.1.1栈的基本概念",
+      "displayIndex": "3.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007434468&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984424795",
+      "title": "3.1.1.1栈的定义和特点",
+      "displayIndex": "3.2.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984424795&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984425728",
+      "title": "3.1.1.2栈的抽象数据类型定义",
+      "displayIndex": "3.2.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984425728&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984425759",
+      "title": "3.1.2栈的顺序表示和实现",
+      "displayIndex": "3.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984425759&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984425774",
+      "title": "顺序栈的表示和初始化",
+      "displayIndex": "3.2.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984425774&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984425976",
+      "title": "顺序栈的入栈操作",
+      "displayIndex": "3.2.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984425976&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984426028",
+      "title": "顺序栈的出栈与取栈顶元素",
+      "displayIndex": "3.2.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984426028&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984427139",
+      "title": "3.1.3栈的链式表示和实现",
+      "displayIndex": "3.2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984427139&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984427144",
+      "title": "链栈的类型定义",
+      "displayIndex": "3.2.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984427144&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984427251",
+      "title": "链栈入栈和出栈算法",
+      "displayIndex": "3.2.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984427251&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441585",
+      "title": "3.2栈与递归",
+      "displayIndex": "3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441585&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441638",
+      "title": "3.2.1采用递归解决的问题",
+      "displayIndex": "3.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441638&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441661",
+      "title": "3.2.2递归过程与递归工作栈",
+      "displayIndex": "3.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441661&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984428893",
+      "title": "3.3队列",
+      "displayIndex": "3.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984428893&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007437142",
+      "title": "案例导学——银行排队问题",
+      "displayIndex": "3.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007437142&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984429556",
+      "title": "3.3.1队列的基本概念",
+      "displayIndex": "3.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984429556&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984429561",
+      "title": "3.3.2队列的顺序表示和实现",
+      "displayIndex": "3.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984429561&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984429572",
+      "title": "顺序队列",
+      "displayIndex": "3.4.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984429572&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984429629",
+      "title": "循环队列",
+      "displayIndex": "3.4.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984429629&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984429638",
+      "title": "循环队列的基本算法设计",
+      "displayIndex": "3.4.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984429638&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984440454",
+      "title": "3.3.3队列的链式表示和实现",
+      "displayIndex": "3.4.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984440454&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984440817",
+      "title": "队列的链式表示和初始化",
+      "displayIndex": "3.4.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984440817&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441094",
+      "title": "链队列的插入和删除",
+      "displayIndex": "3.4.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441094&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984428796",
+      "title": "3.4栈和队列的应用",
+      "displayIndex": "3.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984428796&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984428839",
+      "title": "3.4.1数值转换",
+      "displayIndex": "3.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984428839&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984428878",
+      "title": "3.4.2括号匹配的检验",
+      "displayIndex": "3.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984428878&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441675",
+      "title": "括号匹配问题的提出",
+      "displayIndex": "3.5.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441675&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441681",
+      "title": "括号匹配算法设计",
+      "displayIndex": "3.5.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441681&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441712",
+      "title": "3.4.3表达式求值",
+      "displayIndex": "3.5.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441712&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984441771",
+      "title": "3.4.4 银行客户排队系统算法设计",
+      "displayIndex": "3.5.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984441771&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007442614",
+      "title": "本章概述",
+      "displayIndex": "4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007442614&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1042488588",
+      "title": "案例导学 1——字处理软件的功能",
+      "displayIndex": "4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1042488588&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984444953",
+      "title": "4.1串的定义与操作",
+      "displayIndex": "4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984444953&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984444974",
+      "title": "串的定义和基本概念",
+      "displayIndex": "4.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984444974&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984444990",
+      "title": "串的抽象数据类型定义",
+      "displayIndex": "4.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984444990&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445001",
+      "title": "4.2串的表示与实现",
+      "displayIndex": "4.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445001&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445012",
+      "title": "定长顺序存储表示",
+      "displayIndex": "4.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445012&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445013",
+      "title": "堆分配存储表示",
+      "displayIndex": "4.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445013&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445064",
+      "title": "串的链式存储表示",
+      "displayIndex": "4.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445064&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445241",
+      "title": "4.3串的模式匹配",
+      "displayIndex": "4.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445241&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445321",
+      "title": "简单模式匹配",
+      "displayIndex": "4.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445321&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445329",
+      "title": "KMP算法",
+      "displayIndex": "4.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445329&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1042490623",
+      "title": "案例导学 2——推荐系统中的评分矩阵",
+      "displayIndex": "4.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1042490623&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445454",
+      "title": "4.4数组",
+      "displayIndex": "4.7",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445454&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445469",
+      "title": "数组的定义",
+      "displayIndex": "4.7.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445469&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445509",
+      "title": "数组的顺序存储",
+      "displayIndex": "4.7.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445509&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445670",
+      "title": "特殊矩阵的压缩存储",
+      "displayIndex": "4.7.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445670&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1042492506",
+      "title": "案例导学 3——自然语言理解中的文本处理",
+      "displayIndex": "4.8",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1042492506&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445714",
+      "title": "4.5广义表",
+      "displayIndex": "4.9",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445714&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007443286",
+      "title": "本章概述",
+      "displayIndex": "5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007443286&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984445940",
+      "title": "案例导学——最佳判定树设计",
+      "displayIndex": "5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984445940&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446020",
+      "title": "5.1树",
+      "displayIndex": "5.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446020&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446140",
+      "title": "树的定义和基本术语",
+      "displayIndex": "5.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446140&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446147",
+      "title": "树的抽象数据类型定义",
+      "displayIndex": "5.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446147&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446154",
+      "title": "5.2 二叉树",
+      "displayIndex": "5.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446154&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446159",
+      "title": "二叉树的定义与特点",
+      "displayIndex": "5.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446159&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446190",
+      "title": "二叉树的抽象数据类型定义",
+      "displayIndex": "5.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446190&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446622",
+      "title": "二叉树的性质",
+      "displayIndex": "5.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446622&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984446737",
+      "title": "二叉树的存储结构",
+      "displayIndex": "5.4.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984446737&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447262",
+      "title": "5.3 遍历二叉树",
+      "displayIndex": "5.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447262&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447517",
+      "title": "二叉树遍历的定义与策略",
+      "displayIndex": "5.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447517&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447719",
+      "title": "二叉树的遍历算法",
+      "displayIndex": "5.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447719&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447889",
+      "title": "二叉树的递归遍历",
+      "displayIndex": "5.5.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447889&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447898",
+      "title": "二叉树的非递归遍历",
+      "displayIndex": "5.5.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447898&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447907",
+      "title": "5.4 线索二叉树",
+      "displayIndex": "5.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447907&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984447909",
+      "title": "线索二叉树的基本概念和存储结构",
+      "displayIndex": "5.6.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984447909&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542117",
+      "title": "线索二叉树实例",
+      "displayIndex": "5.6.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542117&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542156",
+      "title": "二叉树的线索化算法",
+      "displayIndex": "5.6.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542156&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542204",
+      "title": "线索二叉树的遍历",
+      "displayIndex": "5.6.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542204&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542212",
+      "title": "5.5 树和森林",
+      "displayIndex": "5.7",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542212&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542217",
+      "title": "树的存储结构",
+      "displayIndex": "5.7.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542217&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542334",
+      "title": "双亲表示法",
+      "displayIndex": "5.7.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542334&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542363",
+      "title": "孩子表示法",
+      "displayIndex": "5.7.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542363&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988111180",
+      "title": "二叉树表示法",
+      "displayIndex": "5.7.1.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988111180&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542814",
+      "title": "树、森林 与二叉树的转换",
+      "displayIndex": "5.7.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542814&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984542888",
+      "title": "树和森林的遍历",
+      "displayIndex": "5.7.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984542888&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543070",
+      "title": "树的遍历",
+      "displayIndex": "5.7.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543070&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543143",
+      "title": "森林的遍历",
+      "displayIndex": "5.7.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543143&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543154",
+      "title": "5.6 哈夫曼树与哈夫曼编码",
+      "displayIndex": "5.8",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543154&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543169",
+      "title": "哈夫曼树的定义",
+      "displayIndex": "5.8.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543169&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543200",
+      "title": "哈夫曼树的构造",
+      "displayIndex": "5.8.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543200&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543221",
+      "title": "最佳判定树的设计",
+      "displayIndex": "5.8.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543221&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984543224",
+      "title": "哈夫曼编码与译码",
+      "displayIndex": "5.8.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984543224&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007446937",
+      "title": "本章概述",
+      "displayIndex": "6.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007446937&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793226",
+      "title": "案例导学——最小代价通信网的构造",
+      "displayIndex": "6.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793226&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984787141",
+      "title": "图的概述",
+      "displayIndex": "6.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984787141&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984787204",
+      "title": "图的定义与基本术语",
+      "displayIndex": "6.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984787204&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984787214",
+      "title": "图及子图",
+      "displayIndex": "6.3.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984787214&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984787358",
+      "title": "图的分类",
+      "displayIndex": "6.3.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984787358&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984787723",
+      "title": "路径的相关概念",
+      "displayIndex": "6.3.1.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984787723&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984787728",
+      "title": "连通图与生成树的相关概念",
+      "displayIndex": "6.3.1.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984787728&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988120169",
+      "title": "6.1.2 图的抽象数据类型定义",
+      "displayIndex": "6.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988120169&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984788227",
+      "title": "6.2 图的存储结构",
+      "displayIndex": "6.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984788227&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984788822",
+      "title": "6.2.1 邻接矩阵",
+      "displayIndex": "6.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984788822&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984789003",
+      "title": "邻接矩阵存储的含义",
+      "displayIndex": "6.4.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984789003&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984789084",
+      "title": "邻接矩阵存储的特点",
+      "displayIndex": "6.4.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984789084&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984789177",
+      "title": "邻接矩阵的类型定义",
+      "displayIndex": "6.4.1.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984789177&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984789206",
+      "title": "基于邻接矩阵创建图",
+      "displayIndex": "6.4.1.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984789206&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984789693",
+      "title": "6.2.2 邻接表",
+      "displayIndex": "6.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984789693&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984789823",
+      "title": "邻接表存储表示",
+      "displayIndex": "6.4.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984789823&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984790252",
+      "title": "邻接表存储结构的类型定义",
+      "displayIndex": "6.4.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984790252&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984790258",
+      "title": "基于邻接表创建图",
+      "displayIndex": "6.4.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984790258&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984790930",
+      "title": "6.3 图的遍历",
+      "displayIndex": "6.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984790930&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984791014",
+      "title": "图遍历的复杂性",
+      "displayIndex": "6.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984791014&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984791867",
+      "title": "6.3.1 深度优先遍历",
+      "displayIndex": "6.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984791867&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984791870",
+      "title": "深度优先遍历的过程",
+      "displayIndex": "6.5.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984791870&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984791905",
+      "title": "图深度优先遍历的实现要点",
+      "displayIndex": "6.5.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984791905&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984792597",
+      "title": "指定结点的深度优先遍历算法",
+      "displayIndex": "6.5.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984792597&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984792761",
+      "title": "邻接矩阵存储结构下深度优先遍历及效率分析",
+      "displayIndex": "6.5.2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984792761&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984792828",
+      "title": "邻接表存储结构下深度优先遍历及效率分析",
+      "displayIndex": "6.5.2.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984792828&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984792973",
+      "title": "6.3.2 广度优先遍历",
+      "displayIndex": "6.5.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984792973&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793110",
+      "title": "广度优先遍历的过程",
+      "displayIndex": "6.5.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793110&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793114",
+      "title": "广度优先遍历算法",
+      "displayIndex": "6.5.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793114&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793208",
+      "title": "6.4 最小生成树",
+      "displayIndex": "6.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793208&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793476",
+      "title": "6.4.1 最小生成树的概念",
+      "displayIndex": "6.6.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793476&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793736",
+      "title": "6.4.2 Prim算法",
+      "displayIndex": "6.6.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793736&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984793931",
+      "title": "Prim算法的基本思想",
+      "displayIndex": "6.6.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984793931&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794110",
+      "title": "Prim算法的实现过程",
+      "displayIndex": "6.6.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794110&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794188",
+      "title": "Prim算法的设计",
+      "displayIndex": "6.6.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794188&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794252",
+      "title": "6.4.3 Kruskal算法",
+      "displayIndex": "6.6.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794252&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794372",
+      "title": "6.5 最短路径",
+      "displayIndex": "6.7",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794372&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794437",
+      "title": "案例导学——景点导游中最短路径问题",
+      "displayIndex": "6.7.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794437&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794543",
+      "title": "6.5.1单源最短路径",
+      "displayIndex": "6.7.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794543&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794556",
+      "title": "单源最短路径的含义",
+      "displayIndex": "6.7.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794556&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794701",
+      "title": "迪杰斯特拉算法思想",
+      "displayIndex": "6.7.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794701&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794710",
+      "title": "迪杰斯特拉算法实现要点",
+      "displayIndex": "6.7.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794710&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984794937",
+      "title": "6.5.2 任意一对顶点间的最短路径",
+      "displayIndex": "6.7.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984794937&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984795146",
+      "title": "弗洛伊德算法思想",
+      "displayIndex": "6.7.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984795146&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984795150",
+      "title": "弗洛伊德算法设计",
+      "displayIndex": "6.7.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984795150&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984795190",
+      "title": "6.6拓扑排序与关键路径",
+      "displayIndex": "6.8",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984795190&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796184",
+      "title": "案例导学——工程管理中的工期问题",
+      "displayIndex": "6.8.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796184&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796186",
+      "title": "6.6.1 拓扑排序",
+      "displayIndex": "6.8.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796186&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796262",
+      "title": "有向无环图及其应用",
+      "displayIndex": "6.8.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796262&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796317",
+      "title": "拓扑排序及其实现方法",
+      "displayIndex": "6.8.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796317&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796345",
+      "title": "拓扑排序实现要点",
+      "displayIndex": "6.8.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796345&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988121007",
+      "title": "拓扑排序算法",
+      "displayIndex": "6.8.2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988121007&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796893",
+      "title": "6.6.2 关键路径",
+      "displayIndex": "6.8.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796893&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796904",
+      "title": "关键路径的概念",
+      "displayIndex": "6.8.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796904&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984796909",
+      "title": "事件的最早发生时间和最迟发生时间",
+      "displayIndex": "6.8.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984796909&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797023",
+      "title": "活动的最早发生时间和最迟发生时间",
+      "displayIndex": "6.8.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797023&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797135",
+      "title": "关键路径的求解过程与实例",
+      "displayIndex": "6.8.3.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797135&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007448039",
+      "title": "本章概述",
+      "displayIndex": "7.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007448039&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797225",
+      "title": "案例导学 ——通信录查询系统",
+      "displayIndex": "7.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797225&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797228",
+      "title": "7.1查找的基本概念",
+      "displayIndex": "7.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797228&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1013447421",
+      "title": "7.1.1 查找表与关键字",
+      "displayIndex": "7.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1013447421&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1013447732",
+      "title": "7.1.2 查找与平均查找长度",
+      "displayIndex": "7.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1013447732&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797234",
+      "title": "7.2 静态查找表",
+      "displayIndex": "7.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797234&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797236",
+      "title": "7.2.1 顺序査找",
+      "displayIndex": "7.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797236&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797934",
+      "title": "静态查找表的类型定义与约定",
+      "displayIndex": "7.4.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797934&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797950",
+      "title": "顺序査找算法",
+      "displayIndex": "7.4.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797950&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797989",
+      "title": "7.2.2 折半查找",
+      "displayIndex": "7.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797989&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984797994",
+      "title": "折半查找过程与算法",
+      "displayIndex": "7.4.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984797994&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798017",
+      "title": "折半查找性能分析与折半查找判定树",
+      "displayIndex": "7.4.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798017&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798133",
+      "title": "7.2.3 分块査找",
+      "displayIndex": "7.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798133&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798144",
+      "title": "7.3 动态查找表",
+      "displayIndex": "7.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798144&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798151",
+      "title": "7.3.1 二叉排序树",
+      "displayIndex": "7.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798151&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798155",
+      "title": "二叉排序树的概念和查找过程",
+      "displayIndex": "7.5.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798155&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798192",
+      "title": "二叉排序树的插入与递归查找算法的改进",
+      "displayIndex": "7.5.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798192&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798313",
+      "title": "二叉排序树的插入",
+      "displayIndex": "7.5.1.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798313&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798316",
+      "title": "二叉排序树不同位置结点删除的分析",
+      "displayIndex": "7.5.1.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798316&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798321",
+      "title": "二叉排序树删除算法",
+      "displayIndex": "7.5.1.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798321&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798488",
+      "title": "二叉排序树的效率分析",
+      "displayIndex": "7.5.1.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798488&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798501",
+      "title": "7.3.2 平衡二叉树",
+      "displayIndex": "7.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798501&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798510",
+      "title": "平衡二叉树的概念",
+      "displayIndex": "7.5.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798510&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798684",
+      "title": "构建平衡二叉树的方法",
+      "displayIndex": "7.5.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798684&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798725",
+      "title": "平衡二叉树的构建实例与分析",
+      "displayIndex": "7.5.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798725&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798736",
+      "title": "7.3.3 B-树和B+树",
+      "displayIndex": "7.5.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798736&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798747",
+      "title": "B-树",
+      "displayIndex": "7.5.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798747&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798755",
+      "title": "B+树",
+      "displayIndex": "7.5.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798755&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798777",
+      "title": "7.4 哈希表",
+      "displayIndex": "7.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798777&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798789",
+      "title": "7.4.1 哈希表的基本概念",
+      "displayIndex": "7.6.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798789&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798854",
+      "title": "7.4.2 哈希函数的构造方法",
+      "displayIndex": "7.6.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798854&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798933",
+      "title": "7.4.3 沖突的处理方法",
+      "displayIndex": "7.6.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798933&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798939",
+      "title": "开放定址法",
+      "displayIndex": "7.6.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798939&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984798941",
+      "title": "链地址法",
+      "displayIndex": "7.6.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984798941&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984801064",
+      "title": "哈希表的查找",
+      "displayIndex": "7.6.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984801064&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "1007449159",
+      "title": "本章概述",
+      "displayIndex": "8.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=1007449159&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984801803",
+      "title": "案例导学——新高考排位的计算",
+      "displayIndex": "8.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984801803&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984801807",
+      "title": "8.1排序概述",
+      "displayIndex": "8.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984801807&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984801812",
+      "title": "排序的基本概念",
+      "displayIndex": "8.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984801812&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984801824",
+      "title": "排序方法的分类",
+      "displayIndex": "8.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984801824&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984801895",
+      "title": "排序记录的存储结构",
+      "displayIndex": "8.3.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984801895&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802141",
+      "title": "8.2 插入排序",
+      "displayIndex": "8.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802141&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802238",
+      "title": "8.2.1 直接插入排序",
+      "displayIndex": "8.4.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802238&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802276",
+      "title": "直接插入排序的过程",
+      "displayIndex": "8.4.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802276&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802303",
+      "title": "直接插入排序算法和效率分析",
+      "displayIndex": "8.4.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802303&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802324",
+      "title": "8.2.2 折半插入排序",
+      "displayIndex": "8.4.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802324&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802336",
+      "title": "8.2.3 希尔排序",
+      "displayIndex": "8.4.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802336&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802510",
+      "title": "希尔排序的过程",
+      "displayIndex": "8.4.3.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802510&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802537",
+      "title": "希尔排序算法和效率分析",
+      "displayIndex": "8.4.3.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802537&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802943",
+      "title": "8.3 交换排序",
+      "displayIndex": "8.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802943&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984802984",
+      "title": "8.3.1 冒泡排序",
+      "displayIndex": "8.5.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984802984&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803004",
+      "title": "冒泡排序过程",
+      "displayIndex": "8.5.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803004&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803317",
+      "title": "冒泡排序算法和效率分析",
+      "displayIndex": "8.5.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803317&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803341",
+      "title": "8.3.2 快速排序",
+      "displayIndex": "8.5.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803341&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803540",
+      "title": "快速排序的一次划分过程",
+      "displayIndex": "8.5.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803540&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803704",
+      "title": "快速排序的一次划分算法",
+      "displayIndex": "8.5.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803704&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803726",
+      "title": "快速排序的过程和算法",
+      "displayIndex": "8.5.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803726&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984803818",
+      "title": "快速排序效率分析",
+      "displayIndex": "8.5.2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984803818&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804151",
+      "title": "8.4 选择排序",
+      "displayIndex": "8.6",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804151&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804442",
+      "title": "8.4.1简单选择排序",
+      "displayIndex": "8.6.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804442&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804454",
+      "title": "8.4.2 堆排序",
+      "displayIndex": "8.6.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804454&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804463",
+      "title": "堆和堆排序的概念",
+      "displayIndex": "8.6.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804463&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988121838",
+      "title": "堆排序中筛选的过程",
+      "displayIndex": "8.6.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988121838&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988121926",
+      "title": "堆排序的筛选算法",
+      "displayIndex": "8.6.2.3",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988121926&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988121969",
+      "title": "堆排序过程",
+      "displayIndex": "8.6.2.4",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988121969&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988122200",
+      "title": "堆排序算法和效率分析",
+      "displayIndex": "8.6.2.5",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988122200&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804662",
+      "title": "8.5 归并排序",
+      "displayIndex": "8.7",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804662&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804714",
+      "title": "8.5.1 2路归并排序的基本过程",
+      "displayIndex": "8.7.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804714&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "984804745",
+      "title": "8.5.2 2路归并排序的算法",
+      "displayIndex": "8.7.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=984804745&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988122909",
+      "title": "8.6 基数排序",
+      "displayIndex": "8.8",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988122909&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123453",
+      "title": "8.6.1 多关键字的排序",
+      "displayIndex": "8.8.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123453&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123487",
+      "title": "多关键字排序的概念",
+      "displayIndex": "8.8.1.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123487&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123496",
+      "title": "多关键字排序的基本方法",
+      "displayIndex": "8.8.1.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123496&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123506",
+      "title": "8.6.2 链式基数排序",
+      "displayIndex": "8.8.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123506&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123514",
+      "title": "基数排序的基本思想",
+      "displayIndex": "8.8.2.1",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123514&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123518",
+      "title": "链式基数排序过程",
+      "displayIndex": "8.8.2.2",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123518&courseId=248275882&clazzid=110782811"
+    },
+    {
+      "knowledgeId": "988123529",
+      "title": "内部排序方法的比较",
+      "displayIndex": "8.9",
+      "url": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/teacherstudy?chapterId=988123529&courseId=248275882&clazzid=110782811"
+    }
+  ]
+}

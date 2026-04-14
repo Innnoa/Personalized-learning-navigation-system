@@ -31,6 +31,7 @@
     "selected_course": "数据结构",
     "default_learner_code": "demo-learner",
     "knowledge_graph_detail_file": "../config/knowledge_graph_details.json",
-    "learning_resource_file": "../config/learning_resources.json"
+    "learning_resource_file": "../config/learning_resources.json",
+    "course_chapter_link_file": "../config/course_chapter_links.json"
   }
 }

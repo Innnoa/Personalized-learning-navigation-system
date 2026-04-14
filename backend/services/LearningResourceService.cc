@@ -37,6 +37,8 @@ struct DetailScopeCatalog
 };
 
 const std::unordered_map<std::string, Json::Value> &getLearningResourceCatalog();
+const std::unordered_map<std::string, Json::Value> &
+getCourseChapterLinkCatalog();
 
 int toPercent(double score)
 {
@@ -73,6 +75,22 @@ std::string readDetailCatalogPath()
     }
 
     return "../config/knowledge_graph_details.json";
+}
+
+std::string readCourseChapterLinkPath()
+{
+    const auto &config = drogon::app().getCustomConfig();
+    if (config.isMember("course_chapter_link_file") &&
+        config["course_chapter_link_file"].isString())
+    {
+        const auto detailPath = config["course_chapter_link_file"].asString();
+        if (!detailPath.empty())
+        {
+            return detailPath;
+        }
+    }
+
+    return "../config/course_chapter_links.json";
 }
 
 Json::Value buildStringArrayPayload(const Json::Value &jsonArray)
@@ -216,6 +234,81 @@ std::string resolveNodeLabel(const std::string &nodeCode)
     }
 
     return nodeCode;
+}
+
+Json::Value buildCourseChapterResourcePayload(const Json::Value &linkJson)
+{
+    const auto knowledgePointCode = linkJson["knowledgePointCode"].asString();
+    const auto knowledgePointLabel =
+        linkJson.isMember("knowledgePointLabel") &&
+                linkJson["knowledgePointLabel"].isString() &&
+                !linkJson["knowledgePointLabel"].asString().empty()
+            ? linkJson["knowledgePointLabel"].asString()
+            : resolveNodeLabel(knowledgePointCode);
+    const auto chapterDisplayIndex =
+        linkJson["chapterDisplayIndex"].asString();
+    const auto chapterTitle = linkJson["chapterTitle"].asString();
+    const auto linkMode = linkJson.isMember("linkMode") &&
+                                  linkJson["linkMode"].isString()
+                              ? linkJson["linkMode"].asString()
+                              : "direct";
+    const bool isCandidateLink = linkMode == "candidate";
+
+    Json::Value payload;
+    payload["title"] = chapterTitle;
+    payload["type"] = "document";
+    payload["source"] =
+        isCandidateLink ? "超星课程原文章节候选" : "超星课程原文章节";
+    payload["url"] = linkJson["url"].asString();
+
+    std::string description =
+        isCandidateLink
+            ? "根据课程章节标题与当前知识点做高置信弱匹配得到，可作为课程内候选原文入口。"
+            : "直接回到本课原文章节查看教师组织的课程内容。";
+    if (!chapterDisplayIndex.empty() && !chapterTitle.empty())
+    {
+        description =
+            isCandidateLink
+                ? "候选课程章节“" + chapterDisplayIndex + " " + chapterTitle +
+                      "”，可先核对它是否与当前知识点完全对应。"
+                : "对应课程章节“" + chapterDisplayIndex + " " + chapterTitle +
+                      "”，适合先对齐课堂语境。";
+    }
+    else if (!chapterTitle.empty())
+    {
+        description = isCandidateLink
+                          ? "候选课程章节“" + chapterTitle +
+                                "”，可先核对它是否与当前知识点完全对应。"
+                          : "对应课程章节“" + chapterTitle +
+                                "”，适合先对齐课堂语境。";
+    }
+
+    payload["description"] = description;
+    payload["recommendedUsage"] = isCandidateLink
+                                      ? "建议先打开这条课程候选原文快速核对课堂表达；若完全对应，再继续结合外部资源补充。"
+                                      : "建议先打开课程原文章节，对齐本课教师给出的定义、案例和任务安排，再结合外部资源补充。";
+    payload["recommendedPhase"] = "主学";
+    payload["focusTags"] = Json::Value(Json::arrayValue);
+    payload["focusTags"].append(isCandidateLink ? "课程候选" : "课程原文");
+    if (!chapterDisplayIndex.empty())
+    {
+        payload["focusTags"].append(chapterDisplayIndex);
+    }
+    payload["focusNodeCode"] = knowledgePointCode;
+    payload["focusNodeLabel"] = knowledgePointLabel;
+    payload["selectionReason"] = "";
+    payload["lastInteractionType"] = "";
+    payload["lastInteractionLabel"] = "";
+    payload["behaviorAdjustmentHint"] = "";
+    payload["resourceCoverageType"] =
+        isCandidateLink ? "course-candidate" : "course-direct";
+    payload["inheritedFromCode"] = "";
+    payload["inheritedFromLabel"] = "";
+    payload["chapterId"] = linkJson["chapterId"].asString();
+    payload["chapterDisplayIndex"] = chapterDisplayIndex;
+    payload["mappingSource"] = linkJson["mappingSource"].asString();
+    payload["linkMode"] = linkMode;
+    return payload;
 }
 
 std::vector<std::pair<std::string, std::string>>
@@ -600,6 +693,16 @@ int buildCoveragePriority(const Json::Value &resourcePayload)
 {
     const auto coverageType =
         resourcePayload["resourceCoverageType"].asString();
+
+    if (coverageType == "course-direct")
+    {
+        return 180;
+    }
+
+    if (coverageType == "course-candidate")
+    {
+        return 96;
+    }
 
     if (coverageType == "focused")
     {
@@ -1185,6 +1288,17 @@ std::string buildPhaseGuidance(
     return "适合作为当前节点的配套学习材料。";
 }
 
+std::string resolveCourseChapterRecommendedPhase(
+    const algorithm::planner::LearningPathItem &item)
+{
+    if (item.status == "mastered")
+    {
+        return "巩固";
+    }
+
+    return "预习";
+}
+
 std::string buildSelectionReason(
     const algorithm::planner::LearningPathItem &item,
     const Json::Value &resourcePayload)
@@ -1234,6 +1348,19 @@ std::string buildSelectionReason(
 
         metrics << "。";
         parts.push_back(metrics.str());
+    }
+
+    const auto resourceCoverageType =
+        resourcePayload["resourceCoverageType"].asString();
+    if (resourceCoverageType == "course-direct")
+    {
+        parts.push_back(
+            "这条资源直接对应当前课程原文章节，能先帮助你回到教师课程语境确认定义、案例和任务安排。");
+    }
+    else if (resourceCoverageType == "course-candidate")
+    {
+        parts.push_back(
+            "这条资源是根据课程章节标题做出的高置信弱匹配候选，适合先快速核对课堂原文是否与当前知识点完全对应。");
     }
 
     const auto recommendedPhase =
@@ -1350,14 +1477,84 @@ const std::unordered_map<std::string, Json::Value> &getLearningResourceCatalog()
     return catalog;
 }
 
+std::unordered_map<std::string, Json::Value> loadCourseChapterLinkCatalog()
+{
+    const auto filePath = readCourseChapterLinkPath();
+    std::ifstream input(filePath);
+    if (!input.is_open())
+    {
+        LOG_WARN << "未找到课程直链配置文件: " << filePath;
+        return {};
+    }
+
+    Json::CharReaderBuilder builder;
+    Json::Value root;
+    std::string errors;
+    if (!Json::parseFromStream(builder, input, &root, &errors))
+    {
+        throw std::runtime_error("课程直链配置解析失败: " + errors);
+    }
+
+    if (!root.isMember("courseChapterLinks") ||
+        !root["courseChapterLinks"].isArray())
+    {
+        throw std::runtime_error(
+            "课程直链配置格式错误：courseChapterLinks 必须为数组。");
+    }
+
+    std::unordered_map<std::string, Json::Value> catalog;
+    for (const auto &itemJson : root["courseChapterLinks"])
+    {
+        const auto knowledgePointCode =
+            itemJson["knowledgePointCode"].asString();
+        if (knowledgePointCode.empty())
+        {
+            continue;
+        }
+
+        const auto url = itemJson["url"].asString();
+        const auto title = itemJson["chapterTitle"].asString();
+        if (url.empty() || title.empty())
+        {
+            continue;
+        }
+
+        catalog[knowledgePointCode].append(
+            buildCourseChapterResourcePayload(itemJson));
+    }
+
+    return catalog;
+}
+
+const std::unordered_map<std::string, Json::Value> &
+getCourseChapterLinkCatalog()
+{
+    static const auto catalog = loadCourseChapterLinkCatalog();
+    return catalog;
+}
+
+Json::Value buildCourseChapterResources(const std::string &knowledgePointCode)
+{
+    const auto &catalog = getCourseChapterLinkCatalog();
+    const auto it = catalog.find(knowledgePointCode);
+    if (it == catalog.end())
+    {
+        return Json::Value(Json::arrayValue);
+    }
+
+    return it->second;
+}
+
 Json::Value findRawResourcesForKnowledgePoint(
     const std::string &knowledgePointCode)
 {
+    const auto courseChapterResources =
+        buildCourseChapterResources(knowledgePointCode);
     const auto directResources =
         buildDirectCatalogResources(knowledgePointCode);
     if (directResources.isArray() && !directResources.empty())
     {
-        return directResources;
+        return mergeResourceArrays(courseChapterResources, directResources);
     }
 
     const auto focusedResources =
@@ -1368,8 +1565,10 @@ Json::Value findRawResourcesForKnowledgePoint(
         buildRelatedCatalogResources(knowledgePointCode);
 
     return mergeResourceArrays(
-        mergeResourceArrays(focusedResources, inheritedResources),
-        relatedResources);
+        courseChapterResources,
+        mergeResourceArrays(
+            mergeResourceArrays(focusedResources, inheritedResources),
+            relatedResources));
 }
 
 std::unordered_map<std::string, std::string> loadLatestInteractionByUrl(
@@ -1433,6 +1632,13 @@ Json::Value LearningResourceService::buildResourcesForLearningPathItem(
     for (const auto &resourcePayload : rawResources)
     {
         auto enrichedResource = resourcePayload;
+        if (enrichedResource["resourceCoverageType"].asString() ==
+            "course-direct")
+        {
+            enrichedResource["recommendedPhase"] =
+                resolveCourseChapterRecommendedPhase(item);
+        }
+
         const auto resourceUrl = enrichedResource["url"].asString();
         const auto latestInteractionIt =
             latestInteractionByUrl.find(resourceUrl);

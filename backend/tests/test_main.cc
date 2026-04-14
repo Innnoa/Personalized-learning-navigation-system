@@ -33,6 +33,8 @@ int main(int argc, char** argv)
         (projectRoot / "backend/config/knowledge_graph_details.json").string();
     config["custom_config"]["learning_resource_file"] =
         (projectRoot / "backend/config/learning_resources.json").string();
+    config["custom_config"]["course_chapter_link_file"] =
+        (projectRoot / "backend/config/course_chapter_links.json").string();
     app().loadConfigJson(config);
 
     std::promise<void> p1;

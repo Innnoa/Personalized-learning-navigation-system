@@ -1,0 +1,1297 @@
+{
+  "capturedAt": "2026-04-14T03:16:30.759Z",
+  "location": {
+    "href": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/tch?courseid=248275882&clazzid=110782811&cpi=62776446&enc=ac83d9b262b48129f84832b53a112026&t=1776132370442&pageHeader=2&v=2&hideHead=0",
+    "origin": "https://mooc2-ans.chaoxing.com",
+    "pathname": "/mooc2-ans/mycourse/tch",
+    "search": "?courseid=248275882&clazzid=110782811&cpi=62776446&enc=ac83d9b262b48129f84832b53a112026&t=1776132370442&pageHeader=2&v=2&hideHead=0",
+    "hash": ""
+  },
+  "title": "数据结构（2025秋）",
+  "referrer": "https://mooc2-ans.chaoxing.com/visit/interaction?s=db84f36fd20ddb4932209d6a050eb50f",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0",
+  "language": "zh-CN",
+  "charset": "UTF-8",
+  "readyState": "complete",
+  "navigationEntry": {
+    "type": "reload",
+    "domContentLoaded": "265.00",
+    "loadEventEnd": "565.00"
+  },
+  "headings": [],
+  "majorBlocks": [
+    {
+      "selector": "html > body > div.box:nth-of-type(1)",
+      "textSnippet": "赵明 课程门户 链接 数据结构（2025秋） AI工作台 任务引擎 ​班级活动 课件 教案 章节 资料 通知 讨论 作业 考试 题库 课程图谱 统计 管理 AI知识库 收起 下载中心 以学生身份预览"
+    }
+  ],
+  "visibleText": "赵明\n课程门户\n链接\n数据结构（2025秋）\nAI工作台\n任务引擎\n​班级活动\n课件\n教案\n章节\n资料\n通知\n讨论\n作业\n考试\n题库\n课程图谱\n统计\n管理\nAI知识库\n收起\n下载中心\n以学生身份预览",
+  "forms": [
+    {
+      "index": 0,
+      "id": "tpsubmit",
+      "name": "",
+      "method": "post",
+      "action": "https://mooc1.chaoxing.com/course/portal/ntUe72KxwkdK8fwcQ2mECQ==",
+      "selector": "form#tpsubmit",
+      "fieldCount": 1,
+      "fields": [
+        {
+          "tag": "input",
+          "type": "hidden",
+          "name": "edit",
+          "id": "",
+          "valuePreview": "true"
+        }
+      ]
+    }
+  ],
+  "hiddenFields": [
+    {
+      "index": 0,
+      "name": "",
+      "id": "isChaoxingClient",
+      "valuePreview": "false",
+      "selector": "input#isChaoxingClient"
+    },
+    {
+      "index": 1,
+      "name": "courseid",
+      "id": "courseid",
+      "valuePreview": "248275882",
+      "selector": "input#courseid"
+    },
+    {
+      "index": 2,
+      "name": "",
+      "id": "courseBelongSchoolId",
+      "valuePreview": "4288",
+      "selector": "input#courseBelongSchoolId"
+    },
+    {
+      "index": 3,
+      "name": "clazzid",
+      "id": "clazzid",
+      "valuePreview": "110782811",
+      "selector": "input#clazzid"
+    },
+    {
+      "index": 4,
+      "name": "cfid",
+      "id": "cfid",
+      "valuePreview": "4288",
+      "selector": "input#cfid"
+    },
+    {
+      "index": 5,
+      "name": "bbsid",
+      "id": "bbsid",
+      "valuePreview": "ffb4ef06f860e0b9508d3cc7af63f841",
+      "selector": "input#bbsid"
+    },
+    {
+      "index": 6,
+      "name": "cpi",
+      "id": "cpi",
+      "valuePreview": "62776446",
+      "selector": "input#cpi"
+    },
+    {
+      "index": 7,
+      "name": "",
+      "id": "chapterId",
+      "valuePreview": "0",
+      "selector": "input#chapterId"
+    },
+    {
+      "index": 8,
+      "name": "",
+      "id": "microTopicId",
+      "valuePreview": "0",
+      "selector": "input#microTopicId"
+    },
+    {
+      "index": 9,
+      "name": "",
+      "id": "topicModelId",
+      "valuePreview": "0",
+      "selector": "input#topicModelId"
+    },
+    {
+      "index": 10,
+      "name": "",
+      "id": "taskEngine",
+      "valuePreview": "false",
+      "selector": "input#taskEngine"
+    },
+    {
+      "index": 11,
+      "name": "enc",
+      "id": "enc",
+      "valuePreview": "ac83d9b262b48129f84832b53a112026",
+      "selector": "input#enc"
+    },
+    {
+      "index": 12,
+      "name": "t",
+      "id": "t",
+      "valuePreview": "1776132370442",
+      "selector": "input#t"
+    },
+    {
+      "index": 13,
+      "name": "coumanagetype",
+      "id": "coumanagetype",
+      "valuePreview": "0",
+      "selector": "input#coumanagetype"
+    },
+    {
+      "index": 14,
+      "name": "heardUt",
+      "id": "heardUt",
+      "valuePreview": "t",
+      "selector": "input#heardUt"
+    },
+    {
+      "index": 15,
+      "name": "fid",
+      "id": "fid",
+      "valuePreview": "4288",
+      "selector": "input#fid"
+    },
+    {
+      "index": 16,
+      "name": "openc",
+      "id": "openc",
+      "valuePreview": "41c1110bfce9cbebb5c2faa8fbde1b03",
+      "selector": "input#openc"
+    },
+    {
+      "index": 17,
+      "name": "oldenc",
+      "id": "oldenc",
+      "valuePreview": "16659d1b5498a51bb70531784bf67b98",
+      "selector": "input#oldenc"
+    },
+    {
+      "index": 18,
+      "name": "userId",
+      "id": "userId",
+      "valuePreview": "77322485",
+      "selector": "input#userId"
+    },
+    {
+      "index": 19,
+      "name": "moocDomainName",
+      "id": "moocDomainName",
+      "valuePreview": "https://mooc1.chaoxing.com",
+      "selector": "input#moocDomainName"
+    },
+    {
+      "index": 20,
+      "name": "courseApp",
+      "id": "courseApp",
+      "valuePreview": "0",
+      "selector": "input#courseApp"
+    },
+    {
+      "index": 21,
+      "name": "headXueyinCourse",
+      "id": "headXueyinCourse",
+      "valuePreview": "0",
+      "selector": "input#headXueyinCourse"
+    },
+    {
+      "index": 22,
+      "name": "bbsUrlSwitch",
+      "id": "bbsUrlSwitch",
+      "valuePreview": "true",
+      "selector": "input#bbsUrlSwitch"
+    },
+    {
+      "index": 23,
+      "name": "learnSilverStartTime",
+      "id": "learnSilverStartTime",
+      "valuePreview": "",
+      "selector": "input#learnSilverStartTime"
+    },
+    {
+      "index": 24,
+      "name": "learnSilverEndTime",
+      "id": "learnSilverEndTime",
+      "valuePreview": "",
+      "selector": "input#learnSilverEndTime"
+    },
+    {
+      "index": 25,
+      "name": "smartCourseState",
+      "id": "smartCourseState",
+      "valuePreview": "0",
+      "selector": "input#smartCourseState"
+    },
+    {
+      "index": 26,
+      "name": "canSetSmartCourse",
+      "id": "canSetSmartCourse",
+      "valuePreview": "0",
+      "selector": "input#canSetSmartCourse"
+    },
+    {
+      "index": 27,
+      "name": "isMapCourse",
+      "id": "isMapCourse",
+      "valuePreview": "false",
+      "selector": "input#isMapCourse"
+    },
+    {
+      "index": 28,
+      "name": "v",
+      "id": "v",
+      "valuePreview": "2",
+      "selector": "input#v"
+    },
+    {
+      "index": 29,
+      "name": "edit",
+      "id": "",
+      "valuePreview": "true",
+      "selector": "form#tpsubmit > input"
+    },
+    {
+      "index": 30,
+      "name": "",
+      "id": "openUpdateTip",
+      "valuePreview": "false",
+      "selector": "input#openUpdateTip"
+    },
+    {
+      "index": 31,
+      "name": "",
+      "id": "updateTipHead",
+      "valuePreview": "下载中心位置指引",
+      "selector": "input#updateTipHead"
+    },
+    {
+      "index": 32,
+      "name": "",
+      "id": "microCourseTopicOpenType",
+      "valuePreview": "1",
+      "selector": "input#microCourseTopicOpenType"
+    },
+    {
+      "index": 33,
+      "name": "",
+      "id": "topicName",
+      "valuePreview": "",
+      "selector": "input#topicName"
+    },
+    {
+      "index": 34,
+      "name": "",
+      "id": "attributeEditTopicId",
+      "valuePreview": "",
+      "selector": "input#attributeEditTopicId"
+    },
+    {
+      "index": 35,
+      "name": "",
+      "id": "topicType",
+      "valuePreview": "",
+      "selector": "input#topicType"
+    },
+    {
+      "index": 36,
+      "name": "",
+      "id": "courseid",
+      "valuePreview": "248275882",
+      "selector": "input#courseid"
+    },
+    {
+      "index": 37,
+      "name": "",
+      "id": "cpi",
+      "valuePreview": "62776446",
+      "selector": "input#cpi"
+    },
+    {
+      "index": 38,
+      "name": "",
+      "id": "oldVersionFlag",
+      "valuePreview": "false",
+      "selector": "input#oldVersionFlag"
+    },
+    {
+      "index": 39,
+      "name": "",
+      "id": "hideHead",
+      "valuePreview": "0",
+      "selector": "input#hideHead"
+    },
+    {
+      "index": 40,
+      "name": "",
+      "id": "showAiAssistant",
+      "valuePreview": "true",
+      "selector": "input#showAiAssistant"
+    },
+    {
+      "index": 41,
+      "name": "",
+      "id": "showAIEnc",
+      "valuePreview": "a882d36121192a79ff4ffe725b11ef37",
+      "selector": "input#showAIEnc"
+    },
+    {
+      "index": 42,
+      "name": "",
+      "id": "isCreator",
+      "valuePreview": "false",
+      "selector": "input#isCreator"
+    },
+    {
+      "index": 43,
+      "name": "",
+      "id": "topicenc",
+      "valuePreview": "",
+      "selector": "input#topicenc"
+    },
+    {
+      "index": 44,
+      "name": "",
+      "id": "topicenctime",
+      "valuePreview": "",
+      "selector": "input#topicenctime"
+    },
+    {
+      "index": 45,
+      "name": "",
+      "id": "fr",
+      "valuePreview": "",
+      "selector": "input#fr"
+    }
+  ],
+  "links": [
+    {
+      "index": 0,
+      "text": "",
+      "href": "javascript:;",
+      "target": "",
+      "selector": "html > body > div.box:nth-of-type(1) > div.Header:nth-of-type(1) > a.Logo.fl"
+    },
+    {
+      "index": 1,
+      "text": "",
+      "href": "javascript:;",
+      "target": "",
+      "selector": "div.Header:nth-of-type(1) > div.headRight.fr > div.loginAfter.fr:nth-of-type(2) > span.headPic.fl > a"
+    },
+    {
+      "index": 2,
+      "text": "课程门户\n链接",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "div#boxscrollleft > dl.classDl > dt > a"
+    },
+    {
+      "index": 3,
+      "text": "AI工作台",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_121990 > a"
+    },
+    {
+      "index": 4,
+      "text": "任务引擎",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_121989 > a"
+    },
+    {
+      "index": 5,
+      "text": "​班级活动",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44914 > a"
+    },
+    {
+      "index": 6,
+      "text": "课件",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44915 > a"
+    },
+    {
+      "index": 7,
+      "text": "教案",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44916 > a"
+    },
+    {
+      "index": 8,
+      "text": "章节",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44917 > a"
+    },
+    {
+      "index": 9,
+      "text": "资料",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44918 > a"
+    },
+    {
+      "index": 10,
+      "text": "通知",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44919 > a"
+    },
+    {
+      "index": 11,
+      "text": "讨论",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44920 > a"
+    },
+    {
+      "index": 12,
+      "text": "作业",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44921 > a"
+    },
+    {
+      "index": 13,
+      "text": "考试",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44922 > a"
+    },
+    {
+      "index": 14,
+      "text": "题库",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44923 > a"
+    },
+    {
+      "index": 15,
+      "text": "课程图谱",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44924 > a"
+    },
+    {
+      "index": 16,
+      "text": "统计",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44925 > a"
+    },
+    {
+      "index": 17,
+      "text": "管理",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_44926 > a"
+    },
+    {
+      "index": 18,
+      "text": "AI知识库",
+      "href": "javascript:void(0);",
+      "target": "",
+      "selector": "li#nav_0 > a"
+    }
+  ],
+  "buttons": [],
+  "iframes": [
+    {
+      "index": 0,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/tchcourse?courseid=248275882&clazzid=110782811&courseId=248275882&classId=110782811&clazzId=110782811&cpi=62776446&enc=ac83d9b262b48129f84832b53a112026&openc=41c1110bfce9cbebb5c2faa8fbde1b03&t=1776132370442&ut=t",
+      "name": "frame_content-zj",
+      "id": "frame_content-zj",
+      "selector": "iframe#frame_content-zj"
+    }
+  ],
+  "metaTags": [
+    {
+      "name": "Content-Type",
+      "content": "text/html; charset=utf-8"
+    }
+  ],
+  "externalScripts": [
+    {
+      "index": 0,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/ServerHost.js?v=2020-0923-1630",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 1,
+      "src": "https://robot-lc.chaoxing.com/sdk/VoiceToonBot.js",
+      "async": true,
+      "defer": false,
+      "type": ""
+    },
+    {
+      "index": 2,
+      "src": "https://mooc2-ans.chaoxing.com/head/passport/all-head-new.shtml?hideOldVersion=1",
+      "async": false,
+      "defer": false,
+      "type": ""
+    },
+    {
+      "index": 3,
+      "src": "https://mooc2-ans.chaoxing.com/head/static/js/jquery-3.6.0.min.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 4,
+      "src": "https://mooc2-ans.chaoxing.com/head/template/new-head/common.js?v=1756374151",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 5,
+      "src": "https://mooc-res2.chaoxing.com/mooc2-ans/js/common/jquery.min.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 6,
+      "src": "https://mooc-res2.chaoxing.com/mooc2-ans/js/common/jquery.nicescroll.min.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 7,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/common.js?v=2023-1015-1826",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 8,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/backtop.min.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 9,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/contentLoader.js?v=2025-0919-1507",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 10,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/course-tch.js?v=2026-0121-0929",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 11,
+      "src": "https://mooc-res2.chaoxing.com/mooc2-ans/js/common/poptoast.js?v=2023-0707-0033",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 12,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/tcmanage/common/common.js?v=2019-1012-1839",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 13,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/downloadcenter/download_center.js?v=2024-0319-1527",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 14,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/jQueryUI/jquery-ui.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 15,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/js/tcmanage/lib/drag/sortTable.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 16,
+      "src": "https://mooc2-ans.chaoxing.com/mooc2-ans/module/exam/js/jquery.jqote2.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    },
+    {
+      "index": 17,
+      "src": "https://robot-lc.chaoxing.com/sdk/CxRobotSdkJs.js",
+      "async": false,
+      "defer": false,
+      "type": "text/javascript"
+    }
+  ],
+  "suspectedEndpoints": [
+    "//mooc-res2.chaoxing.com/mooc2-ans/js/common/jquery.min.js",
+    "//mooc-res2.chaoxing.com/mooc2-ans/js/common/jquery.nicescroll.min.js",
+    "//mooc-res2.chaoxing.com/mooc2-ans/js/common/poptoast.js?v=2023-0707-0033",
+    "//mooc-res2.chaoxing.com/mooc2-ans/style/pop.css?v=2023-0608-1100",
+    "//mooc2-ans.chaoxing.com/head/static/js/jquery-3.6.0.min.js",
+    "//mooc2-ans.chaoxing.com/head/template/new-head/common.js?v=1756374151",
+    "//mooc2-ans.chaoxing.com/head/template/new-head/header.css?v=1756435585",
+    "//mooc2-ans.chaoxing.com/head/template/new-head/images/logo.png",
+    "/course-ans/course/review-report",
+    "/head/passport/all-head-new.shtml?hideOldVersion=1",
+    "/mooc2-ans/coursedata",
+    "/mooc2-ans/css/tcmanage/doornail.css?v=2026-0106-1038",
+    "/mooc2-ans/exam/test",
+    "/mooc2-ans/exam/test/exam-monitor",
+    "/mooc2-ans/js/ServerHost.js?v=2020-0923-1630",
+    "/mooc2-ans/js/backtop.min.js",
+    "/mooc2-ans/js/common.js?v=2023-1015-1826",
+    "/mooc2-ans/js/contentLoader.js?v=2025-0919-1507",
+    "/mooc2-ans/js/course-tch.js?v=2026-0121-0929",
+    "/mooc2-ans/js/downloadcenter/download_center.js?v=2024-0319-1527",
+    "/mooc2-ans/js/jQueryUI/jquery-ui.css",
+    "/mooc2-ans/js/jQueryUI/jquery-ui.js",
+    "/mooc2-ans/js/tcmanage/common/common.js?v=2019-1012-1839",
+    "/mooc2-ans/js/tcmanage/lib/drag/sortTable.js",
+    "/mooc2-ans/module/exam/js/jquery.jqote2.js",
+    "/mooc2-ans/mycourse/tchcourse",
+    "/mooc2-ans/mycourse/tchcourse?courseid=248275882&clazzid=110782811&courseId=248275882&classId=110782811&clazzId=110782811&cpi=62776446&enc=ac83d9b262b48129f84832b53a112026&openc=41c1110bfce9cbebb5c2faa8fbde1b03&t=1776132370442&ut=t",
+    "/mooc2-ans/qbank/import-topic-page",
+    "/mooc2-ans/qbank/questioncompare",
+    "/mooc2-ans/qbank/questionlist",
+    "/mooc2-ans/qbank/smartimport",
+    "/mooc2-ans/style/common.css?v=2026-0205-1058",
+    "/mooc2-ans/style/downloadcenter/download_center.css?v=2024-0314-1622",
+    "/mooc2-ans/style/microCourseNav.css?v=2024-0529",
+    "/mooc2-ans/style/x_icomoon/style.css?v=2025-0424-1038",
+    "/mooc2-ans/tcm/course-manage",
+    "/mooc2-ans/work/list",
+    "/page/active/activeList",
+    "/passport2.chaoxing.com/login",
+    "/passport2.chaoxing.com/logout.html",
+    "/stat2/certificate/index",
+    "/stat2/knowledge-ans/index",
+    "/stat2/supervise/index",
+    "/topic-ans/knowgraph/index.html#/knowledgeMapTempPage",
+    "http://i.mooc.chaoxing.com",
+    "http://p.ananas.chaoxing.com/star3/138_78c/242e82cdc8b24c8e4bb2c80c2d7d7a5e.png",
+    "http://passport2.chaoxing.com/login?newversion=true&refer=",
+    "http://passport2.chaoxing.com/logout.html?refer=http://sjzu.benke.chaoxing.com",
+    "http://www.fanya.chaoxing.com/static/brower.html",
+    "https://groupweb.chaoxing.com/course/topic/topicList",
+    "https://mobilelearn.chaoxing.com",
+    "https://mobilelearn.chaoxing.com/page/class/classList",
+    "https://mobilelearn.chaoxing.com/page/ppt/coursewareList",
+    "https://mobilelearn.chaoxing.com/page/ppt/teachingPlanList",
+    "https://mooc-res2.chaoxing.com/mooc2-ans/js/common/jquery.min.js",
+    "https://mooc-res2.chaoxing.com/mooc2-ans/js/common/jquery.nicescroll.min.js",
+    "https://mooc-res2.chaoxing.com/mooc2-ans/js/common/poptoast.js?v=2023-0707-0033",
+    "https://mooc-res2.chaoxing.com/mooc2-ans/style/pop.css?v=2023-0608-1100",
+    "https://mooc1.chaoxing.com",
+    "https://mooc1.chaoxing.com/course-ans/ai/getTchAiWorkBench?courseId=248275882&clazzId=110782811&cpi=62776446&ut=t",
+    "https://mooc1.chaoxing.com/course/portal/ntUe72KxwkdK8fwcQ2mECQ==",
+    "https://mooc2-ans.chaoxing.com/favicon.ico",
+    "https://mooc2-ans.chaoxing.com/head/passport/all-head-new.shtml?hideOldVersion=1",
+    "https://mooc2-ans.chaoxing.com/head/static/js/jquery-3.6.0.min.js",
+    "https://mooc2-ans.chaoxing.com/head/template/images/eidt.png",
+    "https://mooc2-ans.chaoxing.com/head/template/images/user.png",
+    "https://mooc2-ans.chaoxing.com/head/template/new-head/common.js?v=1756374151",
+    "https://mooc2-ans.chaoxing.com/head/template/new-head/header.css?v=1756435585",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/css/tcmanage/doornail.css?v=2026-0106-1038",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/images/common/door-student-hover.png",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/ServerHost.js?v=2020-0923-1630",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/backtop.min.js",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/common.js?v=2023-1015-1826",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/contentLoader.js?v=2025-0919-1507",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/course-tch.js?v=2026-0121-0929",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/downloadcenter/download_center.js?v=2024-0319-1527",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/jQueryUI/jquery-ui.css",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/jQueryUI/jquery-ui.js",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/tcmanage/common/common.js?v=2019-1012-1839",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/js/tcmanage/lib/drag/sortTable.js",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/module/exam/js/jquery.jqote2.js",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/sturolepreviewcourse?courseid=248275882&clazzid=110782811&cpi=62776446",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/mycourse/tchcourse?courseid=248275882&clazzid=110782811&courseId=248275882&classId=110782811&clazzId=110782811&cpi=62776446&enc=ac83d9b262b48129f84832b53a112026&openc=41c1110bfce9cbebb5c2faa8fbde1b03&t=1776132370442&ut=t",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/style/common.css?v=2026-0205-1058",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/style/downloadcenter/download_center.css?v=2024-0314-1622",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/style/microCourseNav.css?v=2024-0529",
+    "https://mooc2-ans.chaoxing.com/mooc2-ans/style/x_icomoon/style.css?v=2025-0424-1038",
+    "https://notice.chaoxing.com/pc/course/notice/myNoticeList",
+    "https://p.ananas.chaoxing.com/star3/origin/86d5b7107af60380c285bd700ad73d56",
+    "https://p.ananas.chaoxing.com/star3/origin/d9c08c99610e931b801d5f93278e52b1",
+    "https://p.ananas.chaoxing.com/star3/origin/f5b9f69f4cdedf718723de6db473d931.png",
+    "https://p.ananas.chaoxing.com/star3/origin/faa14fdbf73bf240694b725603441578",
+    "https://photo.chaoxing.com/p/77322485_80",
+    "https://robot-lc.chaoxing.com",
+    "https://robot-lc.chaoxing.com/sdk/CxRobotSdkJs.js",
+    "https://robot-lc.chaoxing.com/sdk/VoiceToonBot.js",
+    "https://robot-lc.chaoxing.com/v1/api/doorChat/check?unitId=4288&robotId=b7f8c0833ec64094a0007934a0d0505d&enc=d00ca9f2c1657300f2c854e16fd7c958",
+    "https://robot-lc.chaoxing.com/v1/api/robot/course/getRobotId?courseId=248275882&unitId=4288&appId=108366570&appAuthToken=1cdcd599d85401ae1632ea16ba8862db",
+    "https://robot-lc.chaoxing.com/v1/api/websdk/verify",
+    "https://robot-lc.chaoxing.com/v1/front/chat/digitalHuman/getCartoonMaterial?preset=image_4288_20250912152821",
+    "https://robot-lc.chaoxing.com/v1/front/goCourseKnowledgeBase?belongschoolid=4288&courseId=248275882&enc=d407c850e1858804020be4cf9ecfc822&courseName=%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%882025%E7%A7%8B%EF%BC%89&cpi=62776446&clazzId=110782811",
+    "https://robot-static.chaoxing.com/v1/front/proxy/cartoon-animation/20250912152821/aW1hZ2VfNDI4OF8yMDI1MDkxMjE1MjgyMQ==.gif",
+    "https://stat2-ans.chaoxing.com",
+    "https://stat2-ans.chaoxing.com/stat2-vue/stat",
+    "https://task.chaoxing.com/task/index"
+  ],
+  "customGlobals": [
+    {
+      "key": "0",
+      "type": "object",
+      "preview": "Window"
+    },
+    {
+      "key": "splitDomainConfig",
+      "type": "function",
+      "preview": "function (num, domainHost) { var arr = domainHost.split(\".\"), len = arr.length, array = []; if (num > len) return; for (var i = 0; i < num; i++) { array.push(ar"
+    },
+    {
+      "key": "getDomain",
+      "type": "function",
+      "preview": "function () { domainHost = window.location.host; if (!domainHost) return; var domain = domainHost.substring(domainHost.lastIndexOf(\".\") + 1, domainHost.length);"
+    },
+    {
+      "key": "getCookie",
+      "type": "function",
+      "preview": "function getCookie(Name) { var search = Name + \"=\" ; if(document.cookie.length > 0) { offset = document.cookie.indexOf(search) if(offset != -1) { offset += sear"
+    },
+    {
+      "key": "domainHost",
+      "type": "string",
+      "preview": "mooc2-ans.chaoxing.com"
+    },
+    {
+      "key": "ServerHost",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "I18N_Config",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "$",
+      "type": "function",
+      "preview": "function(e,t){return new k.fn.init(e,t)}"
+    },
+    {
+      "key": "jQuery",
+      "type": "function",
+      "preview": "function(e,t){return new k.fn.init(e,t)}"
+    },
+    {
+      "key": "headLogin",
+      "type": "function",
+      "preview": "function headLogin() { window.location.href = \"http://passport2.chaoxing.com/login?newversion=true&refer=\"+encodeURIComponent(window.location.href); }"
+    },
+    {
+      "key": "headLogout",
+      "type": "function",
+      "preview": "function headLogout() { window.location.href = \"http://passport2.chaoxing.com/logout.html?refer=http://sjzu.benke.chaoxing.com\"; }"
+    },
+    {
+      "key": "ua",
+      "type": "string",
+      "preview": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0"
+    },
+    {
+      "key": "s",
+      "type": "string",
+      "preview": "MSIE"
+    },
+    {
+      "key": "ie11",
+      "type": "string",
+      "preview": "rv:11.0"
+    },
+    {
+      "key": "i",
+      "type": "number",
+      "preview": "-1"
+    },
+    {
+      "key": "ie",
+      "type": "number",
+      "preview": "-1"
+    },
+    {
+      "key": "c",
+      "type": "string",
+      "preview": ""
+    },
+    {
+      "key": "ver",
+      "type": "undefined",
+      "preview": "undefined"
+    },
+    {
+      "key": "closezoh",
+      "type": "function",
+      "preview": "function closezoh(){ if(confirm(\"我知道了，下次不再提示?\")){ writeCookie(\"checkbrower\",\"1\",24); } document.getElementById(\"zoh_god\").style.display=\"none\"; }"
+    },
+    {
+      "key": "writeCookie",
+      "type": "function",
+      "preview": "function writeCookie(name, value, hours){ var expire = \"\"; if(hours != null){ expire = new Date((new Date()).getTime() + hours * 3600000); expire = \"; expires=\""
+    },
+    {
+      "key": "offset",
+      "type": "number",
+      "preview": "-1"
+    },
+    {
+      "key": "NiceScroll",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "het",
+      "type": "number",
+      "preview": "1131"
+    },
+    {
+      "key": "conhet",
+      "type": "number",
+      "preview": "1019"
+    },
+    {
+      "key": "mainhet",
+      "type": "object",
+      "preview": "k"
+    },
+    {
+      "key": "setCss",
+      "type": "function",
+      "preview": "function setCss() { var a = []; a.push(\".back_to_top{display:none;width:40px;height:40px;right:20px;background: #FFFFFF;box-shadow: 0 1px 7px 0 rgba(198,204,217"
+    },
+    {
+      "key": "createLink",
+      "type": "function",
+      "preview": "function createLink() { var a = document.createElement(\"div\"); a.tabIndex = \"-1\",a.id = \"JS_back_to_top\", a.className = \"back_to_top\", a.innerHTML = '<a href=\"#"
+    },
+    {
+      "key": "GetPageScroll",
+      "type": "function",
+      "preview": "function GetPageScroll() { var b, a; return window.pageYOffset ? (a = window.pageYOffset, b = window.pageXOffset) : document.documentElement && document.documen"
+    },
+    {
+      "key": "backToTop",
+      "type": "function",
+      "preview": "function backToTop() { GetPageScroll().y > 300 ? document.getElementById(\"JS_back_to_top\").style.display = \"block\" : document.getElementById(\"JS_back_to_top\").s"
+    },
+    {
+      "key": "maindiv",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "ContentLoader",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "isSameUrl",
+      "type": "function",
+      "preview": "function isSameUrl(oldUrl, url) { if (!oldUrl || !url) { return false; } var split1 = oldUrl.split(\"?\"); var split2 = url.split(\"?\"); if (!!split1[1] && !!split"
+    },
+    {
+      "key": "resizeFrame",
+      "type": "function",
+      "preview": "function resizeFrame() { try { var f = $(ContentLoader.contentFrame); if (ContentLoader.isShow) {//弹出状态 f.width($(window).width()); f.height($(window).height())"
+    },
+    {
+      "key": "PMCMD",
+      "type": "object",
+      "preview": "PMCMD"
+    },
+    {
+      "key": "isOnPopState",
+      "type": "boolean",
+      "preview": "false"
+    },
+    {
+      "key": "mooc1Domain",
+      "type": "string",
+      "preview": "https://mooc1.chaoxing.com"
+    },
+    {
+      "key": "mobilelearnDomain",
+      "type": "string",
+      "preview": "https://mobilelearn.chaoxing.com"
+    },
+    {
+      "key": "moduleMap",
+      "type": "object",
+      "preview": "Map"
+    },
+    {
+      "key": "getDoornailWidth",
+      "type": "function",
+      "preview": "function getDoornailWidth() { var $doornail = $('.doornail'); // 获取元素的实际宽度（包括padding和border） var width = $doornail.outerWidth(); // i标签宽度43x（包括边距），则设置为宽度减去图标宽度 "
+    },
+    {
+      "key": "openWindowUrl",
+      "type": "function",
+      "preview": "function openWindowUrl(pageHeader, url, module) { var browserURL = document.URL; if (browserURL.indexOf(\"&pageHeader=\") != -1) { browserURL = browserURL.replace"
+    },
+    {
+      "key": "openLibraryUrl",
+      "type": "function",
+      "preview": "function openLibraryUrl(url, module){ $.ajax({ url : url, type : \"get\", dataType : \"json\", success : function(data){ if(data.status){ var openUrl = data.url; if"
+    },
+    {
+      "key": "enternavcancelmark",
+      "type": "function",
+      "preview": "function enternavcancelmark(courseid,cpi,shownewmark,courseNavId){ if( typeof courseid == \"undefined\" || typeof cpi == \"undefined\" || typeof shownewmark == \"und"
+    },
+    {
+      "key": "teajudgenavifshowmark",
+      "type": "function",
+      "preview": "function teajudgenavifshowmark(){ var courseNavIds = \"\"; $(\".tchNavigationList\").find(\"li\").each(function(e){ var shownewmark = $(this).attr(\"shownewmark\"); if("
+    },
+    {
+      "key": "iframeAutoResize",
+      "type": "function",
+      "preview": "function iframeAutoResize(doc) { var ifm = document.getElementById(\"frame_content\"); var subWeb = \"\"; try { subWeb = document.frames ? document.frames[\"frame_co"
+    },
+    {
+      "key": "secIframeAutoResize",
+      "type": "function",
+      "preview": "function secIframeAutoResize() { iframeAutoResize(document.getElementById(\"frame_content\")); }"
+    },
+    {
+      "key": "getParam",
+      "type": "function",
+      "preview": "function getParam(name) { return $(\"#\" + name).val(); }"
+    },
+    {
+      "key": "setParam",
+      "type": "function",
+      "preview": "function setParam(name, value) { if(name==\"clazzid\"){ changclazz(value); return; }else { $(\"#\" + name).val(value); } }"
+    },
+    {
+      "key": "isNoticeRed",
+      "type": "function",
+      "preview": "function isNoticeRed() { return $(\"#noticeRedRound\").hasClass('redRound'); }"
+    },
+    {
+      "key": "setNoticeRed",
+      "type": "function",
+      "preview": "function setNoticeRed(val) { if (val) { $(\"#noticeRedRound\").addClass('redRound'); } else { $(\"#noticeRedRound\").removeClass('redRound'); } }"
+    },
+    {
+      "key": "loadNoticeRed",
+      "type": "function",
+      "preview": "function loadNoticeRed() { $.ajax({ url : \"/mooc2-ans/mycourse/getNoReadCount\", type : \"get\", data : { \"cpi\" : getParam(\"cpi\"), \"courseid\" : getParam(\"courseid\""
+    },
+    {
+      "key": "changclazz",
+      "type": "function",
+      "preview": "function changclazz(newclazzid) { $.ajax({ url : \"/mooc2-ans/mycourse/changclazz\", type : \"get\", data : { \"courseid\" : getParam(\"courseid\"), \"clazzid\" : getPara"
+    },
+    {
+      "key": "backToOld",
+      "type": "function",
+      "preview": "function backToOld() { var title = $(\".curNav\").find(\"a\").attr(\"title\"); var curNav = $(\".curNav\"); if (!curNav) { return; } var module = curNav.attr(\"dataname\""
+    },
+    {
+      "key": "operaMarkSmarkCourse",
+      "type": "function",
+      "preview": "function operaMarkSmarkCourse(state){ if(state == 1){ $(\".markSmarkCoursePop\").show() }else { $(\".cancelMarkSmarkCoursePop\").show() } }"
+    },
+    {
+      "key": "copyPortalUrl",
+      "type": "function",
+      "preview": "function copyPortalUrl() { var portalUrl = $(\"#tpsubmit\").attr(\"action\"); if (!portalUrl) { return; } try { var copyInput = document.createElement('input'); doc"
+    },
+    {
+      "key": "customScroll",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "unScroll",
+      "type": "function",
+      "preview": "function unScroll() { $('body').addClass('popOverflow'); // var top = $(document).scrollTop(); // $(document).on('scroll.unable', function (e) { // $(document)."
+    },
+    {
+      "key": "removeUnScroll",
+      "type": "function",
+      "preview": "function removeUnScroll() { // $(document).unbind(\"scroll.unable\"); $('body').removeClass('popOverflow'); }"
+    },
+    {
+      "key": "closePop",
+      "type": "function",
+      "preview": "function closePop() { $(\".popClose,.closePop\").on(\"click\", function () { // 排除掉某些离开需要提示的关闭 if (!$(this).parents(\".popDiv\").hasClass(\"custom-close\")) { $(this).p"
+    },
+    {
+      "key": "showPop",
+      "type": "function",
+      "preview": "function showPop(node) { $(node).fadeIn(); unScroll(); }"
+    },
+    {
+      "key": "closePop2",
+      "type": "function",
+      "preview": "function closePop2(node) { $(node).fadeOut(); removeUnScroll(); }"
+    },
+    {
+      "key": "initTab",
+      "type": "function",
+      "preview": "function initTab(parent, changeBack, x) { var _index = x || 1; $(parent).find('.tab-head .tab-t').removeClass('current'); $(parent).find('.tab-head .tab-t').eq("
+    },
+    {
+      "key": "clickBesideClose",
+      "type": "function",
+      "preview": "function clickBesideClose(triggerObj, popObj) { $(document).on(\"click\", function (event) { if (triggerObj[0] && !triggerObj[0].contains(event.target)) { popObj."
+    },
+    {
+      "key": "setMainHeight",
+      "type": "function",
+      "preview": "function setMainHeight(options) { var defaults = { target: $(\".main\"), height: 112 // 112为main上下的margin的高度 }; var sets = $.extend(defaults, options || {}); var "
+    },
+    {
+      "key": "setHeight",
+      "type": "function",
+      "preview": "function setHeight(options) { var defaults = { type: 'height', target: $(\".main\"), height: 112 // 112为main上下的margin的高度 }; var sets = $.extend(defaults, options "
+    },
+    {
+      "key": "initLookBigImg",
+      "type": "function",
+      "preview": "function initLookBigImg(box,touchObj,touchBox) { addBtnWrap(); var imgObj; // 处理不是点击在图片上进行放大的情况 if(touchObj){ imgObj= touchObj; }else{ imgObj= box + ' img' } $("
+    },
+    {
+      "key": "unactiveViewBtn",
+      "type": "function",
+      "preview": "function unactiveViewBtn() { $('#viewPrev').removeClass('unactive'); $('#viewNext').removeClass('unactive'); if (viewer.index == 0) { $('#viewPrev').addClass('u"
+    },
+    {
+      "key": "addBtnWrap",
+      "type": "function",
+      "preview": "function addBtnWrap() { var btnWrap = \"<div class=\\\"viewBtnWrap\\\">\\n\" + \" <div id=\\\"viewPrev\\\"></div>\\n\" + \" <div id=\\\"viewNext\\\"></div>\\n\" + \" <div class=\\\"vie"
+    },
+    {
+      "key": "setDialogTop",
+      "type": "function",
+      "preview": "function setDialogTop(popDiv){ var dialogToastH=$(\"#dialogToast\").height(); var popH=popDiv.outerHeight(); var top= popDiv.offset().top+popH*0.3-dialogToastH/2;"
+    },
+    {
+      "key": "changeHtml2Text",
+      "type": "function",
+      "preview": "function changeHtml2Text(html) { html = html.replace(/[&<\">']/g, function(a, b) { return { '<' : '&lt;', '&' : '&amp;', '\"' : '&quot;', '>' : '&gt;', \"'\" : '&#3"
+    },
+    {
+      "key": "loadDownload",
+      "type": "function",
+      "preview": "function loadDownload(pageNum, toastFlag) { if ($('#downloadcenter').length == 0) { $(\"body\").append('<div id=\"dragBubble\" class=\"bubble\">'+I18N_Config.drogsort"
+    },
+    {
+      "key": "stuRolePreviewCourse",
+      "type": "function",
+      "preview": "function stuRolePreviewCourse(){ var courseid = $(\"#courseid\").val(); var clazzid = $(\"#clazzid\").val(); var cpi = $(\"#cpi\").val(); $.ajax({ url : \"/mooc2-ans/m"
+    },
+    {
+      "key": "CxRobotSdkJs",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "regeneratorRuntime",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "toOpenAiUrl",
+      "type": "function",
+      "preview": "function toOpenAiUrl(aiUrl) { if (!aiUrl) { return; } window.open(aiUrl); }"
+    },
+    {
+      "key": "getAiUrl",
+      "type": "function",
+      "preview": "function getAiUrl(aiPageHeaderType) { if (!aiPageHeaderType) { return 0; } var courseId = \"248275882\"; var clazzId = \"110782811\"; var cpi = \"62776446\"; var fid "
+    },
+    {
+      "key": "simulateClick",
+      "type": "function",
+      "preview": "function simulateClick(dataName) { $('.nav-content li[dataname=\"' + dataName + '\"]').click(); }"
+    },
+    {
+      "key": "getPageHeader",
+      "type": "function",
+      "preview": "function getPageHeader(jsonArray) { try { var aiPageHeaderType; jsonArray.forEach(function (str) { var jsonObj = JSON.parse(str); // 检查\"key\"属性是否为\"aiPageHeaderTy"
+    },
+    {
+      "key": "initializeRobot",
+      "type": "function",
+      "preview": "async function initializeRobot() { try { var params = { rootClass: \"root-class\", origin: \"https://robot-lc.chaoxing.com\", clazzId: \"110782811\", cpi: \"62776446\","
+    },
+    {
+      "key": "popTips",
+      "type": "function",
+      "preview": "function popTips(userName) { $(userName).map(function () { if (this.offsetWidth < this.scrollWidth) { $(this).append('<div class=\"xpopTips\">' + $(this).text() +"
+    },
+    {
+      "key": "closeWindow",
+      "type": "function",
+      "preview": "function closeWindow(){ window.opener = null; window.open('', '_self'); window.close(); }"
+    },
+    {
+      "key": "$dp",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "VoiceToonBot",
+      "type": "object",
+      "preview": "Object"
+    },
+    {
+      "key": "Recorder",
+      "type": "function",
+      "preview": "function(t){return new z(t)}"
+    },
+    {
+      "key": "setImmediate",
+      "type": "function",
+      "preview": "function(t){\"function\"!=typeof t&&(t=new Function(\"\"+t));for(var e=new Array(arguments.length-1),n=0;n<e.length;n++)e[n]=arguments[n+1];var i={callback:t,args:e"
+    },
+    {
+      "key": "clearImmediate",
+      "type": "function",
+      "preview": "function u(t){delete o[t]}"
+    }
+  ],
+  "cookiesVisibleToJs": [
+    {
+      "key": "fid",
+      "valuePreview": "4288",
+      "valueLength": 4
+    },
+    {
+      "key": "xxtenc",
+      "valuePreview": "cd04865cc51aaf9121bf38be71df6a61",
+      "valueLength": 32
+    },
+    {
+      "key": "route",
+      "valuePreview": "0eb899bb9bb390391b050e8cb1d78cb4",
+      "valueLength": 32
+    },
+    {
+      "key": "browserLocale",
+      "valuePreview": "zh_CN",
+      "valueLength": 5
+    },
+    {
+      "key": "_uid",
+      "valuePreview": "77322485",
+      "valueLength": 8
+    },
+    {
+      "key": "_d",
+      "valuePreview": "1776132352426",
+      "valueLength": 13
+    },
+    {
+      "key": "UID",
+      "valuePreview": "77322485",
+      "valueLength": 8
+    },
+    {
+      "key": "uf",
+      "valuePreview": "d9387224d3a6095b380f02629a28f5a201763ecab0cdfb872e5d86203a2e43f7249ed6744e7ffda14c008838b0833eb95d984d23a7662dfbec8c92ea1c87ac8ca995cca83579031aa94b593de5d847e4",
+      "valueLength": 384
+    },
+    {
+      "key": "cx_p_token",
+      "valuePreview": "74ebf7547369f64fe5d1e212e71dbe1b",
+      "valueLength": 32
+    },
+    {
+      "key": "DSSTASH_LOG",
+      "valuePreview": "C_38-UN_3367-US_77322485-T_1776132352427",
+      "valueLength": 40
+    },
+    {
+      "key": "spaceFid",
+      "valuePreview": "4288",
+      "valueLength": 4
+    },
+    {
+      "key": "spaceRoleId",
+      "valuePreview": "1",
+      "valueLength": 1
+    },
+    {
+      "key": "tl",
+      "valuePreview": "1",
+      "valueLength": 1
+    },
+    {
+      "key": "_industry",
+      "valuePreview": "5",
+      "valueLength": 1
+    },
+    {
+      "key": "248275882cpi",
+      "valuePreview": "62776446",
+      "valueLength": 8
+    },
+    {
+      "key": "248275882ut",
+      "valuePreview": "t",
+      "valueLength": 1
+    },
+    {
+      "key": "248275882t",
+      "valuePreview": "1776132370442",
+      "valueLength": 13
+    },
+    {
+      "key": "248275882enc",
+      "valuePreview": "ac83d9b262b48129f84832b53a112026",
+      "valueLength": 32
+    },
+    {
+      "key": "thirdRegist",
+      "valuePreview": "0",
+      "valueLength": 1
+    }
+  ],
+  "localStorage": [],
+  "sessionStorage": [],
+  "resourceSummary": {
+    "total": 43,
+    "byType": {
+      "link": 8,
+      "script": 18,
+      "other": 4,
+      "img": 3,
+      "iframe": 1,
+      "xmlhttprequest": 6,
+      "css": 3
+    }
+  }
+}

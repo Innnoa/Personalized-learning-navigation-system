@@ -1,0 +1,19 @@
+{
+  "runId": "2026-04-14-course-chapter-resource-first-priority",
+  "stage": "phase_cleanup",
+  "status": "completed",
+  "artifacts": [
+    "docs/requirements/2026-04-14-course-chapter-resource-first-priority.md",
+    "docs/plans/2026-04-14-course-chapter-resource-first-priority-execution-plan.md",
+    "backend/config/course_chapter_links.json",
+    "docs/learn_html/url/course-chapter-link-report.json"
+  ],
+  "verification": [
+    "backend/build/tests/backend_test -r LearningResourceServiceReturnsConfiguredResources",
+    "backend/build/tests/backend_test -r LearningResourceServicePromotesCourseChapterResourcesToFirstPosition",
+    "backend/build/tests/backend_test -r LearningResourceServiceSortsResourcesByLearningStage",
+    "backend/build/tests/backend_test -r PathPlanningServiceBuildsDetailScopePathResponse",
+    "cmake -S backend -B backend/build",
+    "ctest --test-dir backend/build/tests -R 'LearningResourceService|PathPlanningService' --output-on-failure"
+  ]
+}
