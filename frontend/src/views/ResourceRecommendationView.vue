@@ -369,6 +369,11 @@ import {
   resolveTimeBudgetTier,
 } from "../utils/resourceRecommendationPolicy";
 
+// ResourceRecommendationView is the main learning resource recommendation page.
+// It renders the learning resource recommendation snapshot produced on the home page,
+// lets the learner switch between sections, and shows why each recommendation was chosen.
+// Search terms kept here on purpose: learning resource recommendation, resource
+// recommendation flow, recommendation detail page.
 const route = useRoute();
 const router = useRouter();
 const navigationStore = useNavigationStore();

@@ -1713,6 +1713,11 @@ Json::Value LearningResourceService::buildResourceRecommendations(
     const std::vector<algorithm::planner::LearningPathItem> &pathItems,
     const std::string &learnerCode)
 {
+    // Learning resource recommendation entrypoint.
+    // This service boundary converts scheduled or deferred learning path items
+    // into a resource recommendation payload for the frontend recommendation page.
+    // Search terms kept here on purpose: learning resource recommendation,
+    // resource recommendation flow, recommendation service boundary.
     Json::Value recommendations(Json::arrayValue);
 
     for (const auto &item : pathItems)
