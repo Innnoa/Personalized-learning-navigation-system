@@ -47,3 +47,4 @@ backend/build/
 database/data/*.db
 database/data/*.sqlite
 !database/data/.gitkeep
+AI_GUIDE.md

@@ -421,7 +421,7 @@ describe("LearnerLearningGraph", () => {
     await flushUi();
     await wrapper.get("[data-testid='graph-set-target-button']").trigger("click");
 
-    expect(wrapper.emitted("set-target")).toEqual([["stack"]]);
+    expect(wrapper.emitted("set-target")).toEqual([[{ code: "stack", scopeCode: "root" }]]);
   });
 
   it("restores remembered scope and selected node when revisiting learning graph page", async () => {

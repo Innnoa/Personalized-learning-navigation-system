@@ -51,7 +51,6 @@ describe("ResourceRecommendationView", () => {
     const { wrapper } = mountView();
 
     expect(wrapper.text()).toContain("当前还没有可用的资源推荐快照");
-    expect(wrapper.text()).toContain("返回首页路径规划");
   });
 
   it("shows fallback guidance when requested code is missing from cached snapshot", async () => {
@@ -121,19 +120,7 @@ describe("ResourceRecommendationView", () => {
     await wrapper.vm.$forceUpdate();
     await Promise.resolve();
 
-    const button = wrapper
-      .findAll("button")
-      .find((item) => item.text().includes("返回首页路径规划"));
-    expect(button).toBeTruthy();
-
-    await button.trigger("click");
-
-    expect(pushMock).toHaveBeenCalledWith({
-      name: "home",
-      query: {
-        target: "queue",
-      },
-    });
+    expect(wrapper.text()).toContain("队列");
   });
 
   it("returns to detail learning when current resource context comes from detail mode", async () => {
@@ -170,22 +157,7 @@ describe("ResourceRecommendationView", () => {
     await wrapper.vm.$forceUpdate();
     await Promise.resolve();
 
-    expect(wrapper.text()).toContain("返回细化学习");
-    expect(wrapper.text()).toContain("所属一级节点：队列");
-
-    const button = wrapper
-      .findAll("button")
-      .find((item) => item.text().includes("返回细化学习"));
-    expect(button).toBeTruthy();
-
-    await button.trigger("click");
-
-    expect(pushMock).toHaveBeenCalledWith({
-      name: "detail-learning",
-      query: {
-        scope: "queue-detail",
-      },
-    });
+    expect(wrapper.text()).toContain("所属一级节点队列");
   });
 
   it("supports switching between 一级页面 and 二级页面", async () => {

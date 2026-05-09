@@ -8,11 +8,11 @@
           {{ description }}
         </p>
         <nav class="page-nav">
-          <RouterLink to="/" class="page-nav-link">
-            首页
-          </RouterLink>
           <RouterLink to="/learning-graph" class="page-nav-link">
             学习图谱
+          </RouterLink>
+          <RouterLink to="/" class="page-nav-link">
+            主图路径规划
           </RouterLink>
           <RouterLink
             v-if="detailLearningNavTarget"
@@ -22,10 +22,10 @@
               'page-nav-link--active': isDetailLearningNavActive,
             }"
           >
-            细化学习
+            细化路径规划
           </RouterLink>
           <span v-else class="page-nav-link page-nav-link--disabled">
-            细化学习
+            细化路径规划
           </span>
           <RouterLink
             v-if="resourceNavTarget"

@@ -4,43 +4,6 @@
     :title="pageTitle"
     :description="pageDescription"
   >
-    <template #hero-side>
-      <article class="hero-note surface-panel">
-        <p class="label page-section-label">当前节点</p>
-        <h2>{{ currentSection?.name || "资源推荐未就绪" }}</h2>
-        <p v-if="currentSection" class="hero-note-copy">
-          {{ currentSectionHeroCopy }}
-        </p>
-        <p v-else-if="hasResourceSnapshot" class="hero-note-copy">
-          当前节点不在最近一次资源快照中。可先查看最近缓存资源，或回首页重新生成路径。
-        </p>
-        <p v-else class="hero-note-copy">
-          当前页依赖首页最近一次生成的资源快照。若暂无数据，请先回首页生成学习路径。
-        </p>
-        <div class="hero-actions">
-          <button type="button" class="ghost-button" @click="goToPlannerHome">
-            {{ returnButtonLabel }}
-          </button>
-          <button
-            v-if="currentSection"
-            type="button"
-            class="ghost-button"
-            @click="goToSiblingSection(currentSection.code)"
-          >
-            查看其他节点资源
-          </button>
-          <button
-            v-else-if="hasResourceSnapshot"
-            type="button"
-            class="ghost-button"
-            @click="goToSection(availableSections[0].code)"
-          >
-            查看最近缓存资源
-          </button>
-        </div>
-      </article>
-    </template>
-
     <section class="resource-page-layout">
       <article class="card surface-panel resource-summary-card">
         <div class="section-headline">

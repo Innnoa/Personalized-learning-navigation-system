@@ -4,7 +4,7 @@
       <div class="card-head">
         <div>
           <p class="label">路径规划</p>
-          <h2>最小版个性化学习导航</h2>
+          <h2>个性化学习导航</h2>
         </div>
         <p class="caption">输入目标、时间和掌握度，生成当前轮次学习路径</p>
       </div>

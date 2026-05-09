@@ -114,7 +114,7 @@ describe("PageLayout", () => {
 
     const detailLink = wrapper
       .findAllComponents(RouterLinkStub)
-      .find((item) => item.text() === "细化学习");
+      .find((item) => item.text() === "细化路径规划");
 
     expect(detailLink).toBeTruthy();
     expect(detailLink.props("to")).toEqual({

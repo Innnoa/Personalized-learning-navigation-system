@@ -1,36 +1,9 @@
 <template>
   <PageLayout
-    eyebrow="细化学习 · 二级路径规划"
+    eyebrow="细化路径规划 · 二级路径规划"
     :title="pageTitle"
     :description="pageDescription"
   >
-    <template #hero-side>
-      <article class="hero-note surface-panel">
-        <p class="label page-section-label">当前分支</p>
-        <h2>{{ currentSection?.name || "细化学习未就绪" }}</h2>
-        <p v-if="currentSection" class="hero-note-copy">
-          来自首页最近一次本轮推荐学习 ·
-          {{ summary.sourceTargetLabel ? `当前主目标：${summary.sourceTargetLabel}` : "已同步最近一次路径目标" }}
-        </p>
-        <p v-else class="hero-note-copy">
-          当前页依赖首页最近一次路径规划中的“可细化节点”快照。若暂无数据，请先回首页生成路径。
-        </p>
-        <div class="hero-actions">
-          <button type="button" class="ghost-button" @click="goHome">
-            返回首页路径规划
-          </button>
-          <button
-            v-if="currentSection"
-            type="button"
-            class="ghost-button"
-            @click="goToLearningGraph"
-          >
-            查看主学习图谱
-          </button>
-        </div>
-      </article>
-    </template>
-
     <section class="detail-learning-layout">
       <article class="card surface-panel detail-branch-card">
         <div class="section-headline">

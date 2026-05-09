@@ -60,7 +60,7 @@ describe("LearningGraphView", () => {
     );
   });
 
-  it("redirects selected node back to home planner", async () => {
+  it("redirects selected node back to home planner for root scope", async () => {
     const wrapper = mount(LearningGraphView, {
       global: {
         stubs: {
@@ -70,7 +70,7 @@ describe("LearningGraphView", () => {
           LearnerLearningGraph: {
             emits: ["set-target"],
             template:
-              "<button data-testid='set-target' @click=\"$emit('set-target', 'stack')\">set</button>",
+              "<button data-testid='set-target' @click=\"$emit('set-target', { code: 'stack', scopeCode: 'root' })\">set</button>",
           },
         },
       },
@@ -82,6 +82,31 @@ describe("LearningGraphView", () => {
     expect(pushMock).toHaveBeenCalledWith({
       name: "home",
       query: { target: "stack" },
+    });
+  });
+
+  it("redirects selected node to detail-learning for non-root scope", async () => {
+    const wrapper = mount(LearningGraphView, {
+      global: {
+        stubs: {
+          PageLayout: {
+            template: "<div><slot name='hero-side' /><slot /></div>",
+          },
+          LearnerLearningGraph: {
+            emits: ["set-target"],
+            template:
+              "<button data-testid='set-target' @click=\"$emit('set-target', { code: 'stack-push', scopeCode: 'stack-detail' })\">set</button>",
+          },
+        },
+      },
+    });
+
+    await flushUi();
+    await wrapper.get("[data-testid='set-target']").trigger("click");
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "detail-learning",
+      query: { scope: "stack-detail", target: "stack-push" },
     });
   });
 });

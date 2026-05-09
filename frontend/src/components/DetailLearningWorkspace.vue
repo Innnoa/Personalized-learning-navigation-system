@@ -142,12 +142,9 @@
                       <strong>{{ item.label }}</strong>
                       <span
                         class="relation-state"
-                        :class="{
-                          'relation-state--learned': item.isLearned === 1,
-                          'relation-state--unlearned': item.isLearned !== 1,
-                        }"
+                        :class="`relation-state--${item.masteryState}`"
                       >
-                        {{ item.isLearned === 1 ? "已学习" : "未学习" }}
+                        {{ resolveMasteryStateLabel(item.masteryState) }}
                       </span>
                     </div>
                     <p>掌握度 {{ item.masteryPercent }}%</p>
@@ -171,12 +168,9 @@
                       <strong>{{ item.label }}</strong>
                       <span
                         class="relation-state"
-                        :class="{
-                          'relation-state--learned': item.isLearned === 1,
-                          'relation-state--unlearned': item.isLearned !== 1,
-                        }"
+                        :class="`relation-state--${item.masteryState}`"
                       >
-                        {{ item.isLearned === 1 ? "已学习" : "未学习" }}
+                        {{ resolveMasteryStateLabel(item.masteryState) }}
                       </span>
                     </div>
                     <p>掌握度 {{ item.masteryPercent }}%</p>
@@ -899,23 +893,31 @@ function resolveMasteryState(masteryPercent) {
     return "mastered";
   }
 
+  if (masteryPercent >= 61) {
+    return "familiar";
+  }
+
+  if (masteryPercent >= 31) {
+    return "learning";
+  }
+
   if (masteryPercent > 0) {
-    return "in-progress";
+    return "beginner";
   }
 
   return "not-started";
 }
 
 function resolveMasteryStateLabel(masteryState) {
-  if (masteryState === "mastered") {
-    return "已掌握";
-  }
+  const labelMap = {
+    mastered: "已掌握",
+    familiar: "基本掌握",
+    learning: "学习中",
+    beginner: "初步了解",
+    "not-started": "未学习",
+  };
 
-  if (masteryState === "in-progress") {
-    return "学习中";
-  }
-
-  return "未学习";
+  return labelMap[masteryState] || "未学习";
 }
 
 function resolveNodeTypeLabel(nodeType) {
@@ -2260,18 +2262,29 @@ h4 {
 }
 
 .mastery-badge--mastered,
-.relation-state--learned {
+.relation-state--mastered {
   color: #ffffff;
   background: #3f7fe8;
 }
 
-.mastery-badge--progress {
-  color: #21405f;
-  background: #dbe8ff;
+.mastery-badge--progress,
+.relation-state--familiar {
+  color: #1a6b3a;
+  background: #d4edda;
+}
+
+.relation-state--learning {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.relation-state--beginner {
+  color: #0c5460;
+  background: #d1ecf1;
 }
 
 .mastery-badge--idle,
-.relation-state--unlearned {
+.relation-state--not-started {
   color: #586778;
   background: #e5eaef;
 }

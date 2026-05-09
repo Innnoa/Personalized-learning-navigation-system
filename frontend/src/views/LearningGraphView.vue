@@ -4,16 +4,6 @@
     title="课程知识图谱与学习状态"
     description="本页用于统一浏览课程图谱、学习状态和层级下钻，也支持把节点直接设为当前学习目标。"
   >
-    <template #hero-side>
-      <article class="hero-note surface-panel">
-        <p class="label page-section-label">页面说明</p>
-        <h2>适合先讲课程结构，再回首页做路径规划</h2>
-        <p>
-          图谱会按掌握度着色，并支持双击逐层下钻。选中节点后，可直接设为当前学习目标并跳回首页。
-        </p>
-      </article>
-    </template>
-
     <section class="graph-layout">
       <LearnerLearningGraph
         :profile="learnerProfile"
@@ -58,14 +48,16 @@ async function loadLearnerProfile() {
   }
 }
 
-async function handleSetTarget(code) {
+async function handleSetTarget({ code, scopeCode } = {}) {
   if (!code) {
     return;
   }
 
+  const isRootScope = !scopeCode || scopeCode === "root";
+
   await router.push({
-    name: "home",
-    query: { target: code },
+    name: isRootScope ? "home" : "detail-learning",
+    query: isRootScope ? { target: code } : { scope: scopeCode, target: code },
   });
 }
 
