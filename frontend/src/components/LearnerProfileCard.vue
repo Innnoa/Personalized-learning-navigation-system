@@ -23,155 +23,115 @@
         <p>目标课程：{{ profile.course.name }}</p>
       </div>
 
-      <dl class="summary-grid">
-        <div>
-          <dt>平均掌握度</dt>
-          <dd>{{ profile.summary.averageMasteryPercent }}%</dd>
-        </div>
-        <div>
-          <dt>已掌握</dt>
-          <dd>{{ profile.summary.masteredCount }} 个</dd>
-        </div>
-        <div>
-          <dt>进行中</dt>
-          <dd>{{ profile.summary.inProgressCount }} 个</dd>
-        </div>
-        <div>
-          <dt>未开始</dt>
-          <dd>{{ profile.summary.notStartedCount }} 个</dd>
-        </div>
-        <div>
-          <dt>反馈记录</dt>
-          <dd>{{ profile.summary.feedbackRecordCount }} 条</dd>
-        </div>
-        <div>
-          <dt>资源行为</dt>
-          <dd>{{ profile.summary.resourceViewRecordCount || 0 }} 条</dd>
-        </div>
-        <div>
-          <dt>知识点总数</dt>
-          <dd>{{ profile.summary.knowledgePointCount }} 个</dd>
-        </div>
-      </dl>
-
-      <section class="section">
-        <div class="section-head">
-          <h3>掌握度分布</h3>
-          <span>按当前掌握度从高到低展示</span>
-        </div>
-
-        <div v-if="masteryBarItems.length > 0" class="chart-list">
-          <div
-            v-for="item in masteryBarItems"
-            :key="item.code"
-            class="chart-row"
-          >
-            <div class="chart-row-head">
-              <strong>{{ item.name }}</strong>
-              <span>{{ item.masteryPercent }}%</span>
+      <div class="profile-narrative">
+        <section class="section narrative-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">进度总览</p>
+              <h3>当前掌握状态</h3>
             </div>
-            <p class="chart-row-meta">第{{ item.chapterNo }}章</p>
-            <div class="bar-track" aria-hidden="true">
-              <div class="bar-fill" :style="{ width: item.width }"></div>
-            </div>
+            <span>先看整体进度，再决定后续补强重点</span>
           </div>
-        </div>
 
-        <p v-else class="empty-tip">暂无掌握度分布数据。</p>
-      </section>
+          <dl class="summary-grid">
+            <div>
+              <dt>平均掌握度</dt>
+              <dd>{{ profile.summary.averageMasteryPercent }}%</dd>
+            </div>
+            <div>
+              <dt>已掌握</dt>
+              <dd>{{ profile.summary.masteredCount }} 个</dd>
+            </div>
+            <div>
+              <dt>进行中</dt>
+              <dd>{{ profile.summary.inProgressCount }} 个</dd>
+            </div>
+            <div>
+              <dt>未开始</dt>
+              <dd>{{ profile.summary.notStartedCount }} 个</dd>
+            </div>
+            <div>
+              <dt>反馈记录</dt>
+              <dd>{{ profile.summary.feedbackRecordCount }} 条</dd>
+            </div>
+            <div>
+              <dt>资源行为</dt>
+              <dd>{{ profile.summary.resourceViewRecordCount || 0 }} 条</dd>
+            </div>
+            <div>
+              <dt>知识点总数</dt>
+              <dd>{{ profile.summary.knowledgePointCount }} 个</dd>
+            </div>
+          </dl>
 
-      <section class="section">
-        <div class="section-head">
-          <h3>学习反馈趋势</h3>
-          <span>根据最近反馈累计平均掌握度变化生成</span>
-        </div>
+          <ProfileProgressOverview
+            :average-mastery-percent="profile.summary.averageMasteryPercent"
+            :segments="progressSegments"
+          />
+        </section>
 
-        <div v-if="feedbackTrendPoints.length > 0" class="trend-list">
-          <div
-            v-for="point in feedbackTrendPoints"
-            :key="`${point.index}-${point.knowledgePointCode}`"
-            class="trend-point"
-          >
-            <span class="trend-point-label">{{ point.label }}</span>
-            <strong>{{ point.value }}%</strong>
+        <section class="section narrative-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">聚焦观察</p>
+              <h3>掌握趋势与学习活动</h3>
+            </div>
+            <span>结合趋势与活动构成判断近期学习状态</span>
           </div>
-        </div>
 
-        <p v-else class="empty-tip">暂无学习反馈趋势数据。</p>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h3>学习活动结构</h3>
-          <span>按反馈完成状态汇总</span>
-        </div>
-
-        <div v-if="feedbackCompositionItems.length > 0" class="chart-list">
-          <div
-            v-for="item in feedbackCompositionItems"
-            :key="item.status"
-            class="chart-row"
-          >
-            <div class="chart-row-head">
-              <strong>{{ item.label }}</strong>
-              <span>{{ item.count }} 条 · {{ item.percent }}%</span>
-            </div>
-            <div class="bar-track" aria-hidden="true">
-              <div class="bar-fill bar-fill--soft" :style="{ width: `${item.percent}%` }"></div>
-            </div>
+          <div class="profile-spotlight-grid">
+            <ProfileMasteryTrendChart
+              :points="feedbackTrendPoints"
+              :trend-summary="trendSummary"
+            />
+            <ProfileActivityComposition :items="feedbackCompositionItems" />
           </div>
-        </div>
+        </section>
 
-        <p v-else class="empty-tip">暂无学习活动结构数据。</p>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h3>当前待补强知识点</h3>
-          <span>低掌握度优先展示</span>
-        </div>
-
-        <ul class="weak-list">
-          <li v-for="item in weakItems" :key="item.code" class="weak-item">
-            <div class="weak-item-main">
-              <div>
-                <strong>{{ item.name }}</strong>
-                <p>第{{ item.chapterNo }}章 · {{ item.chapterName }}</p>
-              </div>
-              <div class="weak-item-side">
-                <span>{{ item.masteryPercent }}%</span>
-                <button
-                  type="button"
-                  class="weak-action-button"
-                  :disabled="Boolean(resourcePreviewCode)"
-                  @click="emit('open-resource', item)"
-                >
-                  {{
-                    resourcePreviewCode === item.code
-                      ? "准备资源中..."
-                      : "查看推荐资源"
-                  }}
-                </button>
-              </div>
+        <section class="section narrative-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">薄弱点排行</p>
+              <h3>优先补强知识点</h3>
             </div>
-          </li>
-        </ul>
+            <span>低掌握度节点优先进入资源预览</span>
+          </div>
 
-        <p v-if="weakItems.length === 0" class="empty-tip">
-          当前画像中的知识点已全部达到较稳定掌握度。
-        </p>
-        <p v-if="resourcePreviewError" class="state state--error state--inline">
-          {{ resourcePreviewError }}
-        </p>
-      </section>
+          <div
+            class="weak-ranking-shell"
+            :class="{ 'weak-ranking-shell--busy': Boolean(resourcePreviewCode) }"
+          >
+            <ProfileWeakPointRanking
+              :items="weakRankingItems"
+              @open-resource="handleOpenWeakPointResource"
+            />
+          </div>
 
-      <section class="section">
-        <div class="section-head">
-          <h3>最近学习记录</h3>
-          <span>展示最近 {{ recentFeedbackItems.length }} 条</span>
-        </div>
+          <p v-if="resourcePreviewCode" class="state state--loading state--inline">
+            正在准备该知识点的资源预览，请稍候...
+          </p>
 
-        <ul v-if="recentFeedbackItems.length > 0" class="record-list">
+          <p v-if="resourcePreviewError" class="state state--error state--inline">
+            {{ resourcePreviewError }}
+          </p>
+        </section>
+
+        <section class="section narrative-section narrative-section--supporting">
+          <div class="section-head">
+            <div>
+              <p class="section-label">支撑证据</p>
+              <h3>近期学习轨迹</h3>
+            </div>
+            <span>保留最近反馈与资源行为，作为画像解读的上下文</span>
+          </div>
+
+          <section class="supporting-section">
+            <div class="section-head">
+              <h4>最近学习记录</h4>
+              <span>展示最近 {{ recentFeedbackItems.length }} 条</span>
+            </div>
+
+            <ul v-if="recentFeedbackItems.length > 0" class="record-list">
           <li
             v-for="item in recentFeedbackItems"
             :key="`${item.code}-${item.recordedAt}`"
@@ -194,20 +154,20 @@
               自评 {{ item.selfRatedMasteryPercent }}% · {{ item.recordedAt }}
             </p>
           </li>
-        </ul>
+            </ul>
 
-        <p v-else class="empty-tip">
-          当前还没有学习反馈记录，提交一次反馈后会在这里展示最近学习过程。
-        </p>
-      </section>
+            <p v-else class="empty-tip">
+              当前还没有学习反馈记录，提交一次反馈后会在这里展示最近学习过程。
+            </p>
+          </section>
 
-      <section class="section">
-        <div class="section-head">
-          <h3>最近资源行为</h3>
-          <span>展示最近 {{ recentResourceViewItems.length }} 条</span>
-        </div>
+          <section class="supporting-section">
+            <div class="section-head">
+              <h4>最近资源行为</h4>
+              <span>展示最近 {{ recentResourceViewItems.length }} 条</span>
+            </div>
 
-        <ul v-if="recentResourceViewItems.length > 0" class="record-list">
+            <ul v-if="recentResourceViewItems.length > 0" class="record-list">
           <li
             v-for="item in recentResourceViewItems"
             :key="`${item.resourceUrl}-${item.recordedAt}`"
@@ -244,12 +204,14 @@
               {{ item.resourceSource }} · {{ item.recordedAt }}
             </p>
           </li>
-        </ul>
+            </ul>
 
-        <p v-else class="empty-tip">
-          当前还没有资源行为记录，点击资源标题或使用“记为已看 / 记为学完 / 稍后再看”后会在这里展示最近轨迹。
-        </p>
-      </section>
+            <p v-else class="empty-tip">
+              当前还没有资源行为记录，点击资源标题或使用“记为已看 / 记为学完 / 稍后再看”后会在这里展示最近轨迹。
+            </p>
+          </section>
+        </section>
+      </div>
     </template>
   </article>
 </template>
@@ -260,8 +222,14 @@ import { computed } from "vue";
 import {
   buildFeedbackCompositionItems,
   buildFeedbackTrendPoints,
-  buildMasteryBarItems,
+  buildProgressSegments,
+  buildTrendSummary,
+  buildWeakPointRankingItems,
 } from "./profileCharts";
+import ProfileActivityComposition from "./ProfileActivityComposition.vue";
+import ProfileMasteryTrendChart from "./ProfileMasteryTrendChart.vue";
+import ProfileProgressOverview from "./ProfileProgressOverview.vue";
+import ProfileWeakPointRanking from "./ProfileWeakPointRanking.vue";
 
 const props = defineProps({
   profile: {
@@ -304,23 +272,12 @@ const resourceInteractionLabelMap = {
   save_for_later: "稍后再看",
 };
 
-const weakItems = computed(() => {
-  if (!props.profile?.masteryItems) {
-    return [];
-  }
-
-  return [...props.profile.masteryItems]
-    .filter((item) => item.masteryPercent < 85)
-    .sort((left, right) => left.masteryPercent - right.masteryPercent)
-    .slice(0, 5);
-});
-
 const recentFeedbackItems = computed(() => props.profile?.recentFeedbackItems || []);
 const recentResourceViewItems = computed(
   () => props.profile?.recentResourceViewItems || [],
 );
-const masteryBarItems = computed(() =>
-  buildMasteryBarItems(props.profile?.analytics),
+const progressSegments = computed(() =>
+  buildProgressSegments(props.profile?.summary),
 );
 const feedbackTrendPoints = computed(() =>
   buildFeedbackTrendPoints(props.profile?.analytics),
@@ -328,6 +285,26 @@ const feedbackTrendPoints = computed(() =>
 const feedbackCompositionItems = computed(() =>
   buildFeedbackCompositionItems(props.profile?.analytics),
 );
+const trendSummary = computed(() =>
+  buildTrendSummary(props.profile?.analytics),
+);
+const weakRankingItems = computed(() =>
+  buildWeakPointRankingItems(props.profile?.masteryItems),
+);
+
+function handleOpenWeakPointResource(payload) {
+  if (props.resourcePreviewCode) {
+    return;
+  }
+
+  const item = weakRankingItems.value.find((candidate) => candidate.code === payload?.code);
+
+  if (!item) {
+    return;
+  }
+
+  emit("open-resource", item);
+}
 
 function resourceInteractionBadgeClass(interactionType) {
   return {
@@ -347,6 +324,8 @@ function resourceInteractionBadgeClass(interactionType) {
   padding: 22px;
   box-shadow: var(--panel-shadow);
   contain: paint;
+  display: grid;
+  gap: 18px;
 }
 
 .card-head,
@@ -376,8 +355,12 @@ h3 {
   font-size: 0.9rem;
 }
 
+.profile-narrative {
+  display: grid;
+  gap: 22px;
+}
+
 .identity-card {
-  margin-top: 18px;
   padding: 16px 18px;
   border-radius: 20px;
   background: rgba(244, 248, 247, 0.86);
@@ -392,7 +375,6 @@ h3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 18px;
 }
 
 .summary-grid div {
@@ -413,7 +395,24 @@ dd {
 }
 
 .section {
-  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.narrative-section {
+  padding-top: 4px;
+}
+
+.narrative-section--supporting {
+  padding-top: 8px;
+}
+
+.section-label {
+  margin: 0 0 6px;
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6d7781;
 }
 
 .section-head span {
@@ -421,127 +420,35 @@ dd {
   font-size: 0.88rem;
 }
 
-.chart-list,
-.trend-list {
+.profile-spotlight-grid {
   display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.chart-row,
-.trend-point {
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(247, 250, 249, 0.86);
-}
-
-.chart-row-head {
-  display: flex;
-  justify-content: space-between;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  align-items: center;
 }
 
-.chart-row-head span,
-.trend-point-label {
-  color: #66727d;
-  font-size: 0.88rem;
-}
-
-.chart-row-meta {
-  margin: 6px 0 0;
-  color: #44515c;
-}
-
-.bar-track {
-  overflow: hidden;
-  margin-top: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(12, 106, 113, 0.1);
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #0c6a71, #3f9aa1);
-}
-
-.bar-fill--soft {
-  background: linear-gradient(90deg, #6f7f8c, #9baab5);
-}
-
-.trend-list {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.trend-point {
+.supporting-section {
   display: grid;
-  gap: 6px;
+  gap: 14px;
 }
 
-.trend-point strong {
-  color: #0c5960;
+.weak-ranking-shell--busy {
+  pointer-events: none;
+  opacity: 0.76;
 }
 
-.weak-list {
-  display: grid;
-  gap: 12px;
-  margin: 16px 0 0;
-  padding: 0;
-  list-style: none;
+h4 {
+  margin: 0;
+  font-size: 1.02rem;
 }
 
-.weak-item {
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(247, 250, 249, 0.86);
-  contain: layout paint;
-}
-
-.weak-item-main {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: start;
-}
-
-.weak-item p,
 .empty-tip {
   margin: 6px 0 0;
   color: #44515c;
 }
 
-.weak-item-side {
-  display: grid;
-  gap: 10px;
-  justify-items: end;
-}
-
-.weak-item span {
-  font-weight: 700;
-  color: #0c5960;
-}
-
-.weak-action-button {
-  border: 1px solid rgba(12, 106, 113, 0.16);
-  border-radius: 999px;
-  background: rgba(12, 106, 113, 0.08);
-  color: #0c5960;
-  padding: 8px 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.weak-action-button:disabled {
-  cursor: wait;
-  opacity: 0.72;
-}
-
 .record-list {
   display: grid;
   gap: 12px;
-  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -555,7 +462,6 @@ dd {
 
 @supports (content-visibility: auto) {
   .section,
-  .weak-item,
   .record-item {
     content-visibility: auto;
   }
@@ -564,7 +470,6 @@ dd {
     contain-intrinsic-size: 280px;
   }
 
-  .weak-item,
   .record-item {
     contain-intrinsic-size: 120px;
   }
@@ -663,22 +568,16 @@ dd {
     grid-template-columns: 1fr;
   }
 
+  .profile-spotlight-grid {
+    grid-template-columns: 1fr;
+  }
+
   .card-head,
   .section-head,
-  .weak-item-main,
-  .chart-row-head,
   .record-main,
   .record-badge-group {
     flex-direction: column;
     align-items: start;
-  }
-
-  .trend-list {
-    grid-template-columns: 1fr;
-  }
-
-  .weak-item-side {
-    justify-items: start;
   }
 }
 </style>
