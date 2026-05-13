@@ -10,6 +10,8 @@ int main(int argc, char** argv)
 {
     using namespace drogon;
 
+    constexpr uint16_t kTestPort = 18991;
+
     const auto projectRoot = testsupport::locateProjectRoot();
     const auto testDbPath = testsupport::prepareIsolatedTestDatabase();
 
@@ -23,10 +25,15 @@ int main(int argc, char** argv)
     dbClient["timeout"] = -1.0;
     config["db_clients"].append(dbClient);
     config["app"]["number_of_threads"] = 1;
-    config["app"]["enable_session"] = false;
+    config["app"]["enable_session"] = true;
     config["app"]["document_root"] = "./public";
     config["app"]["use_implicit_page"] = false;
     config["app"]["load_dynamic_views"] = false;
+    Json::Value listener(Json::objectValue);
+    listener["address"] = "127.0.0.1";
+    listener["port"] = kTestPort;
+    listener["https"] = false;
+    config["listeners"].append(listener);
     config["custom_config"]["selected_course"] = "数据结构";
     config["custom_config"]["default_learner_code"] = "demo-learner";
     config["custom_config"]["knowledge_graph_detail_file"] =

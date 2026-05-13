@@ -4,13 +4,16 @@ project(backend_test CXX)
 aux_source_directory(../algorithm/planner TEST_ALGORITHM_PLANNER_SRC)
 aux_source_directory(../algorithm/adjuster TEST_ALGORITHM_ADJUSTER_SRC)
 aux_source_directory(../algorithm/explainer TEST_ALGORITHM_EXPLAINER_SRC)
+aux_source_directory(../controllers TEST_CONTROLLER_SRC)
 aux_source_directory(../services TEST_SERVICE_SRC)
 aux_source_directory(../repositories TEST_REPOSITORY_SRC)
 aux_source_directory(../utils TEST_UTIL_SRC)
 
 add_executable(${PROJECT_NAME}
                test_main.cc
+               AuthSessionServiceTest.cc
                KnowledgeGraphServiceTest.cc
+               RoleDashboardServiceTest.cc
                PathPlannerTest.cc
                PathPlanningServiceTest.cc
                PathAdjusterTest.cc
@@ -19,6 +22,7 @@ add_executable(${PROJECT_NAME}
                TestSupport.cc)
 target_sources(${PROJECT_NAME}
                PRIVATE
+               ${TEST_CONTROLLER_SRC}
                ${TEST_ALGORITHM_PLANNER_SRC}
                ${TEST_ALGORITHM_ADJUSTER_SRC}
                ${TEST_ALGORITHM_EXPLAINER_SRC}

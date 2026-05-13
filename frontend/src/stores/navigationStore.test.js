@@ -171,6 +171,30 @@ describe("navigationStore", () => {
     expect(store.learningGraphViewState.lastFocusedScopeCode).toBe("root");
   });
 
+  it("persists practice-check context and restores it on next store init", () => {
+    setActivePinia(createPinia());
+    const store = useNavigationStore();
+
+    store.setPracticeCheckContext({
+      learnerCode: "test-learner",
+      sourcePage: "detail-learning",
+      targetCode: "queue-array",
+      targetName: "顺序队列",
+      scopeCode: "queue-detail",
+      feedbackBatchId: "batch-001",
+      feedbackItemCount: 3,
+    });
+
+    expect(store.practiceCheckContext.targetCode).toBe("queue-array");
+    expect(store.practiceCheckContext.feedbackBatchId).toBe("batch-001");
+
+    setActivePinia(createPinia());
+    const restoredStore = useNavigationStore();
+
+    expect(restoredStore.practiceCheckContext.targetCode).toBe("queue-array");
+    expect(restoredStore.practiceCheckContext.feedbackBatchId).toBe("batch-001");
+  });
+
   it("persists detail learning context and restores selected scope", () => {
     setActivePinia(createPinia());
     const store = useNavigationStore();

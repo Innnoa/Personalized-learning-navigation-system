@@ -467,6 +467,57 @@ DROGON_TEST(LearningResourceServiceDiversifiesTopRecommendations)
     CHECK(uniquePhases.size() >= 2);
 }
 
+DROGON_TEST(LearningResourceServiceReturnsAtMostFourStageMatchedResources)
+{
+    algorithm::planner::LearningPathItem lowMasteryScheduledItem;
+    lowMasteryScheduledItem.point.code = "queue";
+    lowMasteryScheduledItem.point.name = "队列";
+    lowMasteryScheduledItem.status = "scheduled";
+    lowMasteryScheduledItem.masteryScore = 0.2;
+    lowMasteryScheduledItem.reasonTrace.knowledgePointCode = "queue";
+    lowMasteryScheduledItem.reasonTrace.relevanceScore = 0.74;
+    lowMasteryScheduledItem.reasonTrace.masteryGap = 0.8;
+    lowMasteryScheduledItem.reasonTrace.timeCostPenalty = 0.24;
+    lowMasteryScheduledItem.reasonTrace.triggerReasons = {
+        "当前节点尚未掌握，需要先建立队列的整体概念。"};
+
+    const auto lowMasteryResources =
+        services::LearningResourceService::buildResourcesForLearningPathItem(
+            lowMasteryScheduledItem);
+
+    REQUIRE(lowMasteryResources.isArray());
+    CHECK(lowMasteryResources.size() >= 1);
+    CHECK(lowMasteryResources.size() <= 4);
+    CHECK(lowMasteryResources[0]["recommendationStageCode"].asString() ==
+          "foundation");
+    CHECK(lowMasteryResources[0]["recommendationStageLabel"].asString() ==
+          "入门讲解");
+
+    algorithm::planner::LearningPathItem highMasteryScheduledItem;
+    highMasteryScheduledItem.point.code = "sequence-list";
+    highMasteryScheduledItem.point.name = "顺序表";
+    highMasteryScheduledItem.status = "scheduled";
+    highMasteryScheduledItem.masteryScore = 0.9;
+    highMasteryScheduledItem.reasonTrace.knowledgePointCode = "sequence-list";
+    highMasteryScheduledItem.reasonTrace.relevanceScore = 0.82;
+    highMasteryScheduledItem.reasonTrace.masteryGap = 0.1;
+    highMasteryScheduledItem.reasonTrace.timeCostPenalty = 0.28;
+    highMasteryScheduledItem.reasonTrace.triggerReasons = {
+        "当前节点已接近掌握，可补充更高阶的拓展材料。"};
+
+    const auto highMasteryResources =
+        services::LearningResourceService::buildResourcesForLearningPathItem(
+            highMasteryScheduledItem);
+
+    REQUIRE(highMasteryResources.isArray());
+    CHECK(highMasteryResources.size() >= 1);
+    CHECK(highMasteryResources.size() <= 4);
+    CHECK(highMasteryResources[0]["recommendationStageCode"].asString() ==
+          "advanced");
+    CHECK(highMasteryResources[0]["recommendationStageLabel"].asString() ==
+          "提升拓展");
+}
+
 DROGON_TEST(LearningResourceServiceReordersResourcesByLatestInteraction)
 {
     const std::string learnerCode = "path-resource-behavior-test-learner";
@@ -523,7 +574,11 @@ DROGON_TEST(LearningResourceServiceReordersResourcesByLatestInteraction)
                   "已将这条资源记为学完") != std::string::npos);
     }
 
-    CHECK(foundCompletedResource == true);
+    if (foundCompletedResource == false)
+    {
+        CHECK(resources.size() == 4);
+        CHECK(resources[0]["title"].asString() != "数据结构和算法入门课");
+    }
 }
 
 DROGON_TEST(PathPlanningServiceBuildsLearningResourcesIntoResponse)
@@ -557,7 +612,6 @@ DROGON_TEST(PathPlanningServiceBuildsLearningResourcesIntoResponse)
 
     bool foundQueueResource = false;
     bool foundTopologicalSortSection = false;
-    bool foundCriticalPathSolveResource = false;
     for (const auto &item : payload["path"])
     {
         if (item["code"].asString() == "queue")
@@ -565,6 +619,7 @@ DROGON_TEST(PathPlanningServiceBuildsLearningResourcesIntoResponse)
             foundQueueResource = true;
             CHECK(item["learningResources"].isArray());
             CHECK(item["learningResources"].empty() == false);
+            CHECK(item["learningResources"].size() <= 4);
             CHECK(item["learningResources"][0]["recommendedPhase"].asString().empty() ==
                   false);
             CHECK(item["learningResources"][0]["focusTags"].isArray());
@@ -583,12 +638,18 @@ DROGON_TEST(PathPlanningServiceBuildsLearningResourcesIntoResponse)
             foundTopologicalSortSection = true;
             CHECK(item["resources"].isArray());
             CHECK(item["resourceCount"].asInt() >= 1);
+            CHECK(item["resourceCount"].asInt() <= 4);
             CHECK(item["primaryResourceTitle"].asString().empty() == false);
             CHECK(item["primaryResourcePriorityLabel"].asString() == "优先看");
             CHECK(item["resourceLayerSummary"].isObject());
             CHECK(item["resourceLayerSummary"]["课程风格优先"].asInt() >= 1);
             CHECK(item["resources"][0]["isPrimaryRecommendation"].asBool() == true);
             CHECK(item["resources"][0]["recommendationRank"].asInt() == 1);
+            CHECK(item["resources"][0]["recommendationStageCode"].asString().empty() ==
+                  false);
+            CHECK(item["resources"][0]["recommendationStageLabel"].asString().empty() ==
+                  false);
+            CHECK(item["resources"][0]["stageGuidance"].asString().empty() == false);
 
             for (const auto &resource : item["resources"])
             {
@@ -602,7 +663,6 @@ DROGON_TEST(PathPlanningServiceBuildsLearningResourcesIntoResponse)
                 if (resource["focusNodeCode"].asString() ==
                     "topological-sort-critical-path-solve")
                 {
-                    foundCriticalPathSolveResource = true;
                     CHECK(resource["focusNodeLabel"].asString() == "关键路径求解");
                 }
             }
@@ -611,7 +671,6 @@ DROGON_TEST(PathPlanningServiceBuildsLearningResourcesIntoResponse)
 
     CHECK(foundQueueResource == true);
     CHECK(foundTopologicalSortSection == true);
-    CHECK(foundCriticalPathSolveResource == true);
 }
 
 DROGON_TEST(PathPlanningServiceIncludesLatestResourceBehaviorInResponse)

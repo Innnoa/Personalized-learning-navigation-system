@@ -7,7 +7,7 @@
     <section class="home-stack">
       <PathPlannerPanel
         :key="plannerRenderKey"
-        :learner-code="learnerProfile?.learner?.code || 'demo-learner'"
+        :learner-code="resolvedLearnerCode"
         :initial-mastery-by-code="learnerProfile?.masteryByCode || {}"
         :feedback-record-count="learnerProfile?.summary?.feedbackRecordCount || 0"
         :profile-loading="learnerProfileLoading"
@@ -19,17 +19,23 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import PageLayout from "../components/PageLayout.vue";
 import PathPlannerPanel from "../components/PathPlannerPanel.vue";
 import { fetchLearnerProfile } from "../api/learnerProfile";
+import { useAuthStore } from "../stores/authStore";
 
 const router = useRouter();
+const authStore = useAuthStore();
 const learnerProfile = ref(null);
 const learnerProfileLoading = ref(true);
 const plannerRenderKey = ref(0);
+const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
+const resolvedLearnerCode = computed(
+  () => authLearnerCode.value || learnerProfile.value?.learner?.code || "demo-learner",
+);
 
 function handleLearnerProfileUpdated(payload) {
   learnerProfile.value = payload;
@@ -48,7 +54,9 @@ async function handleGraphFocusRequested(code) {
 
 onMounted(async () => {
   try {
-    learnerProfile.value = await fetchLearnerProfile();
+    learnerProfile.value = authLearnerCode.value
+      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
+      : await fetchLearnerProfile();
   } catch (error) {
     console.error(error);
   } finally {

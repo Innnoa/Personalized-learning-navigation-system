@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import DetailLearningView from "./DetailLearningView.vue";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 
 const pushMock = vi.fn();
@@ -46,7 +47,13 @@ function mountView(options = {}) {
   const pinia = createPinia();
   setActivePinia(pinia);
 
+  const authStore = useAuthStore();
+  if (options.session) {
+    authStore.setSession(options.session);
+  }
+
   return {
+    authStore,
     store: useNavigationStore(),
     wrapper: mount(DetailLearningView, {
       global: {
@@ -171,5 +178,52 @@ describe("DetailLearningView", () => {
     await flushUi();
 
     expect(fetchLearnerProfile).toHaveBeenCalledTimes(2);
+  });
+
+  it("clears stale detail learning context when stored learner differs from auth learner", async () => {
+    routeState.query = {
+      scope: "queue-detail",
+    };
+
+    const { store, wrapper } = mountView({
+      session: {
+        currentUser: {
+          id: 3,
+          username: "student3",
+        },
+        currentRoles: ["student"],
+        activeRole: "student",
+        linkedLearner: {
+          learnerCode: "learner-003",
+        },
+      },
+    });
+
+    store.setDetailLearningContext({
+      learnerCode: "demo-learner",
+      detailLearningSections: [
+        {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      ],
+      selectedScopeCode: "queue-detail",
+      sourceTargetLabel: "队列",
+      sourcePage: "home",
+    });
+
+    await flushUi();
+
+    expect(store.detailLearningSections).toHaveLength(0);
+    expect(store.detailLearningSummary.selectedScopeCode).toBe("");
+    expect(wrapper.text()).toContain("当前页尚未收到首页路径规划的细化分支上下文");
+    expect(fetchLearnerProfile).toHaveBeenCalledWith({
+      learnerCode: "learner-003",
+    });
   });
 });

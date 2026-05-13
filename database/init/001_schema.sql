@@ -159,3 +159,50 @@ CREATE INDEX IF NOT EXISTS idx_learning_resource_view_records_learner
 
 CREATE INDEX IF NOT EXISTS idx_learning_resource_view_records_learner_point
     ON learning_resource_view_records(learner_id, knowledge_point_id, recorded_at DESC);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_status
+    ON users(status);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    role_code TEXT NOT NULL CHECK (role_code IN ('student', 'teacher', 'admin')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (user_id, role_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_roles_user
+    ON user_roles(user_id);
+
+CREATE TABLE IF NOT EXISTS user_learner_links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL UNIQUE,
+    learner_id INTEGER NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (learner_id) REFERENCES learners(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_learner_links_learner
+    ON user_learner_links(learner_id);
+
+CREATE TABLE IF NOT EXISTS teacher_course_assignments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    course_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    UNIQUE (user_id, course_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_teacher_course_assignments_course
+    ON teacher_course_assignments(course_id);

@@ -73,14 +73,17 @@ import { useRoute, useRouter } from "vue-router";
 import { fetchLearnerProfile } from "../api/learnerProfile";
 import DetailLearningWorkspace from "../components/DetailLearningWorkspace.vue";
 import PageLayout from "../components/PageLayout.vue";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const navigationStore = useNavigationStore();
 const learnerProfile = ref(null);
 const learnerProfileError = ref("");
 const learnerProfileVersion = ref(0);
+const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
 
 const availableSections = computed(() => navigationStore.detailLearningSections || []);
 const summary = computed(
@@ -95,7 +98,7 @@ const summary = computed(
 );
 const requestedScopeCode = computed(() => String(route.query.scope || ""));
 const detailLearningLearnerCode = computed(
-  () => navigationStore.detailLearningLearnerCode || "demo-learner",
+  () => authLearnerCode.value || navigationStore.detailLearningLearnerCode || "demo-learner",
 );
 const currentSection = computed(() => {
   if (availableSections.value.length === 0) {
@@ -108,6 +111,11 @@ const currentSection = computed(() => {
     availableSections.value[0]
   );
 });
+const hasStoredDetailLearningContext = computed(
+  () =>
+    availableSections.value.length > 0 ||
+    Boolean(navigationStore.detailLearningSummary?.selectedScopeCode),
+);
 const workspaceKey = computed(
   () =>
     `${currentSection.value?.scopeCode || "empty"}-${detailLearningLearnerCode.value}-${learnerProfileVersion.value}`,
@@ -197,10 +205,32 @@ async function handleProfileUpdated() {
   await loadLearnerProfile();
 }
 
+function clearStaleDetailLearningContext() {
+  if (!authLearnerCode.value || !hasStoredDetailLearningContext.value) {
+    return;
+  }
+
+  if (authLearnerCode.value === navigationStore.detailLearningLearnerCode) {
+    return;
+  }
+
+  navigationStore.clearDetailLearningContext();
+}
+
 watch(
   [availableSections, requestedScopeCode],
   async () => {
     await ensureCurrentScopeSynced();
+  },
+  {
+    immediate: true,
+  },
+);
+
+watch(
+  [authLearnerCode, () => navigationStore.detailLearningLearnerCode, hasStoredDetailLearningContext],
+  () => {
+    clearStaleDetailLearningContext();
   },
   {
     immediate: true,

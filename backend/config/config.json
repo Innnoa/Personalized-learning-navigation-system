@@ -18,7 +18,7 @@
   ],
   "app": {
     "number_of_threads": 1,
-    "enable_session": false,
+    "enable_session": true,
     "document_root": "./public",
     "use_implicit_page": false,
     "load_dynamic_views": false,

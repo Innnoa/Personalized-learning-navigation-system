@@ -244,3 +244,41 @@ VALUES
         (SELECT id FROM knowledge_points WHERE code = 'topological-sort' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
         0.00
     );
+
+INSERT OR IGNORE INTO users (
+    username,
+    password_hash,
+    display_name,
+    status
+)
+VALUES
+    ('student_demo', 'demo123', '演示学生账号', 'active'),
+    ('teacher_demo', 'demo123', '演示教师账号', 'active'),
+    ('admin_demo', 'demo123', '演示管理员账号', 'active');
+
+INSERT OR IGNORE INTO user_roles (
+    user_id,
+    role_code
+)
+VALUES
+    ((SELECT id FROM users WHERE username = 'student_demo'), 'student'),
+    ((SELECT id FROM users WHERE username = 'teacher_demo'), 'teacher'),
+    ((SELECT id FROM users WHERE username = 'admin_demo'), 'admin');
+
+INSERT OR IGNORE INTO user_learner_links (
+    user_id,
+    learner_id
+)
+VALUES (
+    (SELECT id FROM users WHERE username = 'student_demo'),
+    (SELECT id FROM learners WHERE code = 'demo-learner')
+);
+
+INSERT OR IGNORE INTO teacher_course_assignments (
+    user_id,
+    course_id
+)
+VALUES (
+    (SELECT id FROM users WHERE username = 'teacher_demo'),
+    (SELECT id FROM courses WHERE code = 'data-structures')
+);

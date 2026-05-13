@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
 
 import LearnerProfileView from "./LearnerProfileView.vue";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 import { fetchLearnerProfile } from "../api/learnerProfile";
 import { generateLearningPath } from "../api/path";
@@ -59,12 +60,109 @@ function buildProfilePayload() {
     ],
     recentFeedbackItems: [],
     recentResourceViewItems: [],
+    analytics: {
+      masteryDistribution: [
+        {
+          code: "queue",
+          name: "队列",
+          chapterNo: 4,
+          masteryPercent: 20,
+        },
+      ],
+      feedbackTrend: [
+        {
+          index: 1,
+          label: "反馈1",
+          knowledgePointCode: "queue",
+          averageUpdatedMasteryPercent: 20,
+        },
+      ],
+      feedbackStatusComposition: [
+        {
+          status: "completed",
+          label: "已完成",
+          count: 1,
+        },
+        {
+          status: "partial",
+          label: "部分完成",
+          count: 0,
+        },
+        {
+          status: "blocked",
+          label: "学习受阻",
+          count: 0,
+        },
+      ],
+    },
+  };
+}
+
+function buildZeroActivityProfilePayload() {
+  return {
+    ...buildProfilePayload(),
+    analytics: {
+      masteryDistribution: [
+        {
+          code: "queue",
+          name: "队列",
+          chapterNo: 4,
+          masteryPercent: 20,
+        },
+      ],
+      feedbackTrend: [
+        {
+          index: 1,
+          label: "反馈1",
+          knowledgePointCode: "queue",
+          averageUpdatedMasteryPercent: 20,
+        },
+      ],
+      feedbackStatusComposition: [
+        {
+          status: "completed",
+          label: "已完成",
+          count: 0,
+        },
+        {
+          status: "partial",
+          label: "部分完成",
+          count: 0,
+        },
+        {
+          status: "blocked",
+          label: "学习受阻",
+          count: 0,
+        },
+      ],
+    },
   };
 }
 
 async function flushUi() {
   await Promise.resolve();
   await Promise.resolve();
+}
+
+function mountView(options = {}) {
+  const pinia = createPinia();
+  setActivePinia(pinia);
+
+  const authStore = useAuthStore();
+  if (options.session) {
+    authStore.setSession(options.session);
+  }
+
+  return mount(LearnerProfileView, {
+    global: {
+      plugins: [pinia],
+      stubs: {
+        PageLayout: {
+          template: "<div><slot name='hero-side' /><slot /></div>",
+        },
+      },
+    },
+  });
 }
 
 describe("LearnerProfileView", () => {
@@ -88,6 +186,63 @@ describe("LearnerProfileView", () => {
       ],
     });
 
+    const wrapper = mountView({
+      session: {
+        currentUser: {
+          id: 8,
+          username: "student8",
+        },
+        currentRoles: ["student"],
+        activeRole: "student",
+        linkedLearner: {
+          learnerCode: "learner-008",
+        },
+      },
+    });
+
+    await flushUi();
+
+    const button = wrapper
+      .findAll("button")
+      .find((item) => item.text().includes("查看推荐资源"));
+    expect(button).toBeTruthy();
+
+    await button.trigger("click");
+    await flushUi();
+
+    const store = useNavigationStore();
+    expect(fetchLearnerProfile).toHaveBeenCalledWith({
+      learnerCode: "learner-008",
+    });
+    expect(generateLearningPath).toHaveBeenCalledWith({
+      learnerCode: "learner-008",
+      targetCodes: ["queue"],
+      availableMinutes: 120,
+      masteryByCode: {
+        queue: 0.2,
+      },
+    });
+    expect(store.resourceSectionByCode("queue")?.name).toBe("队列");
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "resource-recommendation",
+      params: { code: "queue" },
+      query: {
+        level: "main",
+      },
+    });
+  });
+
+  it("renders analytics chart section titles", async () => {
+    fetchLearnerProfile.mockResolvedValue(buildProfilePayload());
+    generateLearningPath.mockResolvedValue({
+      summary: {
+        availableMinutes: 120,
+        scheduledCount: 0,
+        deferredCount: 0,
+      },
+      resourceRecommendations: [],
+    });
+
     const pinia = createPinia();
     setActivePinia(pinia);
 
@@ -104,30 +259,40 @@ describe("LearnerProfileView", () => {
 
     await flushUi();
 
-    const button = wrapper
-      .findAll("button")
-      .find((item) => item.text().includes("查看推荐资源"));
-    expect(button).toBeTruthy();
+    expect(wrapper.text()).toContain("掌握度分布");
+    expect(wrapper.text()).toContain("学习反馈趋势");
+    expect(wrapper.text()).toContain("学习活动结构");
+  });
 
-    await button.trigger("click");
+  it("renders empty state instead of zero activity structure bars", async () => {
+    fetchLearnerProfile.mockResolvedValue(buildZeroActivityProfilePayload());
+    generateLearningPath.mockResolvedValue({
+      summary: {
+        availableMinutes: 120,
+        scheduledCount: 0,
+        deferredCount: 0,
+      },
+      resourceRecommendations: [],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mount(LearnerProfileView, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          PageLayout: {
+            template: "<div><slot name='hero-side' /><slot /></div>",
+          },
+        },
+      },
+    });
+
     await flushUi();
 
-    const store = useNavigationStore();
-    expect(generateLearningPath).toHaveBeenCalledWith({
-      learnerCode: "demo-learner",
-      targetCodes: ["queue"],
-      availableMinutes: 120,
-      masteryByCode: {
-        queue: 0.2,
-      },
-    });
-    expect(store.resourceSectionByCode("queue")?.name).toBe("队列");
-    expect(pushMock).toHaveBeenCalledWith({
-      name: "resource-recommendation",
-      params: { code: "queue" },
-      query: {
-        level: "main",
-      },
-    });
+    expect(wrapper.text()).toContain("学习活动结构");
+    expect(wrapper.text()).toContain("暂无学习活动结构数据。");
+    expect(wrapper.text()).not.toContain("0 条 · 0%");
   });
 });

@@ -44,6 +44,7 @@
 frontend/node_modules/
 frontend/dist/
 backend/build/
+.worktrees/
 database/data/*.db
 database/data/*.sqlite
 !database/data/.gitkeep

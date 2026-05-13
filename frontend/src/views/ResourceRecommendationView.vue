@@ -94,6 +94,18 @@
           </button>
         </div>
 
+        <div v-if="stageSummary" class="resource-stage-panel">
+          <p class="resource-stage-panel-label">推荐阶段</p>
+          <div class="resource-stage-panel-body">
+            <strong class="resource-stage-panel-title">
+              {{ stageSummary.recommendationStageLabel }}
+            </strong>
+            <p v-if="stageSummary.stageGuidance" class="resource-stage-panel-copy">
+              {{ stageSummary.stageGuidance }}
+            </p>
+          </div>
+        </div>
+
         <dl class="summary-grid">
           <div>
             <dt>资源总数</dt>
@@ -152,6 +164,12 @@
                 {{ resource.title }}
               </a>
               <div class="resource-item-badges">
+                <span
+                  v-if="resource.recommendationStageLabel"
+                  class="resource-stage-badge"
+                >
+                  {{ resource.recommendationStageLabel }}
+                </span>
                 <span
                   v-if="resource.isPrimaryRecommendation"
                   class="resource-top-badge"
@@ -325,6 +343,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import PageLayout from "../components/PageLayout.vue";
 import { recordResourceView } from "../api/resource";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 import {
   buildTimeBudgetTierHint,
@@ -339,11 +358,13 @@ import {
 // recommendation flow, recommendation detail page.
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const navigationStore = useNavigationStore();
 
 const actionMessage = ref("");
 const actionError = ref("");
 const showAllResources = ref(false);
+const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
 
 const resourceInteractionButtons = [
   { value: "viewed", label: "记为已看" },
@@ -539,6 +560,20 @@ const hiddenResourceCount = computed(() =>
 
 const hasHiddenResources = computed(() => hiddenResourceCount.value > 0);
 
+const stageSummary = computed(() => {
+  const firstStagedResource = displayedResources.value.find(
+    (resource) => resource?.recommendationStageLabel,
+  );
+  if (!firstStagedResource?.recommendationStageLabel) {
+    return null;
+  }
+
+  return {
+    recommendationStageLabel: firstStagedResource.recommendationStageLabel,
+    stageGuidance: firstStagedResource.stageGuidance || "",
+  };
+});
+
 const displayGuidanceText = computed(() => {
   if (!currentSection.value) {
     return "当前节点暂无可展示资源。";
@@ -601,6 +636,18 @@ const currentSectionHeroCopy = computed(() => {
 
 function toggleShowAllResources() {
   showAllResources.value = !showAllResources.value;
+}
+
+function clearStaleResourceContext() {
+  if (!authLearnerCode.value || !hasResourceSnapshot.value) {
+    return;
+  }
+
+  if (authLearnerCode.value === navigationStore.activeLearnerCode) {
+    return;
+  }
+
+  navigationStore.clearResourceRecommendationContext();
 }
 
 const returnButtonLabel = computed(() =>
@@ -679,6 +726,16 @@ watch(
   () => activeResourcePageLevel.value,
   () => {
     showAllResources.value = false;
+  },
+);
+
+watch(
+  [authLearnerCode, () => navigationStore.activeLearnerCode, hasResourceSnapshot],
+  () => {
+    clearStaleResourceContext();
+  },
+  {
+    immediate: true,
   },
 );
 
@@ -848,7 +905,8 @@ async function recordResourceInteraction(section, resource, interactionType) {
   actionError.value = "";
 
   const payload = await recordResourceView({
-    learnerCode: navigationStore.activeLearnerCode || "demo-learner",
+    learnerCode:
+      authLearnerCode.value || navigationStore.activeLearnerCode || "demo-learner",
     knowledgePointCode: section.recordingKnowledgePointCode || section.code,
     resourceTitle: resource.title,
     resourceUrl: resource.url,
@@ -1075,8 +1133,44 @@ dd {
   line-height: 1.55;
 }
 
+.resource-stage-panel {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(55, 82, 129, 0.06);
+  border: 1px solid rgba(55, 82, 129, 0.12);
+  display: grid;
+  gap: 10px;
+}
+
+.resource-stage-panel-label,
+.resource-stage-panel-copy {
+  margin: 0;
+}
+
+.resource-stage-panel-label {
+  color: #27456f;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.resource-stage-panel-body {
+  display: grid;
+  gap: 6px;
+}
+
+.resource-stage-panel-title {
+  color: #24323b;
+}
+
+.resource-stage-panel-copy {
+  color: #44515c;
+  line-height: 1.55;
+}
+
 .resource-layer-chip,
 .resource-layer-badge,
+.resource-stage-badge,
 .resource-origin-badge,
 .resource-phase,
 .resource-focus-node,
@@ -1120,6 +1214,11 @@ dd {
 .resource-state-badge--completed {
   background: rgba(28, 113, 58, 0.12);
   color: #14542d;
+}
+
+.resource-stage-badge {
+  background: rgba(55, 82, 129, 0.14);
+  color: #27456f;
 }
 
 .resource-top-badge {

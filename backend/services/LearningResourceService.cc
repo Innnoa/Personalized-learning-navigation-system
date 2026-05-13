@@ -36,6 +36,13 @@ struct DetailScopeCatalog
     std::unordered_map<std::string, int> nodeDisplayOrderByCode;
 };
 
+struct RecommendationStage
+{
+    std::string code;
+    std::string label;
+    std::string guidance;
+};
+
 const std::unordered_map<std::string, Json::Value> &getLearningResourceCatalog();
 const std::unordered_map<std::string, Json::Value> &
 getCourseChapterLinkCatalog();
@@ -892,6 +899,18 @@ std::vector<Json::Value> buildDiversifiedResourceOrder(
     return orderedResources;
 }
 
+std::vector<Json::Value> buildCappedResourceItems(
+    const std::vector<Json::Value> &resourceItems)
+{
+    if (resourceItems.size() <= 4)
+    {
+        return resourceItems;
+    }
+
+    return std::vector<Json::Value>(resourceItems.begin(),
+                                    resourceItems.begin() + 4);
+}
+
 std::string buildInteractionLabel(const std::string &interactionType)
 {
     if (interactionType == "viewed")
@@ -1288,6 +1307,35 @@ std::string buildPhaseGuidance(
     return "适合作为当前节点的配套学习材料。";
 }
 
+RecommendationStage buildRecommendationStage(
+    const algorithm::planner::LearningPathItem &item)
+{
+    if (item.masteryScore < 0.30)
+    {
+        return {"foundation",
+                "入门讲解",
+                "当前掌握度较低，建议先用入门讲解型资源建立基础概念与核心直觉。"};
+    }
+
+    if (item.masteryScore < 0.60)
+    {
+        return {"consolidation",
+                "巩固理解",
+                "当前掌握度正在提升，建议优先使用巩固理解型资源补齐关键定义与步骤。"};
+    }
+
+    if (item.masteryScore < 0.85)
+    {
+        return {"practice",
+                "应用训练",
+                "当前掌握度已具备基础，建议通过应用训练型资源加强迁移与实操。"};
+    }
+
+    return {"advanced",
+            "提升拓展",
+            "当前掌握度较高，建议优先查看提升拓展型资源补充进阶视角与延伸应用。"};
+}
+
 std::string resolveCourseChapterRecommendedPhase(
     const algorithm::planner::LearningPathItem &item)
 {
@@ -1625,6 +1673,7 @@ Json::Value LearningResourceService::buildResourcesForLearningPathItem(
 
     const auto explanation =
         algorithm::explainer::explainLearningPathItem(item);
+    const auto recommendationStage = buildRecommendationStage(item);
     const auto latestInteractionByUrl =
         loadLatestInteractionByUrl(learnerCode, item);
 
@@ -1681,6 +1730,7 @@ Json::Value LearningResourceService::buildResourcesForLearningPathItem(
                      });
 
     resourceItems = buildDiversifiedResourceOrder(std::move(resourceItems));
+    resourceItems = buildCappedResourceItems(resourceItems);
 
     Json::Value resources(Json::arrayValue);
     for (std::size_t index = 0; index < resourceItems.size(); ++index)
@@ -1700,6 +1750,9 @@ Json::Value LearningResourceService::buildResourcesForLearningPathItem(
         resourcePayload["resourceLayer"] = resourceLayer;
         resourcePayload["resourceLayerHint"] =
             buildResourceLayerHint(resourceLayer);
+        resourcePayload["recommendationStageCode"] = recommendationStage.code;
+        resourcePayload["recommendationStageLabel"] = recommendationStage.label;
+        resourcePayload["stageGuidance"] = recommendationStage.guidance;
         resourcePayload["linkedReasonLabels"] = linkedReasonLabels;
         resourcePayload["linkedReasonLabelSummary"] =
             buildLinkedReasonLabelSummary(linkedReasonLabels);

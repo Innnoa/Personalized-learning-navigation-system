@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { generateLearningPath } from "../api/path";
@@ -53,10 +53,12 @@ import LearnerProfileCard from "../components/LearnerProfileCard.vue";
 import PageLayout from "../components/PageLayout.vue";
 import { fetchHealth } from "../api/health";
 import { fetchLearnerProfile } from "../api/learnerProfile";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 
 const RESOURCE_PREVIEW_MINUTES = 120;
 const router = useRouter();
+const authStore = useAuthStore();
 const navigationStore = useNavigationStore();
 const health = ref(null);
 const healthError = ref("");
@@ -68,13 +70,16 @@ const resourcePreviewError = ref("");
 const resettingDemo = ref(false);
 const resetMessage = ref("");
 const resetError = ref("");
+const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
 
 async function loadLearnerProfile() {
   learnerProfileLoading.value = true;
   learnerProfileError.value = "";
 
   try {
-    learnerProfile.value = await fetchLearnerProfile();
+    learnerProfile.value = authLearnerCode.value
+      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
+      : await fetchLearnerProfile();
   } catch (error) {
     learnerProfileError.value =
       "未能读取学习者画像。请先启动后端并确认数据库已初始化。";
@@ -108,7 +113,8 @@ async function handleOpenWeakItemResource(item) {
   resourcePreviewError.value = "";
 
   try {
-    const learnerCode = learnerProfile.value.learner?.code || "demo-learner";
+    const learnerCode =
+      authLearnerCode.value || learnerProfile.value.learner?.code || "demo-learner";
     const masteryByCode = learnerProfile.value.masteryByCode || {};
     const payload = await generateLearningPath({
       learnerCode,

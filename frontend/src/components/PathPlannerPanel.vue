@@ -561,6 +561,29 @@
                     </li>
                   </ul>
                 </article>
+
+                <article v-if="postFeedbackPracticePrompt" class="result-card result-card--wide">
+                  <h3>是否进入练习检验</h3>
+                  <p class="path-item-reason">
+                    学习反馈已保存并完成重新规划，可选择暂不进入检验，或直接前往练习检验继续验证当前目标掌握情况。
+                  </p>
+                  <div class="result-action-row result-action-row--stacked">
+                    <button
+                      type="button"
+                      class="ghost-button"
+                      @click="dismissPostFeedbackPracticePrompt"
+                    >
+                      暂不检验
+                    </button>
+                    <button
+                      type="button"
+                      class="submit-button submit-button--inline"
+                      @click="goToPracticeCheck"
+                    >
+                      进入练习检验
+                    </button>
+                  </div>
+                </article>
               </template>
 
               <template v-if="rollbackSummary">
@@ -828,6 +851,7 @@ const rollbackSummary = ref(null);
 const rollbackItems = ref([]);
 const pathComparison = ref(null);
 const pathComparisonMode = ref("adjust");
+const postFeedbackPracticePrompt = ref(null);
 const optionsReady = ref(false);
 const initialPlanInitialized = ref(false);
 const expandedExplanationByCode = ref({});
@@ -1314,6 +1338,30 @@ function clearOperationOutputs() {
   rollbackSummary.value = null;
   rollbackItems.value = [];
   pathComparison.value = null;
+  postFeedbackPracticePrompt.value = null;
+}
+
+function dismissPostFeedbackPracticePrompt() {
+  postFeedbackPracticePrompt.value = null;
+}
+
+function goToPracticeCheck() {
+  const prompt = postFeedbackPracticePrompt.value;
+  if (!prompt) {
+    return;
+  }
+
+  navigationStore.setPracticeCheckContext({
+    learnerCode: props.learnerCode,
+    sourcePage: "home",
+    targetCode: prompt.targetCode,
+    targetName: prompt.targetName,
+    scopeCode: "root",
+    scopeLabel: "课程主线",
+    feedbackBatchId: prompt.feedbackBatchId,
+    feedbackItemCount: prompt.feedbackItemCount,
+  });
+  router.push({ name: "practice-check" });
 }
 
 function exportCurrentPlan() {
@@ -1466,6 +1514,14 @@ async function submitAdjustment() {
     pathComparisonMode.value = "adjust";
     pathComparison.value = buildPathComparison(beforePlanSnapshot, nextPlanResult);
     syncFeedbackDrafts();
+    postFeedbackPracticePrompt.value = {
+      targetCode: selectedTargetCode.value,
+      targetName: selectedTargetLabel.value,
+      feedbackBatchId:
+        payload.feedbackSummary?.feedbackBatchId || payload.feedbackBatchId || "",
+      feedbackItemCount:
+        Number(payload.feedbackSummary?.feedbackItemCount ?? payload.feedbackItemCount) || 0,
+    };
   } catch (error) {
     adjustError.value =
       error?.response?.data?.detail ||

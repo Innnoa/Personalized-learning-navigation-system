@@ -60,6 +60,7 @@ function createElement(id, collection, nodeDataMap) {
 
 const { fetchKnowledgeGraph } = await import("../api/knowledgeGraph");
 const { generateDetailLearningPath } = await import("../api/path");
+const { adjustDetailLearningPath } = await import("../api/path");
 const { downloadLearningPathExport } = await import("../utils/learningPathExport");
 const { loadCytoscape } = await import("../graph/loadCytoscape");
 const { useNavigationStore } = await import("../stores/navigationStore");
@@ -203,6 +204,51 @@ describe("DetailLearningWorkspace", () => {
               recommendedUsage: "配合当前节点学习。",
             },
           ],
+        },
+      ],
+    });
+    adjustDetailLearningPath.mockResolvedValue({
+      summary: {
+        scheduledCount: 0,
+        deferredCount: 0,
+        masteredCount: 1,
+        scheduledMinutes: 0,
+        totalRequiredMinutes: 20,
+        targetReachableWithinBudget: true,
+      },
+      path: [
+        {
+          code: "queue-linked",
+          name: "链式队列",
+          chapterNo: 4,
+          difficultyLevel: 2,
+          estimatedMinutes: 20,
+          masteryPercent: 95,
+          status: "mastered",
+          explanation: {
+            summary: "当前细化目标已完成本轮学习。",
+          },
+        },
+      ],
+      resourceRecommendations: [],
+      updatedMasteryByCode: {
+        "queue-array": 0.2,
+        "queue-linked": 0.95,
+      },
+      feedbackSummary: {
+        feedbackBatchId: "detail-batch-123",
+        feedbackItemCount: 1,
+        completedCount: 1,
+        partialCount: 0,
+        blockedCount: 0,
+      },
+      adjustments: [
+        {
+          code: "queue-linked",
+          completionStatus: "completed",
+          previousMastery: 0.1,
+          updatedMastery: 0.95,
+          adjustmentReasons: ["掌握度明显提升。"],
         },
       ],
     });
@@ -539,6 +585,7 @@ describe("DetailLearningWorkspace", () => {
     const { wrapper, store } = mountWorkspace();
 
     await flushUi(6);
+    await wrapper.findAll("select")[0].setValue("queue-linked");
     await wrapper.get(".detail-path-form").trigger("submit.prevent");
     await flushUi(6);
 
@@ -560,5 +607,309 @@ describe("DetailLearningWorkspace", () => {
         level: "detail",
       },
     });
+  });
+
+  it("routes to practice check with detail-scoped context after successful feedback adjustment", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useNavigationStore();
+
+    store.setDetailLearningContext({
+      learnerCode: "demo-learner",
+      detailLearningSections: [
+        {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      ],
+      selectedScopeCode: "queue-detail",
+      sourceTargetLabel: "队列",
+      sourcePage: "home",
+    });
+    store.setDetailLearningViewState("queue-detail", {
+      targetNodeCode: "queue-linked",
+      availableMinutes: 20,
+      planResult: {
+        summary: {
+          scheduledCount: 1,
+          deferredCount: 0,
+          masteredCount: 0,
+          scheduledMinutes: 20,
+          totalRequiredMinutes: 20,
+          targetReachableWithinBudget: true,
+        },
+        path: [
+          {
+            code: "queue-linked",
+            name: "链式队列",
+            chapterNo: 4,
+            difficultyLevel: 2,
+            estimatedMinutes: 20,
+            masteryPercent: 30,
+            status: "scheduled",
+            explanation: {
+              summary: "当前应先掌握链式队列。",
+            },
+          },
+        ],
+        resourceRecommendations: [],
+      },
+    });
+
+    const wrapper = mount(DetailLearningWorkspace, {
+      global: {
+        plugins: [pinia],
+      },
+      props: {
+        learnerCode: "demo-learner",
+        masteryByCode: {
+          "queue-array": 0.2,
+          "queue-linked": 0.1,
+        },
+        section: {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      },
+    });
+
+    await flushUi(6);
+    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
+    await flushUi(6);
+
+    expect(adjustDetailLearningPath).toHaveBeenCalled();
+    expect(wrapper.text()).toContain("是否进入练习检验");
+
+    const practiceCheckButton = wrapper
+      .findAll("button")
+      .find((button) => button.text().includes("进入练习检验"));
+
+    expect(practiceCheckButton).toBeTruthy();
+
+    await practiceCheckButton.trigger("click");
+
+    expect(store.practiceCheckContext).toMatchObject({
+      learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      targetCode: "queue-linked",
+      targetName: "链式队列",
+      scopeCode: "queue-detail",
+      scopeLabel: "队列",
+      feedbackBatchId: "detail-batch-123",
+      feedbackItemCount: 1,
+    });
+    expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
+  });
+
+  it("only shows practice prompt after a successful current detail adjustment", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useNavigationStore();
+
+    store.setDetailLearningContext({
+      learnerCode: "demo-learner",
+      detailLearningSections: [
+        {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      ],
+      selectedScopeCode: "queue-detail",
+      sourceTargetLabel: "队列",
+      sourcePage: "home",
+    });
+    store.setDetailLearningViewState("queue-detail", {
+      targetNodeCode: "queue-linked",
+      availableMinutes: 20,
+      planResult: {
+        summary: {
+          scheduledCount: 1,
+          deferredCount: 0,
+          masteredCount: 0,
+          scheduledMinutes: 20,
+          totalRequiredMinutes: 20,
+          targetReachableWithinBudget: true,
+        },
+        path: [
+          {
+            code: "queue-linked",
+            name: "链式队列",
+            chapterNo: 4,
+            difficultyLevel: 2,
+            estimatedMinutes: 20,
+            masteryPercent: 30,
+            status: "scheduled",
+            explanation: {
+              summary: "当前应先掌握链式队列。",
+            },
+          },
+        ],
+        resourceRecommendations: [],
+      },
+    });
+
+    const wrapper = mount(DetailLearningWorkspace, {
+      global: {
+        plugins: [pinia],
+      },
+      props: {
+        learnerCode: "demo-learner",
+        masteryByCode: {
+          "queue-array": 0.2,
+          "queue-linked": 0.1,
+        },
+        section: {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      },
+    });
+
+    await flushUi(6);
+
+    expect(wrapper.text()).not.toContain("是否进入练习检验");
+
+    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
+    await flushUi(6);
+
+    expect(wrapper.text()).toContain("是否进入练习检验");
+  });
+
+  it("clears stale practice prompt when a later detail adjustment attempt fails", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useNavigationStore();
+
+    store.setDetailLearningContext({
+      learnerCode: "demo-learner",
+      detailLearningSections: [
+        {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      ],
+      selectedScopeCode: "queue-detail",
+      sourceTargetLabel: "队列",
+      sourcePage: "home",
+    });
+    store.setDetailLearningViewState("queue-detail", {
+      targetNodeCode: "queue-linked",
+      availableMinutes: 20,
+      planResult: {
+        summary: {
+          scheduledCount: 1,
+          deferredCount: 0,
+          masteredCount: 0,
+          scheduledMinutes: 20,
+          totalRequiredMinutes: 20,
+          targetReachableWithinBudget: true,
+        },
+        path: [
+          {
+            code: "queue-linked",
+            name: "链式队列",
+            chapterNo: 4,
+            difficultyLevel: 2,
+            estimatedMinutes: 20,
+            masteryPercent: 30,
+            status: "scheduled",
+            explanation: {
+              summary: "当前应先掌握链式队列。",
+            },
+          },
+        ],
+        resourceRecommendations: [],
+      },
+    });
+
+    const wrapper = mount(DetailLearningWorkspace, {
+      global: {
+        plugins: [pinia],
+      },
+      props: {
+        learnerCode: "demo-learner",
+        masteryByCode: {
+          "queue-array": 0.2,
+          "queue-linked": 0.1,
+        },
+        section: {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      },
+    });
+
+    await flushUi(6);
+    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
+    await flushUi(6);
+
+    expect(wrapper.text()).toContain("是否进入练习检验");
+
+    adjustDetailLearningPath.mockRejectedValueOnce(new Error("detail adjust failed"));
+
+    generateDetailLearningPath.mockResolvedValueOnce({
+      summary: {
+        scheduledCount: 1,
+        deferredCount: 0,
+        masteredCount: 0,
+        scheduledMinutes: 20,
+        totalRequiredMinutes: 20,
+        targetReachableWithinBudget: true,
+      },
+      path: [
+        {
+          code: "queue-linked",
+          name: "链式队列",
+          chapterNo: 4,
+          difficultyLevel: 2,
+          estimatedMinutes: 20,
+          masteryPercent: 30,
+          status: "scheduled",
+          explanation: {
+            summary: "当前应先掌握链式队列。",
+          },
+        },
+      ],
+      resourceRecommendations: [],
+    });
+
+    await wrapper.get(".detail-path-form").trigger("submit.prevent");
+    await flushUi(6);
+
+    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
+    await flushUi(6);
+
+    expect(wrapper.text()).not.toContain("是否进入练习检验");
+    expect(wrapper.text()).toContain("本范围学习反馈调整失败");
   });
 });

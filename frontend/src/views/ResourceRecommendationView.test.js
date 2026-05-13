@@ -3,7 +3,9 @@ import { mount, RouterLinkStub } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import ResourceRecommendationView from "./ResourceRecommendationView.vue";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
+import { recordResourceView } from "../api/resource";
 
 const pushMock = vi.fn();
 let routeParams = { code: "queue" };
@@ -22,11 +24,17 @@ vi.mock("../api/resource", () => ({
   recordResourceView: vi.fn(),
 }));
 
-function mountView() {
+function mountView(options = {}) {
   const pinia = createPinia();
   setActivePinia(pinia);
 
+  const authStore = useAuthStore();
+  if (options.session) {
+    authStore.setSession(options.session);
+  }
+
   return {
+    authStore,
     store: useNavigationStore(),
     wrapper: mount(ResourceRecommendationView, {
       global: {
@@ -45,6 +53,7 @@ describe("ResourceRecommendationView", () => {
     routeParams = { code: "queue" };
     routeQuery = {};
     window.sessionStorage.clear();
+    recordResourceView.mockReset();
   });
 
   it("shows empty snapshot guidance when no cached resource context exists", () => {
@@ -431,5 +440,239 @@ describe("ResourceRecommendationView", () => {
     await wrapper.vm.$forceUpdate();
     await Promise.resolve();
     expect(wrapper.text()).toContain("120 分钟（充裕）");
+  });
+
+  it("surfaces stage summary and per-resource stage badge when backend stage labels exist", async () => {
+    routeParams = { code: "queue" };
+    const { wrapper, store } = mountView();
+
+    store.setResourceRecommendationContext({
+      learnerCode: "test-learner",
+      resourceRecommendationSections: [
+        {
+          code: "queue",
+          name: "队列",
+          status: "scheduled",
+          resourceCount: 2,
+          recommendedUsage: "先看主学资源。",
+          resources: [
+            {
+              url: "https://example.com/r1",
+              title: "资源1",
+              type: "video",
+              source: "来源1",
+              recommendationStageLabel: "当前阶段优先",
+              stageGuidance: "先完成当前主线资源，再补充延伸材料。",
+            },
+            {
+              url: "https://example.com/r2",
+              title: "资源2",
+              type: "article",
+              source: "来源2",
+            },
+          ],
+        },
+      ],
+      targetLabel: "队列",
+      availableMinutes: 45,
+      scheduledCount: 1,
+      deferredCount: 0,
+    });
+
+    await wrapper.vm.$forceUpdate();
+    await Promise.resolve();
+
+    expect(wrapper.text()).toContain("推荐阶段");
+    expect(wrapper.text()).toContain("当前阶段优先");
+    expect(wrapper.text()).toContain("先完成当前主线资源，再补充延伸材料。");
+    expect(wrapper.findAll(".resource-stage-badge")).toHaveLength(1);
+  });
+
+  it("uses the first displayed resource with a stage label for the stage panel", async () => {
+    routeParams = { code: "queue" };
+    const { wrapper, store } = mountView();
+
+    store.setResourceRecommendationContext({
+      learnerCode: "test-learner",
+      resourceRecommendationSections: [
+        {
+          code: "queue",
+          name: "队列",
+          status: "scheduled",
+          resourceCount: 2,
+          recommendedUsage: "先看主学资源。",
+          resources: [
+            {
+              url: "https://example.com/r1",
+              title: "资源1",
+              type: "video",
+              source: "来源1",
+            },
+            {
+              url: "https://example.com/r2",
+              title: "资源2",
+              type: "article",
+              source: "来源2",
+              recommendationStageLabel: "巩固阶段",
+              stageGuidance: "先完成基础内容，再切换到巩固材料。",
+            },
+          ],
+        },
+      ],
+      targetLabel: "队列",
+      availableMinutes: 45,
+      scheduledCount: 1,
+      deferredCount: 0,
+    });
+
+    await wrapper.vm.$forceUpdate();
+    await Promise.resolve();
+
+    expect(wrapper.text()).toContain("推荐阶段");
+    expect(wrapper.text()).toContain("巩固阶段");
+    expect(wrapper.text()).toContain("先完成基础内容，再切换到巩固材料。");
+  });
+
+  it("renders stage title without empty guidance copy when stage guidance is missing", async () => {
+    routeParams = { code: "queue" };
+    const { wrapper, store } = mountView();
+
+    store.setResourceRecommendationContext({
+      learnerCode: "test-learner",
+      resourceRecommendationSections: [
+        {
+          code: "queue",
+          name: "队列",
+          status: "scheduled",
+          resourceCount: 1,
+          recommendedUsage: "先看主学资源。",
+          resources: [
+            {
+              url: "https://example.com/r1",
+              title: "资源1",
+              type: "video",
+              source: "来源1",
+              recommendationStageLabel: "当前阶段优先",
+            },
+          ],
+        },
+      ],
+      targetLabel: "队列",
+      availableMinutes: 45,
+      scheduledCount: 1,
+      deferredCount: 0,
+    });
+
+    await wrapper.vm.$forceUpdate();
+    await Promise.resolve();
+
+    expect(wrapper.text()).toContain("推荐阶段");
+    expect(wrapper.find(".resource-stage-panel-copy").exists()).toBe(false);
+  });
+
+  it("clears stale resource context when stored learner differs from auth learner", async () => {
+    const { wrapper, store } = mountView({
+      session: {
+        currentUser: {
+          id: 5,
+          username: "student5",
+        },
+        currentRoles: ["student"],
+        activeRole: "student",
+        linkedLearner: {
+          learnerCode: "learner-005",
+        },
+      },
+    });
+
+    store.setResourceRecommendationContext({
+      learnerCode: "demo-learner",
+      resourceRecommendationSections: [
+        {
+          code: "queue",
+          name: "队列",
+          status: "scheduled",
+          resourceCount: 1,
+          recommendedUsage: "先看课程视频。",
+          resources: [
+            {
+              url: "https://example.com/r1",
+              title: "资源1",
+              type: "video",
+              source: "来源1",
+            },
+          ],
+        },
+      ],
+      targetLabel: "队列",
+      availableMinutes: 45,
+      scheduledCount: 1,
+      deferredCount: 0,
+    });
+
+    await wrapper.vm.$forceUpdate();
+    await Promise.resolve();
+
+    expect(store.activeLearnerCode).toBe("demo-learner");
+    expect(wrapper.text()).toContain("当前还没有可用的资源推荐快照");
+  });
+
+  it("records resource interaction with current auth learner instead of stale stored learner", async () => {
+    recordResourceView.mockResolvedValue({
+      recordedResource: {
+        interactionTypeLabel: "已打开",
+      },
+    });
+
+    const { wrapper, store } = mountView({
+      session: {
+        currentUser: {
+          id: 5,
+          username: "student5",
+        },
+        currentRoles: ["student"],
+        activeRole: "student",
+        linkedLearner: {
+          learnerCode: "learner-005",
+        },
+      },
+    });
+
+    store.setResourceRecommendationContext({
+      learnerCode: "learner-005",
+      resourceRecommendationSections: [
+        {
+          code: "queue",
+          name: "队列",
+          status: "scheduled",
+          resourceCount: 1,
+          recommendedUsage: "先看课程视频。",
+          resources: [
+            {
+              url: "https://example.com/r1",
+              title: "资源1",
+              type: "video",
+              source: "来源1",
+            },
+          ],
+        },
+      ],
+      targetLabel: "队列",
+      availableMinutes: 45,
+      scheduledCount: 1,
+      deferredCount: 0,
+    });
+
+    await wrapper.vm.$forceUpdate();
+    await Promise.resolve();
+
+    await wrapper.get(".resource-link").trigger("click");
+    await Promise.resolve();
+
+    expect(recordResourceView).toHaveBeenCalledWith(
+      expect.objectContaining({
+        learnerCode: "learner-005",
+      }),
+    );
   });
 });

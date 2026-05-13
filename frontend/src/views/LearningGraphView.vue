@@ -28,19 +28,24 @@ import { useRoute, useRouter } from "vue-router";
 import { fetchLearnerProfile } from "../api/learnerProfile";
 import LearnerLearningGraph from "../components/LearnerLearningGraph.vue";
 import PageLayout from "../components/PageLayout.vue";
+import { useAuthStore } from "../stores/authStore";
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const learnerProfile = ref(null);
 const learnerProfileError = ref("");
 
 const preferredSelectedCode = computed(() => String(route.query.focus || ""));
+const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
 
 async function loadLearnerProfile() {
   learnerProfileError.value = "";
 
   try {
-    learnerProfile.value = await fetchLearnerProfile();
+    learnerProfile.value = authLearnerCode.value
+      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
+      : await fetchLearnerProfile();
   } catch (error) {
     learnerProfileError.value =
       "未能读取学习者画像。请先启动后端并确认数据库已初始化。";

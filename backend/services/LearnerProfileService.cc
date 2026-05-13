@@ -7,6 +7,7 @@
 #include <drogon/drogon.h>
 
 #include <cmath>
+#include <cstddef>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -113,10 +114,16 @@ Json::Value LearnerProfileService::buildProfilePayload(
     Json::Value masteryItems(Json::arrayValue);
     Json::Value recentFeedbackItems(Json::arrayValue);
     Json::Value recentResourceViewItems(Json::arrayValue);
+    Json::Value masteryDistribution(Json::arrayValue);
+    Json::Value feedbackTrend(Json::arrayValue);
+    Json::Value feedbackStatusComposition(Json::arrayValue);
     double masterySum = 0.0;
     int masteredCount = 0;
     int inProgressCount = 0;
     int notStartedCount = 0;
+    int completedFeedbackCount = 0;
+    int partialFeedbackCount = 0;
+    int blockedFeedbackCount = 0;
     std::unordered_map<std::string, double> mainMasteryLookup;
     mainMasteryLookup.reserve(masteryRecords.size());
 
@@ -151,6 +158,13 @@ Json::Value LearnerProfileService::buildProfilePayload(
         masteryItem["masteryScore"] = item.masteryScore;
         masteryItem["masteryPercent"] = masteryPercent;
         masteryItems.append(masteryItem);
+
+        Json::Value masteryDistributionItem(Json::objectValue);
+        masteryDistributionItem["code"] = item.code;
+        masteryDistributionItem["name"] = item.name;
+        masteryDistributionItem["chapterNo"] = item.chapterNo;
+        masteryDistributionItem["masteryPercent"] = masteryPercent;
+        masteryDistribution.append(masteryDistributionItem);
     }
 
     const auto detailProgressSnapshot =
@@ -168,6 +182,19 @@ Json::Value LearnerProfileService::buildProfilePayload(
 
     for (const auto &record : recentFeedbackRecords)
     {
+        if (record.completionStatus == "completed")
+        {
+            ++completedFeedbackCount;
+        }
+        else if (record.completionStatus == "partial")
+        {
+            ++partialFeedbackCount;
+        }
+        else if (record.completionStatus == "blocked")
+        {
+            ++blockedFeedbackCount;
+        }
+
         Json::Value feedbackItem;
         feedbackItem["knowledgePointId"] = record.knowledgePointId;
         feedbackItem["code"] = record.code;
@@ -188,6 +215,42 @@ Json::Value LearnerProfileService::buildProfilePayload(
         feedbackItem["recordedAt"] = record.recordedAt;
         recentFeedbackItems.append(feedbackItem);
     }
+
+    double cumulativeUpdatedMastery = 0.0;
+    for (std::size_t i = 0; i < recentFeedbackRecords.size(); ++i)
+    {
+        const auto &record =
+            recentFeedbackRecords[recentFeedbackRecords.size() - 1 - i];
+        cumulativeUpdatedMastery += record.updatedMastery;
+
+        Json::Value trendItem(Json::objectValue);
+        trendItem["index"] = static_cast<int>(i + 1);
+        trendItem["label"] = "反馈" + std::to_string(i + 1);
+        trendItem["recordedAt"] = record.recordedAt;
+        trendItem["averageUpdatedMasteryPercent"] =
+            static_cast<int>(std::round(cumulativeUpdatedMastery * 100.0 /
+                                        static_cast<double>(i + 1)));
+        trendItem["knowledgePointCode"] = record.code;
+        feedbackTrend.append(trendItem);
+    }
+
+    Json::Value completedComposition(Json::objectValue);
+    completedComposition["status"] = "completed";
+    completedComposition["label"] = "已完成";
+    completedComposition["count"] = completedFeedbackCount;
+    feedbackStatusComposition.append(completedComposition);
+
+    Json::Value partialComposition(Json::objectValue);
+    partialComposition["status"] = "partial";
+    partialComposition["label"] = "部分完成";
+    partialComposition["count"] = partialFeedbackCount;
+    feedbackStatusComposition.append(partialComposition);
+
+    Json::Value blockedComposition(Json::objectValue);
+    blockedComposition["status"] = "blocked";
+    blockedComposition["label"] = "学习受阻";
+    blockedComposition["count"] = blockedFeedbackCount;
+    feedbackStatusComposition.append(blockedComposition);
 
     for (const auto &record : recentResourceViewRecords)
     {
@@ -245,6 +308,10 @@ Json::Value LearnerProfileService::buildProfilePayload(
     payload["masteryItems"] = masteryItems;
     payload["recentFeedbackItems"] = recentFeedbackItems;
     payload["recentResourceViewItems"] = recentResourceViewItems;
+    payload["analytics"]["masteryDistribution"] = masteryDistribution;
+    payload["analytics"]["feedbackTrend"] = feedbackTrend;
+    payload["analytics"]["feedbackStatusComposition"] =
+        feedbackStatusComposition;
 
     return payload;
 }

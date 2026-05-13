@@ -56,6 +56,77 @@
 
       <section class="section">
         <div class="section-head">
+          <h3>掌握度分布</h3>
+          <span>按当前掌握度从高到低展示</span>
+        </div>
+
+        <div v-if="masteryBarItems.length > 0" class="chart-list">
+          <div
+            v-for="item in masteryBarItems"
+            :key="item.code"
+            class="chart-row"
+          >
+            <div class="chart-row-head">
+              <strong>{{ item.name }}</strong>
+              <span>{{ item.masteryPercent }}%</span>
+            </div>
+            <p class="chart-row-meta">第{{ item.chapterNo }}章</p>
+            <div class="bar-track" aria-hidden="true">
+              <div class="bar-fill" :style="{ width: item.width }"></div>
+            </div>
+          </div>
+        </div>
+
+        <p v-else class="empty-tip">暂无掌握度分布数据。</p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h3>学习反馈趋势</h3>
+          <span>根据最近反馈累计平均掌握度变化生成</span>
+        </div>
+
+        <div v-if="feedbackTrendPoints.length > 0" class="trend-list">
+          <div
+            v-for="point in feedbackTrendPoints"
+            :key="`${point.index}-${point.knowledgePointCode}`"
+            class="trend-point"
+          >
+            <span class="trend-point-label">{{ point.label }}</span>
+            <strong>{{ point.value }}%</strong>
+          </div>
+        </div>
+
+        <p v-else class="empty-tip">暂无学习反馈趋势数据。</p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h3>学习活动结构</h3>
+          <span>按反馈完成状态汇总</span>
+        </div>
+
+        <div v-if="feedbackCompositionItems.length > 0" class="chart-list">
+          <div
+            v-for="item in feedbackCompositionItems"
+            :key="item.status"
+            class="chart-row"
+          >
+            <div class="chart-row-head">
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.count }} 条 · {{ item.percent }}%</span>
+            </div>
+            <div class="bar-track" aria-hidden="true">
+              <div class="bar-fill bar-fill--soft" :style="{ width: `${item.percent}%` }"></div>
+            </div>
+          </div>
+        </div>
+
+        <p v-else class="empty-tip">暂无学习活动结构数据。</p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
           <h3>当前待补强知识点</h3>
           <span>低掌握度优先展示</span>
         </div>
@@ -186,6 +257,12 @@
 <script setup>
 import { computed } from "vue";
 
+import {
+  buildFeedbackCompositionItems,
+  buildFeedbackTrendPoints,
+  buildMasteryBarItems,
+} from "./profileCharts";
+
 const props = defineProps({
   profile: {
     type: Object,
@@ -241,6 +318,15 @@ const weakItems = computed(() => {
 const recentFeedbackItems = computed(() => props.profile?.recentFeedbackItems || []);
 const recentResourceViewItems = computed(
   () => props.profile?.recentResourceViewItems || [],
+);
+const masteryBarItems = computed(() =>
+  buildMasteryBarItems(props.profile?.analytics),
+);
+const feedbackTrendPoints = computed(() =>
+  buildFeedbackTrendPoints(props.profile?.analytics),
+);
+const feedbackCompositionItems = computed(() =>
+  buildFeedbackCompositionItems(props.profile?.analytics),
 );
 
 function resourceInteractionBadgeClass(interactionType) {
@@ -333,6 +419,69 @@ dd {
 .section-head span {
   color: #66727d;
   font-size: 0.88rem;
+}
+
+.chart-list,
+.trend-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.chart-row,
+.trend-point {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(247, 250, 249, 0.86);
+}
+
+.chart-row-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.chart-row-head span,
+.trend-point-label {
+  color: #66727d;
+  font-size: 0.88rem;
+}
+
+.chart-row-meta {
+  margin: 6px 0 0;
+  color: #44515c;
+}
+
+.bar-track {
+  overflow: hidden;
+  margin-top: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(12, 106, 113, 0.1);
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0c6a71, #3f9aa1);
+}
+
+.bar-fill--soft {
+  background: linear-gradient(90deg, #6f7f8c, #9baab5);
+}
+
+.trend-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trend-point {
+  display: grid;
+  gap: 6px;
+}
+
+.trend-point strong {
+  color: #0c5960;
 }
 
 .weak-list {
@@ -517,10 +666,15 @@ dd {
   .card-head,
   .section-head,
   .weak-item-main,
+  .chart-row-head,
   .record-main,
   .record-badge-group {
     flex-direction: column;
     align-items: start;
+  }
+
+  .trend-list {
+    grid-template-columns: 1fr;
   }
 
   .weak-item-side {

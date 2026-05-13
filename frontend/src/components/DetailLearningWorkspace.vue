@@ -657,6 +657,38 @@
               本次局部反馈没有改变当前二级范围的本轮安排顺序。
             </p>
           </article>
+
+          <article
+            v-if="postDetailFeedbackPracticePrompt"
+            class="detail-adjustment-panel detail-adjustment-panel--practice"
+          >
+            <div class="section-headline">
+              <div>
+                <p class="label">练习检验</p>
+                <h3>是否进入练习检验</h3>
+              </div>
+              <p class="caption">
+                当前细化反馈已保存并完成重算，可继续留在本页，或直接前往练习检验验证该细化目标的掌握情况。
+              </p>
+            </div>
+
+            <div class="detail-result-action-row detail-result-action-row--stacked">
+              <button
+                type="button"
+                class="ghost-button"
+                @click="dismissPostDetailFeedbackPracticePrompt"
+              >
+                暂不检验
+              </button>
+              <button
+                type="button"
+                class="submit-button submit-button--inline"
+                @click="goToDetailPracticeCheck"
+              >
+                进入练习检验
+              </button>
+            </div>
+          </article>
         </template>
       </template>
 
@@ -721,6 +753,7 @@ const detailAdjustmentError = ref("");
 const detailAdjustmentSummary = ref(null);
 const detailAdjustmentItems = ref([]);
 const detailPathComparison = ref(null);
+const postDetailFeedbackPracticePrompt = ref(null);
 const detailExportError = ref("");
 const loadedScopeCode = ref("");
 let cyInstance = null;
@@ -1390,6 +1423,30 @@ function clearDetailOperationOutputs() {
   detailAdjustmentSummary.value = null;
   detailAdjustmentItems.value = [];
   detailPathComparison.value = null;
+  postDetailFeedbackPracticePrompt.value = null;
+}
+
+function dismissPostDetailFeedbackPracticePrompt() {
+  postDetailFeedbackPracticePrompt.value = null;
+}
+
+function goToDetailPracticeCheck() {
+  const prompt = postDetailFeedbackPracticePrompt.value;
+  if (!prompt) {
+    return;
+  }
+
+  navigationStore.setPracticeCheckContext({
+    learnerCode: props.learnerCode,
+    sourcePage: "detail-learning",
+    targetCode: prompt.targetCode,
+    targetName: prompt.targetName,
+    scopeCode: prompt.scopeCode,
+    scopeLabel: prompt.scopeLabel,
+    feedbackBatchId: prompt.feedbackBatchId,
+    feedbackItemCount: prompt.feedbackItemCount,
+  });
+  router.push({ name: "practice-check" });
 }
 
 function normalizeDetailAvailableMinutes(value) {
@@ -1864,6 +1921,7 @@ async function submitDetailAdjustment() {
   detailAdjusting.value = true;
   detailAdjustmentError.value = "";
   detailExportError.value = "";
+  postDetailFeedbackPracticePrompt.value = null;
   const beforePlanSnapshot = clonePlanSnapshot(detailPlanResult.value);
 
   try {
@@ -1881,6 +1939,16 @@ async function submitDetailAdjustment() {
     detailAdjustmentItems.value = payload.adjustments || [];
     detailPlanResult.value = payload;
     detailPathComparison.value = buildDetailPathComparison(beforePlanSnapshot, payload);
+    postDetailFeedbackPracticePrompt.value = {
+      targetCode: detailTargetCode.value,
+      targetName: detailTargetLabel.value,
+      scopeCode: props.section.scopeCode,
+      scopeLabel: props.section.scopeLabel || currentScopeName.value,
+      feedbackBatchId:
+        payload.feedbackSummary?.feedbackBatchId || payload.feedbackBatchId || "",
+      feedbackItemCount:
+        Number(payload.feedbackSummary?.feedbackItemCount ?? payload.feedbackItemCount) || 0,
+    };
     syncDetailFeedbackDrafts();
     emit("profile-updated");
     refreshGraphState();

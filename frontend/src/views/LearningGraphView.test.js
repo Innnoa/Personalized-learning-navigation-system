@@ -1,3 +1,4 @@
+import { createPinia, setActivePinia } from "pinia";
 import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -31,6 +32,18 @@ async function flushUi() {
   await Promise.resolve();
 }
 
+function mountView(options = {}) {
+  const pinia = createPinia();
+  setActivePinia(pinia);
+
+  return mount(LearningGraphView, {
+    global: {
+      plugins: [pinia],
+      stubs: options.stubs,
+    },
+  });
+}
+
 describe("LearningGraphView", () => {
   beforeEach(() => {
     pushMock.mockReset();
@@ -38,17 +51,15 @@ describe("LearningGraphView", () => {
   });
 
   it("passes route focus query into learning graph component", async () => {
-    const wrapper = mount(LearningGraphView, {
-      global: {
-        stubs: {
-          PageLayout: {
-            template: "<div><slot name='hero-side' /><slot /></div>",
-          },
-          LearnerLearningGraph: {
-            props: ["preferredSelectedCode"],
-            template:
-              "<div data-testid='learning-graph' :data-focus='preferredSelectedCode'></div>",
-          },
+    const wrapper = mountView({
+      stubs: {
+        PageLayout: {
+          template: "<div><slot name='hero-side' /><slot /></div>",
+        },
+        LearnerLearningGraph: {
+          props: ["preferredSelectedCode"],
+          template:
+            "<div data-testid='learning-graph' :data-focus='preferredSelectedCode'></div>",
         },
       },
     });
@@ -61,17 +72,15 @@ describe("LearningGraphView", () => {
   });
 
   it("redirects selected node back to home planner for root scope", async () => {
-    const wrapper = mount(LearningGraphView, {
-      global: {
-        stubs: {
-          PageLayout: {
-            template: "<div><slot name='hero-side' /><slot /></div>",
-          },
-          LearnerLearningGraph: {
-            emits: ["set-target"],
-            template:
-              "<button data-testid='set-target' @click=\"$emit('set-target', { code: 'stack', scopeCode: 'root' })\">set</button>",
-          },
+    const wrapper = mountView({
+      stubs: {
+        PageLayout: {
+          template: "<div><slot name='hero-side' /><slot /></div>",
+        },
+        LearnerLearningGraph: {
+          emits: ["set-target"],
+          template:
+            "<button data-testid='set-target' @click=\"$emit('set-target', { code: 'stack', scopeCode: 'root' })\">set</button>",
         },
       },
     });
@@ -86,17 +95,15 @@ describe("LearningGraphView", () => {
   });
 
   it("redirects selected node to detail-learning for non-root scope", async () => {
-    const wrapper = mount(LearningGraphView, {
-      global: {
-        stubs: {
-          PageLayout: {
-            template: "<div><slot name='hero-side' /><slot /></div>",
-          },
-          LearnerLearningGraph: {
-            emits: ["set-target"],
-            template:
-              "<button data-testid='set-target' @click=\"$emit('set-target', { code: 'stack-push', scopeCode: 'stack-detail' })\">set</button>",
-          },
+    const wrapper = mountView({
+      stubs: {
+        PageLayout: {
+          template: "<div><slot name='hero-side' /><slot /></div>",
+        },
+        LearnerLearningGraph: {
+          emits: ["set-target"],
+          template:
+            "<button data-testid='set-target' @click=\"$emit('set-target', { code: 'stack-push', scopeCode: 'stack-detail' })\">set</button>",
         },
       },
     });

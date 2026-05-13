@@ -142,6 +142,84 @@ DROGON_TEST(LearnerProfileServiceBuildsDefaultLearnerPayload)
     CHECK(payload["recentResourceViewItems"].size() == 0U);
 }
 
+DROGON_TEST(LearnerProfileServiceBuildsChartAnalyticsPayload)
+{
+    const std::string learnerCode = "chart-analytics-test-learner";
+    createIsolatedLearnerFromDemo(learnerCode, "画像分析测试学习者");
+
+    Json::Value firstRequest(Json::objectValue);
+    firstRequest["learnerCode"] = learnerCode;
+    firstRequest["feedbackItems"] = Json::Value(Json::arrayValue);
+    firstRequest["feedbackItems"][0]["code"] = "queue";
+    firstRequest["feedbackItems"][0]["completionStatus"] = "completed";
+    firstRequest["feedbackItems"][0]["selfRatedMastery"] = 0.90;
+    services::FeedbackService::submitFeedback(firstRequest);
+
+    Json::Value secondRequest(Json::objectValue);
+    secondRequest["learnerCode"] = learnerCode;
+    secondRequest["feedbackItems"] = Json::Value(Json::arrayValue);
+    secondRequest["feedbackItems"][0]["code"] = "graph-basic";
+    secondRequest["feedbackItems"][0]["completionStatus"] = "partial";
+    secondRequest["feedbackItems"][0]["selfRatedMastery"] = 0.55;
+    services::FeedbackService::submitFeedback(secondRequest);
+
+    Json::Value thirdRequest(Json::objectValue);
+    thirdRequest["learnerCode"] = learnerCode;
+    thirdRequest["feedbackItems"] = Json::Value(Json::arrayValue);
+    thirdRequest["feedbackItems"][0]["code"] = "topological-sort";
+    thirdRequest["feedbackItems"][0]["completionStatus"] = "blocked";
+    thirdRequest["feedbackItems"][0]["selfRatedMastery"] = 0.10;
+    services::FeedbackService::submitFeedback(thirdRequest);
+
+    const auto payload =
+        services::LearnerProfileService::buildProfilePayload(learnerCode);
+
+    REQUIRE(payload["analytics"].isObject());
+    REQUIRE(payload["analytics"]["masteryDistribution"].isArray());
+    REQUIRE(payload["analytics"]["feedbackTrend"].isArray());
+    REQUIRE(payload["analytics"]["feedbackStatusComposition"].isArray());
+    REQUIRE(payload["analytics"]["masteryDistribution"].empty() == false);
+    REQUIRE(payload["analytics"]["feedbackTrend"].empty() == false);
+    CHECK(payload["analytics"]["masteryDistribution"][0]["code"].asString().empty() ==
+          false);
+    CHECK(payload["analytics"]["masteryDistribution"][0]["masteryPercent"].isInt());
+
+    REQUIRE(payload["analytics"]["feedbackTrend"].size() == 3U);
+    CHECK(payload["analytics"]["feedbackTrend"][0]["index"].asInt() == 1);
+    CHECK(payload["analytics"]["feedbackTrend"][0]["label"].asString() == "反馈1");
+    CHECK(payload["analytics"]["feedbackTrend"][0]["knowledgePointCode"].asString() ==
+          "queue");
+    CHECK(payload["analytics"]["feedbackTrend"][0]["averageUpdatedMasteryPercent"]
+              .asInt() == 90);
+    CHECK(payload["analytics"]["feedbackTrend"][1]["knowledgePointCode"].asString() ==
+          "graph-basic");
+    CHECK(payload["analytics"]["feedbackTrend"][1]["averageUpdatedMasteryPercent"]
+              .asInt() == 73);
+    CHECK(payload["analytics"]["feedbackTrend"][2]["knowledgePointCode"].asString() ==
+          "topological-sort");
+    CHECK(payload["analytics"]["feedbackTrend"][2]["averageUpdatedMasteryPercent"]
+              .asInt() == 48);
+    CHECK(payload["analytics"]["feedbackTrend"][0]["recordedAt"].asString() <=
+          payload["analytics"]["feedbackTrend"][1]["recordedAt"].asString());
+    CHECK(payload["analytics"]["feedbackTrend"][1]["recordedAt"].asString() <=
+          payload["analytics"]["feedbackTrend"][2]["recordedAt"].asString());
+
+    REQUIRE(payload["analytics"]["feedbackStatusComposition"].size() == 3U);
+    CHECK(payload["analytics"]["feedbackStatusComposition"][0]["status"].asString() ==
+          "completed");
+    CHECK(payload["analytics"]["feedbackStatusComposition"][0]["count"].asInt() == 1);
+    CHECK(payload["analytics"]["feedbackStatusComposition"][1]["status"].asString() ==
+          "partial");
+    CHECK(payload["analytics"]["feedbackStatusComposition"][1]["count"].asInt() == 1);
+    CHECK(payload["analytics"]["feedbackStatusComposition"][2]["status"].asString() ==
+          "blocked");
+    CHECK(payload["analytics"]["feedbackStatusComposition"][2]["count"].asInt() == 1);
+    CHECK(payload["analytics"]["feedbackStatusComposition"][0]["count"].asInt() +
+              payload["analytics"]["feedbackStatusComposition"][1]["count"].asInt() +
+              payload["analytics"]["feedbackStatusComposition"][2]["count"].asInt() ==
+          payload["summary"]["feedbackRecordCount"].asInt());
+}
+
 DROGON_TEST(LearnerProfileServiceBuildsGraphMasteryForDetailNodes)
 {
     const auto payload = services::LearnerProfileService::buildProfilePayload();

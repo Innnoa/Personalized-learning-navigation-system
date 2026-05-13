@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PathPlannerPanel from "./PathPlannerPanel.vue";
 import { fetchKnowledgeGraph } from "../api/knowledgeGraph";
+import { submitLearningFeedback } from "../api/feedback";
 import { generateLearningPath } from "../api/path";
+import { useNavigationStore } from "../stores/navigationStore";
 
 const pushMock = vi.fn();
 let routeQuery = {
@@ -610,5 +612,136 @@ describe("PathPlannerPanel", () => {
     expect(
       wrapper.get("[data-testid='feedback-mastery-queue']").element.value,
     ).toBe("55");
+  });
+
+  it("routes to practice check after successful feedback submission", async () => {
+    fetchKnowledgeGraph.mockResolvedValue({
+      nodes: [
+        { code: "stack", label: "栈" },
+        { code: "queue", label: "队列" },
+      ],
+    });
+    generateLearningPath
+      .mockResolvedValueOnce({
+        summary: {
+          targetReachableWithinBudget: true,
+          scheduledCount: 1,
+          deferredCount: 0,
+          masteredCount: 0,
+          scheduledMinutes: 30,
+          totalRequiredMinutes: 30,
+          availableMinutes: 120,
+        },
+        path: [
+          {
+            code: "queue",
+            name: "队列",
+            chapterNo: 4,
+            estimatedMinutes: 30,
+            masteryPercent: 20,
+            status: "scheduled",
+            reasonTrace: {
+              triggerReasons: ["该节点与当前目标直接相关。"],
+              relevanceScore: 0.9,
+              importanceScore: 0.85,
+              timeCostPenalty: 0.2,
+            },
+          },
+        ],
+        resourceRecommendations: [],
+      })
+      .mockResolvedValueOnce({
+        summary: {
+          targetReachableWithinBudget: true,
+          scheduledCount: 0,
+          deferredCount: 0,
+          masteredCount: 1,
+          scheduledMinutes: 0,
+          totalRequiredMinutes: 30,
+          availableMinutes: 120,
+        },
+        path: [
+          {
+            code: "queue",
+            name: "队列",
+            chapterNo: 4,
+            estimatedMinutes: 30,
+            masteryPercent: 95,
+            status: "mastered",
+            reasonTrace: {
+              triggerReasons: ["该节点已完成本轮学习。"],
+              relevanceScore: 0.9,
+              importanceScore: 0.85,
+              timeCostPenalty: 0.2,
+            },
+          },
+        ],
+        resourceRecommendations: [],
+      });
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        stack: 0.4,
+        queue: 0.95,
+      },
+      feedbackSummary: {
+        feedbackBatchId: "batch-123",
+        feedbackItemCount: 1,
+        completedCount: 1,
+        partialCount: 0,
+        blockedCount: 0,
+      },
+      adjustments: [
+        {
+          code: "queue",
+          completionStatus: "completed",
+          previousMastery: 0.2,
+          updatedMastery: 0.95,
+          adjustmentReasons: ["掌握度明显提升。"],
+        },
+      ],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mount(PathPlannerPanel, {
+      props: {
+        learnerCode: "demo-learner",
+        initialMasteryByCode: {
+          stack: 0.4,
+          queue: 0.2,
+        },
+        profileLoading: false,
+      },
+      global: {
+        plugins: [pinia],
+      },
+    });
+    const navigationStore = useNavigationStore();
+
+    await flushUi();
+    await wrapper.get(".feedback-form").trigger("submit");
+    await flushUi();
+
+    expect(submitLearningFeedback).toHaveBeenCalled();
+
+    const practiceCheckButton = wrapper
+      .findAll("button")
+      .find((button) => button.text() === "进入练习检验");
+
+    expect(practiceCheckButton).toBeTruthy();
+
+    await practiceCheckButton.trigger("click");
+
+    expect(navigationStore.practiceCheckContext).toMatchObject({
+      learnerCode: "demo-learner",
+      sourcePage: "home",
+      targetCode: "queue",
+      targetName: "队列",
+      scopeCode: "root",
+      feedbackBatchId: "batch-123",
+      feedbackItemCount: 1,
+    });
+    expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
   });
 });

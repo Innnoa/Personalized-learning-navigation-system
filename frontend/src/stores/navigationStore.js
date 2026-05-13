@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 const RESOURCE_CONTEXT_STORAGE_KEY = "plns-resource-context";
 const LEARNING_GRAPH_CONTEXT_STORAGE_KEY = "plns-learning-graph-context";
 const DETAIL_LEARNING_CONTEXT_STORAGE_KEY = "plns-detail-learning-context";
+const PRACTICE_CHECK_CONTEXT_STORAGE_KEY = "plns-practice-check-context";
 
 function buildDefaultResourceSummary() {
   return {
@@ -68,6 +69,20 @@ function buildDefaultDetailLearningViewState() {
     adjustmentItems: [],
     pathComparison: null,
     updatedAt: "",
+  };
+}
+
+function buildDefaultPracticeCheckContext() {
+  return {
+    learnerCode: "demo-learner",
+    sourcePage: "home",
+    targetCode: "",
+    targetName: "",
+    scopeCode: "",
+    scopeLabel: "",
+    feedbackBatchId: "",
+    feedbackItemCount: 0,
+    generatedAt: "",
   };
 }
 
@@ -294,11 +309,42 @@ function readPersistedDetailLearningContext() {
   }
 }
 
+function readPersistedPracticeCheckContext() {
+  if (typeof window === "undefined") {
+    return {
+      practiceCheckContext: buildDefaultPracticeCheckContext(),
+    };
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(PRACTICE_CHECK_CONTEXT_STORAGE_KEY);
+    if (!raw) {
+      return {
+        practiceCheckContext: buildDefaultPracticeCheckContext(),
+      };
+    }
+
+    const parsed = JSON.parse(raw);
+    return {
+      practiceCheckContext: {
+        ...buildDefaultPracticeCheckContext(),
+        ...normalizeObjectRecord(parsed.practiceCheckContext),
+      },
+    };
+  } catch (error) {
+    console.warn("读取练习检测上下文失败，将回退到默认状态。", error);
+    return {
+      practiceCheckContext: buildDefaultPracticeCheckContext(),
+    };
+  }
+}
+
 export const useNavigationStore = defineStore("navigation", {
   state: () => ({
     ...readPersistedResourceContext(),
     ...readPersistedLearningGraphContext(),
     ...readPersistedDetailLearningContext(),
+    ...readPersistedPracticeCheckContext(),
   }),
   getters: {
     resourceSectionByCode: (state) => (code) =>
@@ -391,6 +437,18 @@ export const useNavigationStore = defineStore("navigation", {
           detailLearningSections: this.detailLearningSections,
           detailLearningSummary: this.detailLearningSummary,
           detailLearningViewStates: this.detailLearningViewStates,
+        }),
+      );
+    },
+    persistPracticeCheckContext() {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        PRACTICE_CHECK_CONTEXT_STORAGE_KEY,
+        JSON.stringify({
+          practiceCheckContext: this.practiceCheckContext,
         }),
       );
     },
@@ -596,6 +654,30 @@ export const useNavigationStore = defineStore("navigation", {
       this.detailLearningSummary = buildDefaultDetailLearningSummary();
       this.detailLearningViewStates = {};
       this.persistDetailLearningContext();
+    },
+    setPracticeCheckContext(payload = {}) {
+      const nextContext = {
+        ...this.practiceCheckContext,
+        ...normalizeObjectRecord(payload),
+        learnerCode: String(payload.learnerCode || this.practiceCheckContext.learnerCode || "demo-learner"),
+        sourcePage: String(payload.sourcePage || this.practiceCheckContext.sourcePage || "home"),
+        targetCode: String(payload.targetCode || ""),
+        targetName: String(payload.targetName || ""),
+        scopeCode: String(payload.scopeCode || ""),
+        scopeLabel: String(payload.scopeLabel || ""),
+        feedbackBatchId: String(payload.feedbackBatchId || ""),
+        feedbackItemCount: Number.isFinite(Number(payload.feedbackItemCount))
+          ? Number(payload.feedbackItemCount)
+          : 0,
+        generatedAt: new Date().toISOString(),
+      };
+
+      this.practiceCheckContext = nextContext;
+      this.persistPracticeCheckContext();
+    },
+    clearPracticeCheckContext() {
+      this.practiceCheckContext = buildDefaultPracticeCheckContext();
+      this.persistPracticeCheckContext();
     },
     setLearningGraphViewState(payload = {}) {
       const nextState = {
