@@ -412,23 +412,19 @@
           <article class="detail-feedback-panel">
             <div class="section-headline">
               <div>
-                <p class="label">学习反馈</p>
-                <h3>根据本范围学习情况重新规划</h3>
+                <p class="label">练习检验</p>
+                <h3>通过练习检验客观更新局部掌握度</h3>
               </div>
               <p class="caption">
-                只对“本轮推荐学习”中的细化节点提交反馈，系统会即时重算当前二级路径。
+                不再支持主观填写掌握度；请直接进入练习检验，由系统根据答题结果自动更新本范围掌握度与路径顺序。
               </p>
             </div>
 
             <div v-if="detailScheduledItems.length === 0" class="empty-tip">
-              当前没有待学习的细化节点，因此无需提交局部反馈。
+              当前没有待学习的细化节点，因此无需进入练习检验。
             </div>
 
-            <form
-              v-else
-              class="detail-feedback-form"
-              @submit.prevent="submitDetailAdjustment"
-            >
+            <div v-else class="detail-feedback-practice-entry-list">
               <article
                 v-for="item in detailScheduledItems"
                 :key="`detail-feedback-${item.code}`"
@@ -442,60 +438,19 @@
                     </p>
                   </div>
                 </div>
-
-                <div class="detail-feedback-quick-actions">
-                  <span class="detail-feedback-quick-actions__label">快捷录入</span>
-                  <div class="detail-feedback-quick-actions__buttons">
-                    <button
-                      v-for="preset in feedbackQuickPresets"
-                      :key="`${item.code}-${preset.key}`"
-                      type="button"
-                      class="detail-feedback-preset-button"
-                      :class="`detail-feedback-preset-button--${preset.tone}`"
-                      @click="applyDetailFeedbackQuickPreset(item, preset.key)"
-                    >
-                      {{ preset.label }}
-                    </button>
-                  </div>
-                </div>
-
-                <div class="detail-feedback-fields">
-                  <label class="field">
-                    <span>完成情况</span>
-                    <select
-                      v-model="detailFeedbackDraftByCode[item.code].completionStatus"
-                      @change="handleDetailFeedbackStatusChange(item)"
-                    >
-                      <option value="completed">已完成</option>
-                      <option value="partial">部分完成</option>
-                      <option value="blocked">学习受阻</option>
-                    </select>
-                  </label>
-
-                  <label class="field">
-                    <span>学习后掌握度</span>
-                    <div class="slider-row">
-                      <input
-                        :key="`${item.code}-${detailFeedbackDraftByCode[item.code].completionStatus}`"
-                        v-model.number="detailFeedbackDraftByCode[item.code].selfRatedMastery"
-                        type="range"
-                        :min="getDetailFeedbackMasteryRangeForCode(item.code).min"
-                        :max="getDetailFeedbackMasteryRangeForCode(item.code).max"
-                        step="5"
-                      />
-                      <strong>{{ detailFeedbackDraftByCode[item.code].selfRatedMastery }}%</strong>
-                    </div>
-                    <p class="field-hint field-hint--feedback">
-                      当前可调区间：{{ getDetailFeedbackMasteryRangeLabel(item.code) }}
-                    </p>
-                  </label>
-                </div>
+                <p class="detail-path-item-reason">
+                  当前细化节点将通过练习检验结果自动判断掌握度，并据此更新本范围学习路径。
+                </p>
               </article>
 
-              <button class="submit-button" :disabled="detailAdjusting">
-                {{ detailAdjusting ? "正在根据反馈调整..." : "提交本范围反馈并重算" }}
+              <button
+                type="button"
+                class="submit-button"
+                @click="goToDetailPracticeCheck"
+              >
+                进入练习检验
               </button>
-            </form>
+            </div>
 
             <div
               v-if="detailAdjustmentError"
@@ -509,9 +464,9 @@
             <div class="section-headline">
               <div>
                 <p class="label">操作摘要</p>
-                <h3>最近一次局部反馈结果</h3>
+                <h3>最近一次局部掌握度更新</h3>
               </div>
-              <p class="caption">用于快速查看本范围学习反馈对掌握度的影响。</p>
+              <p class="caption">用于快速查看本范围练习结果写回对掌握度的影响。</p>
             </div>
 
             <dl class="detail-summary-grid detail-summary-grid--compact">
@@ -658,37 +613,6 @@
             </p>
           </article>
 
-          <article
-            v-if="postDetailFeedbackPracticePrompt"
-            class="detail-adjustment-panel detail-adjustment-panel--practice"
-          >
-            <div class="section-headline">
-              <div>
-                <p class="label">练习检验</p>
-                <h3>是否进入练习检验</h3>
-              </div>
-              <p class="caption">
-                当前细化反馈已保存并完成重算，可继续留在本页，或直接前往练习检验验证该细化目标的掌握情况。
-              </p>
-            </div>
-
-            <div class="detail-result-action-row detail-result-action-row--stacked">
-              <button
-                type="button"
-                class="ghost-button"
-                @click="dismissPostDetailFeedbackPracticePrompt"
-              >
-                暂不检验
-              </button>
-              <button
-                type="button"
-                class="submit-button submit-button--inline"
-                @click="goToDetailPracticeCheck"
-              >
-                进入练习检验
-              </button>
-            </div>
-          </article>
         </template>
       </template>
 
@@ -1431,20 +1355,29 @@ function dismissPostDetailFeedbackPracticePrompt() {
 }
 
 function goToDetailPracticeCheck() {
-  const prompt = postDetailFeedbackPracticePrompt.value;
-  if (!prompt) {
+  const targetItem =
+    detailScheduledItems.value.find((item) => item.code === detailTargetCode.value) ||
+    detailScheduledItems.value[0] ||
+    null;
+  if (!targetItem) {
     return;
   }
+
+  const feedbackDraft = normalizeFeedbackDraft(
+    targetItem,
+    detailFeedbackDraftByCode.value[targetItem.code],
+  );
 
   navigationStore.setPracticeCheckContext({
     learnerCode: props.learnerCode,
     sourcePage: "detail-learning",
-    targetCode: prompt.targetCode,
-    targetName: prompt.targetName,
-    scopeCode: prompt.scopeCode,
-    scopeLabel: prompt.scopeLabel,
-    feedbackBatchId: prompt.feedbackBatchId,
-    feedbackItemCount: prompt.feedbackItemCount,
+    targetCode: targetItem.code,
+    targetName: targetItem.name,
+    scopeCode: props.section.scopeCode,
+    scopeLabel: props.section.scopeLabel || currentScopeName.value,
+    previousMasteryPercent: Math.round(Number(targetItem.masteryPercent) || 0),
+    completionStatus: feedbackDraft.completionStatus || "completed",
+    notes: String(feedbackDraft.notes || ""),
   });
   router.push({ name: "practice-check" });
 }

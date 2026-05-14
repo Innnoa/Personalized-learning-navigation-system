@@ -4,6 +4,7 @@ import { nextTick } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PracticeCheckView from "./PracticeCheckView.vue";
+import { submitLearningFeedback } from "../api/feedback";
 import { useNavigationStore } from "../stores/navigationStore";
 
 const pushMock = vi.fn();
@@ -16,6 +17,16 @@ vi.mock("vue-router", async () => {
   };
 });
 
+vi.mock("../api/feedback", () => ({
+  submitLearningFeedback: vi.fn(),
+}));
+
+async function flushUi() {
+  await Promise.resolve();
+  await Promise.resolve();
+  await nextTick();
+}
+
 function mountView() {
   const pinia = createPinia();
   setActivePinia(pinia);
@@ -27,7 +38,9 @@ function mountView() {
         plugins: [pinia],
         stubs: {
           PageLayout: {
-            template: "<div><slot /></div>",
+            props: ["title", "description", "eyebrow"],
+            template:
+              '<div><h1>{{ title }}</h1><p>{{ eyebrow }}</p><p>{{ description }}</p><slot /></div>',
           },
         },
       },
@@ -38,70 +51,131 @@ function mountView() {
 describe("PracticeCheckView", () => {
   beforeEach(() => {
     pushMock.mockReset();
+    submitLearningFeedback.mockReset();
     window.sessionStorage.clear();
   });
 
-  it("renders practice check handoff context from navigation store", async () => {
+  it("shows fixed demo questions for supported practice targets", async () => {
     const { store, wrapper } = mountView();
 
     store.setPracticeCheckContext({
-      learnerCode: "learner-001",
-      sourcePage: "detail-learning",
+      learnerCode: "demo-learner",
       targetCode: "queue",
       targetName: "队列",
-      scopeCode: "queue-detail",
-      scopeLabel: "队列细化范围",
-      feedbackBatchId: "batch-123",
-      feedbackItemCount: 3,
+      previousMasteryPercent: 20,
     });
 
     await nextTick();
 
-    expect(wrapper.text()).toContain("队列");
-    expect(wrapper.text()).toContain("batch-123");
-    expect(wrapper.text()).toContain("题目模块后续接入");
-    expect(wrapper.text()).toContain("队列细化范围（queue-detail）");
+    expect(wrapper.text()).toContain("队列练习检验");
+    expect(wrapper.text()).toContain("第 1 题");
+    expect(wrapper.text()).toContain("第 2 题");
+    expect(wrapper.text()).toContain("第 3 题");
   });
 
-  it("renders placeholder values when practice check context is empty", () => {
-    const { wrapper } = mountView();
+  it("shows unsupported placeholder when the target has no fixed demo questions", async () => {
+    const { store, wrapper } = mountView();
 
-    expect(wrapper.text()).toContain("未指定");
-    expect(wrapper.text()).toContain("未生成");
-    expect(wrapper.text()).toContain("demo-learner");
-    expect(wrapper.text()).toContain("home");
-    expect(wrapper.text()).toContain("题目模块后续接入");
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      targetCode: "unsupported-node",
+      targetName: "未配置节点",
+      previousMasteryPercent: 20,
+    });
+
+    await nextTick();
+
+    expect(wrapper.text()).toContain("该知识点练习题待补充");
   });
 
-  it("navigates home when clicking the home button", async () => {
-    const { wrapper } = mountView();
+  it("requires all questions to be answered before submit succeeds", async () => {
+    const { store, wrapper } = mountView();
 
-    const button = wrapper
-      .findAll("button")
-      .find((item) => item.text().includes("返回首页"));
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      targetCode: "queue",
+      targetName: "队列",
+      previousMasteryPercent: 20,
+    });
 
-    expect(button).toBeTruthy();
+    await nextTick();
 
-    await button.trigger("click");
+    await wrapper.get('input[type="radio"]').setValue();
+    await wrapper.get("form").trigger("submit");
 
+    expect(wrapper.text()).toContain("请先完成全部题目再提交。");
+    expect(submitLearningFeedback).not.toHaveBeenCalled();
+  });
+
+  it("submits weighted mastery as decimal and routes home on success", async () => {
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        queue: 0.59,
+      },
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      sourcePage: "home",
+      targetCode: "queue",
+      targetName: "队列",
+      previousMasteryPercent: 50,
+      completionStatus: "completed",
+      notes: "本轮已完成队列学习",
+    });
+
+    await nextTick();
+
+    const radios = wrapper.findAll('input[type="radio"]');
+    await radios[1].setValue();
+    await radios[5].setValue();
+    await radios[10].setValue();
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(submitLearningFeedback).toHaveBeenCalledWith({
+      learnerCode: "demo-learner",
+      masteryByCode: {
+        queue: 0.5,
+      },
+      feedbackItems: [
+        {
+          code: "queue",
+          completionStatus: "completed",
+          selfRatedMastery: 0.59,
+        },
+      ],
+    });
     expect(pushMock).toHaveBeenCalledWith({
       name: "home",
+      query: { practiceUpdated: "1" },
     });
   });
 
-  it("navigates to learner profile when clicking the learner profile button", async () => {
-    const { wrapper } = mountView();
+  it("shows submission failure message when feedback write fails", async () => {
+    submitLearningFeedback.mockRejectedValue(new Error("network"));
 
-    const button = wrapper
-      .findAll("button")
-      .find((item) => item.text().includes("前往学习者画像"));
+    const { store, wrapper } = mountView();
 
-    expect(button).toBeTruthy();
-
-    await button.trigger("click");
-
-    expect(pushMock).toHaveBeenCalledWith({
-      name: "learner-profile",
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      targetCode: "queue",
+      targetName: "队列",
+      previousMasteryPercent: 50,
     });
+
+    await nextTick();
+
+    const radios = wrapper.findAll('input[type="radio"]');
+    await radios[1].setValue();
+    await radios[5].setValue();
+    await radios[10].setValue();
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(wrapper.text()).toContain("练习结果未成功写入，请重试。");
+    expect(pushMock).not.toHaveBeenCalled();
   });
 });

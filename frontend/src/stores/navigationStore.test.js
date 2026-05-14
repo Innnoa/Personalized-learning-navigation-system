@@ -181,17 +181,26 @@ describe("navigationStore", () => {
       targetCode: "queue-array",
       targetName: "顺序队列",
       scopeCode: "queue-detail",
+      previousMasteryPercent: 20,
+      completionStatus: "completed",
+      notes: "本轮已完成队列学习",
       feedbackBatchId: "batch-001",
       feedbackItemCount: 3,
     });
 
     expect(store.practiceCheckContext.targetCode).toBe("queue-array");
+    expect(store.practiceCheckContext.previousMasteryPercent).toBe(20);
+    expect(store.practiceCheckContext.completionStatus).toBe("completed");
+    expect(store.practiceCheckContext.notes).toBe("本轮已完成队列学习");
     expect(store.practiceCheckContext.feedbackBatchId).toBe("batch-001");
 
     setActivePinia(createPinia());
     const restoredStore = useNavigationStore();
 
     expect(restoredStore.practiceCheckContext.targetCode).toBe("queue-array");
+    expect(restoredStore.practiceCheckContext.previousMasteryPercent).toBe(20);
+    expect(restoredStore.practiceCheckContext.completionStatus).toBe("completed");
+    expect(restoredStore.practiceCheckContext.notes).toBe("本轮已完成队列学习");
     expect(restoredStore.practiceCheckContext.feedbackBatchId).toBe("batch-001");
   });
 
