@@ -31,6 +31,21 @@ export function mapCorrectCountToPracticeMastery({ correctCount, totalCount }) {
   return 20;
 }
 
+export function resolvePracticeCompletionStatus({ correctCount, totalCount }) {
+  const normalizedTotal = Math.max(0, Number(totalCount) || 0);
+  const normalizedCorrect = Math.max(0, Math.min(normalizedTotal, Number(correctCount) || 0));
+
+  if (normalizedTotal > 0 && normalizedCorrect >= normalizedTotal) {
+    return "completed";
+  }
+
+  if (normalizedCorrect <= 0) {
+    return "blocked";
+  }
+
+  return "partial";
+}
+
 export function computeWeightedMasteryPercent({ previousMasteryPercent, practiceMasteryPercent }) {
   const previous = clampPercent(previousMasteryPercent);
   const practice = clampPercent(practiceMasteryPercent);

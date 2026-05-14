@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   mapCorrectCountToPracticeMastery,
   computeWeightedMasteryPercent,
+  resolvePracticeCompletionStatus,
 } from "./practiceCheckScoring";
 
 describe("practiceCheckScoring", () => {
@@ -29,5 +30,12 @@ describe("practiceCheckScoring", () => {
     expect(
       computeWeightedMasteryPercent({ previousMasteryPercent: Number.NaN, practiceMasteryPercent: Infinity }),
     ).toBe(0);
+  });
+
+  it("derives completion status from the actual number of correct answers", () => {
+    expect(resolvePracticeCompletionStatus({ correctCount: 3, totalCount: 3 })).toBe("completed");
+    expect(resolvePracticeCompletionStatus({ correctCount: 2, totalCount: 3 })).toBe("partial");
+    expect(resolvePracticeCompletionStatus({ correctCount: 1, totalCount: 3 })).toBe("partial");
+    expect(resolvePracticeCompletionStatus({ correctCount: 0, totalCount: 3 })).toBe("blocked");
   });
 });

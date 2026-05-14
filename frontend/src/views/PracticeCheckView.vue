@@ -120,10 +120,14 @@ import { useRouter } from "vue-router";
 import { submitLearningFeedback } from "../api/feedback";
 import PageLayout from "../components/PageLayout.vue";
 import { useNavigationStore } from "../stores/navigationStore";
-import { getPracticeCheckQuestionSet } from "../utils/practiceCheckQuestions";
+import {
+  getPracticeCheckQuestionSet,
+  resolvePracticeQuestionTargetCode,
+} from "../utils/practiceCheckQuestions";
 import {
   computeWeightedMasteryPercent,
   mapCorrectCountToPracticeMastery,
+  resolvePracticeCompletionStatus,
 } from "../utils/practiceCheckScoring";
 
 const router = useRouter();
@@ -173,6 +177,9 @@ const questionSet = computed(() =>
 );
 
 const hasSupportedQuestions = computed(() => questionSet.value.length > 0);
+const resolvedQuestionTargetCode = computed(() =>
+  resolvePracticeQuestionTargetCode(practiceCheckContext.value.targetCode),
+);
 
 function selectAnswer(questionId, optionIndex) {
   answers[questionId] = optionIndex;
@@ -185,7 +192,7 @@ function hasAnsweredAllQuestions() {
 }
 
 function countCorrectAnswers() {
-  const answerKey = CORRECT_OPTION_INDEX_BY_TARGET[practiceCheckContext.value.targetCode] || {};
+  const answerKey = CORRECT_OPTION_INDEX_BY_TARGET[resolvedQuestionTargetCode.value] || {};
 
   return questionSet.value.reduce((count, question) => {
     if (answers[question.id] === answerKey[question.id]) {
@@ -209,6 +216,10 @@ async function submitPractice() {
     correctCount: countCorrectAnswers(),
     totalCount: questionSet.value.length,
   });
+  const completionStatus = resolvePracticeCompletionStatus({
+    correctCount: countCorrectAnswers(),
+    totalCount: questionSet.value.length,
+  });
   const weightedMasteryPercent = computeWeightedMasteryPercent({
     previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent,
     practiceMasteryPercent,
@@ -223,13 +234,13 @@ async function submitPractice() {
         [practiceCheckContext.value.targetCode]:
           Number(practiceCheckContext.value.previousMasteryPercent || 0) / 100,
       },
-      feedbackItems: [
-        {
-          code: practiceCheckContext.value.targetCode,
-          completionStatus: practiceCheckContext.value.completionStatus || "completed",
-          selfRatedMastery: weightedMasteryPercent / 100,
-        },
-      ],
+        feedbackItems: [
+          {
+            code: practiceCheckContext.value.targetCode,
+            completionStatus,
+            selfRatedMastery: weightedMasteryPercent / 100,
+          },
+        ],
     });
 
     submitSuccessMessage.value = "练习结果已提交。";

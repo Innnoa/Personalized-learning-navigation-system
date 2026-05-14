@@ -88,6 +88,50 @@ describe("PracticeCheckView", () => {
     expect(wrapper.text()).toContain("该知识点练习题待补充");
   });
 
+  it("reuses queue practice questions for detail-learning queue-linked targets", async () => {
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        "queue-linked": 0.71,
+      },
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      targetCode: "queue-linked",
+      targetName: "链式队列",
+      previousMasteryPercent: 50,
+    });
+
+    await nextTick();
+
+    expect(wrapper.text()).toContain("第 1 题");
+    expect(wrapper.text()).not.toContain("该知识点练习题待补充");
+
+    const radios = wrapper.findAll('input[type="radio"]');
+    await radios[1].setValue();
+    await radios[4].setValue();
+    await radios[10].setValue();
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(submitLearningFeedback).toHaveBeenCalledWith({
+      learnerCode: "demo-learner",
+      masteryByCode: {
+        "queue-linked": 0.5,
+      },
+      feedbackItems: [
+        {
+          code: "queue-linked",
+          completionStatus: "completed",
+          selfRatedMastery: 0.71,
+        },
+      ],
+    });
+  });
+
   it("requires all questions to be answered before submit succeeds", async () => {
     const { store, wrapper } = mountView();
 
@@ -143,7 +187,7 @@ describe("PracticeCheckView", () => {
       feedbackItems: [
         {
           code: "queue",
-          completionStatus: "completed",
+          completionStatus: "partial",
           selfRatedMastery: 0.59,
         },
       ],
@@ -151,6 +195,49 @@ describe("PracticeCheckView", () => {
     expect(pushMock).toHaveBeenCalledWith({
       name: "home",
       query: { practiceUpdated: "1" },
+    });
+  });
+
+  it("maps low-scoring practice attempts to a non-completed feedback status", async () => {
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        queue: 0.26,
+      },
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      sourcePage: "home",
+      targetCode: "queue",
+      targetName: "队列",
+      previousMasteryPercent: 35,
+      completionStatus: "completed",
+      notes: "原始上下文来自已完成学习",
+    });
+
+    await nextTick();
+
+    const radios = wrapper.findAll('input[type="radio"]');
+    await radios[0].setValue();
+    await radios[6].setValue();
+    await radios[8].setValue();
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(submitLearningFeedback).toHaveBeenCalledWith({
+      learnerCode: "demo-learner",
+      masteryByCode: {
+        queue: 0.35,
+      },
+      feedbackItems: [
+        {
+          code: "queue",
+          completionStatus: "blocked",
+          selfRatedMastery: 0.26,
+        },
+      ],
     });
   });
 

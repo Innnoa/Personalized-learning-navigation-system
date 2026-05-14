@@ -21,10 +21,29 @@ const PRACTICE_CHECK_QUESTION_SETS = {
   ],
 };
 
-export function getPracticeCheckQuestionSet(targetCode) {
+function resolvePracticeQuestionTargetCode(targetCode) {
   if (!targetCode) {
+    return "";
+  }
+
+  const normalizedCode = String(targetCode);
+
+  if (PRACTICE_CHECK_QUESTION_SETS[normalizedCode]) {
+    return normalizedCode;
+  }
+
+  const [baseCode] = normalizedCode.split("-");
+  return PRACTICE_CHECK_QUESTION_SETS[baseCode] ? baseCode : normalizedCode;
+}
+
+export function getPracticeCheckQuestionSet(targetCode) {
+  const resolvedTargetCode = resolvePracticeQuestionTargetCode(targetCode);
+
+  if (!resolvedTargetCode) {
     return null;
   }
 
-  return PRACTICE_CHECK_QUESTION_SETS[targetCode] || null;
+  return PRACTICE_CHECK_QUESTION_SETS[resolvedTargetCode] || null;
 }
+
+export { resolvePracticeQuestionTargetCode };
