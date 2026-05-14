@@ -374,14 +374,14 @@
           <div class="section-headline">
             <div>
               <p class="label">扩展区</p>
-              <h3>反馈与路径变化</h3>
+          <h3>练习检验与路径变化</h3>
             </div>
             <p class="caption">
-              首屏聚焦“图谱 + 路径”，资源直接从上方路径项进入；下方主要用于提交学习反馈，并观察路径如何变化。
+          首屏聚焦“图谱 + 路径”，资源直接从上方路径项进入；下方主要用于进入练习检验，并观察路径如何变化。
             </p>
           </div>
           <ul class="planner-extension-chips">
-            <li class="planner-extension-chip">学习反馈</li>
+            <li class="planner-extension-chip">练习检验</li>
             <li class="planner-extension-chip">操作摘要</li>
             <li class="planner-extension-chip">路径变化</li>
           </ul>
@@ -392,15 +392,15 @@
             <section class="card planner-section-card feedback-panel">
               <div class="section-headline">
                 <div>
-                  <p class="label">学习反馈</p>
-                  <h3>根据本轮学习情况调整推荐路径</h3>
+                  <p class="label">练习检验</p>
+                  <h3>通过练习检验客观更新掌握度</h3>
                 </div>
                 <div class="feedback-head-side">
-                  <p class="caption">只对“本轮推荐学习”中的节点提交反馈，系统会据此更新掌握度并重新规划。</p>
+                  <p class="caption">不再支持主观填写掌握度；请直接进入练习检验，由系统根据答题结果自动更新掌握度并重新规划。</p>
                   <button
                     type="button"
                     class="ghost-button"
-                    :disabled="rollingBack || adjusting || !canRollbackFeedback"
+                    :disabled="rollingBack || !canRollbackFeedback"
                     @click="rollbackLatestAdjustment"
                   >
                     {{
@@ -418,11 +418,7 @@
                 当前没有待学习节点，因此无需调整路径。
               </div>
 
-              <form
-                v-else
-                class="feedback-form"
-                @submit.prevent="submitAdjustment"
-              >
+              <div v-else class="feedback-practice-entry-list">
                 <article
                   v-for="item in scheduledItems"
                   :key="item.code"
@@ -437,67 +433,20 @@
                     </div>
                     <span class="feedback-badge">{{ item.estimatedMinutes }} 分钟</span>
                   </div>
-
-                  <div class="feedback-quick-actions">
-                    <span class="feedback-quick-actions__label">快捷录入</span>
-                    <div class="feedback-quick-actions__buttons">
-                      <button
-                        v-for="preset in feedbackQuickPresets"
-                        :key="`${item.code}-${preset.key}`"
-                        type="button"
-                        class="feedback-preset-button"
-                        :class="`feedback-preset-button--${preset.tone}`"
-                        :data-testid="`feedback-preset-${item.code}-${preset.key}`"
-                        @click="applyFeedbackQuickPreset(item, preset.key)"
-                      >
-                        {{ preset.label }}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="feedback-fields">
-                    <label class="field">
-                      <span>完成情况</span>
-                      <select
-                        :data-testid="`feedback-status-${item.code}`"
-                        v-model="feedbackDraftByCode[item.code].completionStatus"
-                        @change="handleFeedbackStatusChange(item)"
-                      >
-                        <option value="completed">已完成</option>
-                        <option value="partial">部分完成</option>
-                        <option value="blocked">学习受阻</option>
-                      </select>
-                    </label>
-
-                    <label class="field">
-                      <span>学习后掌握度</span>
-                      <div class="slider-row">
-                        <input
-                          :key="`${item.code}-${feedbackDraftByCode[item.code].completionStatus}`"
-                          :data-testid="`feedback-mastery-${item.code}`"
-                          v-model.number="feedbackDraftByCode[item.code].selfRatedMastery"
-                          type="range"
-                          :min="getFeedbackMasteryRangeForCode(item.code).min"
-                          :max="getFeedbackMasteryRangeForCode(item.code).max"
-                          step="5"
-                        />
-                        <strong>{{ feedbackDraftByCode[item.code].selfRatedMastery }}%</strong>
-                      </div>
-                      <p class="field-hint field-hint--feedback">
-                        当前可调区间：{{ getFeedbackMasteryRangeLabel(item.code) }}
-                      </p>
-                    </label>
-                  </div>
+                  <p class="path-item-reason">
+                    当前节点将通过练习检验结果自动判断掌握度，并据此更新推荐路径。
+                  </p>
                 </article>
 
-                <button class="submit-button" :disabled="adjusting">
-                  {{ adjusting ? "正在调整路径..." : "提交反馈并调整路径" }}
+                <button
+                  type="button"
+                  class="submit-button"
+                  @click="goToPracticeCheck"
+                >
+                  进入练习检验
                 </button>
-              </form>
-
-              <div v-if="adjustError" class="state state--error state--result">
-                {{ adjustError }}
               </div>
+
               <div v-if="rollbackError" class="state state--error state--result">
                 {{ rollbackError }}
               </div>
@@ -506,85 +455,16 @@
 
           <aside class="planner-extension-side">
             <article
-              v-if="adjustmentSummary || rollbackSummary"
+              v-if="rollbackSummary"
               class="card planner-section-card planner-section-card--summary"
             >
               <div class="section-headline">
                 <div>
                   <p class="label">操作摘要</p>
-                  <h3>最近一次反馈或回退</h3>
+                  <h3>最近一次回退</h3>
                 </div>
-                <p class="caption">用于快速查看最近一次操作对掌握度的影响。</p>
+                <p class="caption">用于快速查看最近一次回退对掌握度的影响。</p>
               </div>
-
-              <template v-if="adjustmentSummary">
-                <dl class="summary-grid feedback-summary">
-                  <div>
-                    <dt>反馈节点</dt>
-                    <dd>{{ adjustmentSummary.feedbackItemCount }} 个</dd>
-                  </div>
-                  <div>
-                    <dt>已完成</dt>
-                    <dd>{{ adjustmentSummary.completedCount }} 个</dd>
-                  </div>
-                  <div>
-                    <dt>部分完成</dt>
-                    <dd>{{ adjustmentSummary.partialCount }} 个</dd>
-                  </div>
-                  <div>
-                    <dt>学习受阻</dt>
-                    <dd>{{ adjustmentSummary.blockedCount }} 个</dd>
-                  </div>
-                </dl>
-
-                <article class="result-card result-card--wide">
-                  <h3>最近一次调整说明</h3>
-                  <ul class="path-list plain-list">
-                    <li
-                      v-for="item in adjustmentItems"
-                      :key="`${item.code}-${item.completionStatus}`"
-                      class="path-item"
-                    >
-                      <div class="path-item-head">
-                        <strong>{{ resolveKnowledgePointLabel(item.code) }}</strong>
-                        <span>
-                          {{ Math.round(item.previousMastery * 100) }}% ->
-                          {{ Math.round(item.updatedMastery * 100) }}%
-                        </span>
-                      </div>
-                      <p class="path-item-meta">
-                        反馈结果：{{ adjustmentStatusLabelMap[item.completionStatus] }}
-                      </p>
-                      <p class="path-item-reason">
-                        {{ item.adjustmentReasons.join(" ") }}
-                      </p>
-                    </li>
-                  </ul>
-                </article>
-
-                <article v-if="postFeedbackPracticePrompt" class="result-card result-card--wide">
-                  <h3>是否进入练习检验</h3>
-                  <p class="path-item-reason">
-                    学习反馈已保存并完成重新规划，可选择暂不进入检验，或直接前往练习检验继续验证当前目标掌握情况。
-                  </p>
-                  <div class="result-action-row result-action-row--stacked">
-                    <button
-                      type="button"
-                      class="ghost-button"
-                      @click="dismissPostFeedbackPracticePrompt"
-                    >
-                      暂不检验
-                    </button>
-                    <button
-                      type="button"
-                      class="submit-button submit-button--inline"
-                      @click="goToPracticeCheck"
-                    >
-                      进入练习检验
-                    </button>
-                  </div>
-                </article>
-              </template>
 
               <template v-if="rollbackSummary">
                 <dl class="summary-grid feedback-summary">
@@ -644,7 +524,7 @@
               <p class="label">路径变化</p>
               <h3>{{ comparisonChangeTitle }}</h3>
             </div>
-            <p class="caption">用于观察最近一次反馈或回退后，本轮学习安排如何变化。</p>
+            <p class="caption">用于观察最近一次练习结果写回或回退后，本轮学习安排如何变化。</p>
           </div>
 
           <dl class="summary-grid comparison-summary">
@@ -772,17 +652,11 @@ import { useRoute, useRouter } from "vue-router";
 import { fetchKnowledgeGraph } from "../api/knowledgeGraph";
 import {
   rollbackLatestLearningFeedback,
-  submitLearningFeedback,
 } from "../api/feedback";
 import { generateLearningPath } from "../api/path";
 import { useNavigationStore } from "../stores/navigationStore";
 import {
-  clampFeedbackMasteryForStatus,
-  feedbackQuickPresets,
-  getFeedbackMasteryRange,
   normalizeFeedbackDraft,
-  resolveFeedbackQuickPresetDraft,
-  resolveFeedbackStatusDraft,
 } from "../utils/feedbackQuickPreset";
 import { downloadLearningPathExport } from "../utils/learningPathExport";
 
@@ -840,18 +714,12 @@ const planning = ref(false);
 const planError = ref("");
 const exportError = ref("");
 const planResult = ref(null);
-const feedbackDraftByCode = ref({});
-const adjusting = ref(false);
-const adjustError = ref("");
-const adjustmentSummary = ref(null);
-const adjustmentItems = ref([]);
 const rollingBack = ref(false);
 const rollbackError = ref("");
 const rollbackSummary = ref(null);
 const rollbackItems = ref([]);
 const pathComparison = ref(null);
 const pathComparisonMode = ref("adjust");
-const postFeedbackPracticePrompt = ref(null);
 const optionsReady = ref(false);
 const initialPlanInitialized = ref(false);
 const expandedExplanationByCode = ref({});
@@ -933,23 +801,23 @@ const comparisonAfterTitle = computed(() =>
 const comparisonBeforeEmptyTip = computed(() =>
   pathComparisonMode.value === "rollback"
     ? "回退前当前轮次没有待学习节点。"
-    : "调整前当前轮次没有待学习节点。",
+    : "回退前当前轮次没有待学习节点。",
 );
 
 const comparisonAfterEmptyTip = computed(() =>
   pathComparisonMode.value === "rollback"
     ? "回退后当前轮次暂时没有新的待学习节点。"
-    : "调整后当前轮次暂时没有新的待学习节点。",
+    : "回退后当前轮次暂时没有新的待学习节点。",
 );
 
 const comparisonChangeTitle = computed(() =>
-  pathComparisonMode.value === "rollback" ? "回退后路径变化" : "关键路径变化",
+  "回退后路径变化",
 );
 
 const comparisonNoChangeTip = computed(() =>
   pathComparisonMode.value === "rollback"
     ? "本次回退主要恢复了掌握度，路径状态没有出现明显变化。"
-    : "本次反馈主要更新了掌握度，路径状态没有出现明显变化。",
+    : "本次回退主要恢复了掌握度，路径状态没有出现明显变化。",
 );
 
 function setAllMastery(percent) {
@@ -1295,71 +1163,32 @@ function changeBadgeClass(changeType) {
   };
 }
 
-function getFeedbackMasteryRangeForCode(code) {
-  const completionStatus =
-    feedbackDraftByCode.value[code]?.completionStatus || "completed";
-  return getFeedbackMasteryRange(completionStatus);
-}
-
-function getFeedbackMasteryRangeLabel(code) {
-  const range = getFeedbackMasteryRangeForCode(code);
-  return `${range.min}% - ${range.max}%`;
-}
-
-function syncFeedbackDrafts() {
-  feedbackDraftByCode.value = Object.fromEntries(
-    scheduledItems.value.map((item) => [
-      item.code,
-      resolveFeedbackStatusDraft(item, "completed"),
-    ]),
-  );
-}
-
-function applyFeedbackQuickPreset(item, presetKey) {
-  feedbackDraftByCode.value = {
-    ...feedbackDraftByCode.value,
-    [item.code]: resolveFeedbackQuickPresetDraft(item, presetKey),
-  };
-}
-
-function handleFeedbackStatusChange(item) {
-  const currentDraft = feedbackDraftByCode.value[item.code] || {};
-  feedbackDraftByCode.value = {
-    ...feedbackDraftByCode.value,
-    [item.code]: normalizeFeedbackDraft(item, currentDraft),
-  };
-}
-
 function clearOperationOutputs() {
-  adjustError.value = "";
   rollbackError.value = "";
-  adjustmentSummary.value = null;
-  adjustmentItems.value = [];
   rollbackSummary.value = null;
   rollbackItems.value = [];
   pathComparison.value = null;
-  postFeedbackPracticePrompt.value = null;
-}
-
-function dismissPostFeedbackPracticePrompt() {
-  postFeedbackPracticePrompt.value = null;
 }
 
 function goToPracticeCheck() {
-  const prompt = postFeedbackPracticePrompt.value;
-  if (!prompt) {
+  const targetItem =
+    scheduledItems.value.find((item) => item.code === selectedTargetCode.value) ||
+    scheduledItems.value[0] ||
+    null;
+  if (!targetItem) {
     return;
   }
 
   navigationStore.setPracticeCheckContext({
     learnerCode: props.learnerCode,
     sourcePage: "home",
-    targetCode: prompt.targetCode,
-    targetName: prompt.targetName,
+    targetCode: targetItem.code,
+    targetName: targetItem.name,
     scopeCode: "root",
-    scopeLabel: "课程主线",
-    feedbackBatchId: prompt.feedbackBatchId,
-    feedbackItemCount: prompt.feedbackItemCount,
+    scopeLabel: "课程主图",
+    previousMasteryPercent: Math.round(Number(targetItem.masteryPercent) || 0),
+    completionStatus: "completed",
+    notes: "",
   });
   router.push({ name: "practice-check" });
 }
@@ -1459,7 +1288,6 @@ async function submitPlan() {
     });
     syncResourceRecommendationContext(planResult.value);
     syncDetailLearningContext();
-    syncFeedbackDrafts();
   } catch (error) {
     planError.value =
       error?.response?.data?.detail ||
@@ -1467,68 +1295,6 @@ async function submitPlan() {
     console.error(error);
   } finally {
     planning.value = false;
-  }
-}
-
-function buildFeedbackItems() {
-  return scheduledItems.value.map((item) => ({
-    code: item.code,
-    completionStatus:
-      normalizeFeedbackDraft(item, feedbackDraftByCode.value[item.code]).completionStatus,
-    selfRatedMastery:
-      clampFeedbackMasteryForStatus(
-        normalizeFeedbackDraft(item, feedbackDraftByCode.value[item.code]).completionStatus,
-        feedbackDraftByCode.value[item.code]?.selfRatedMastery || 0,
-      ) / 100,
-  }));
-}
-
-async function submitAdjustment() {
-  adjusting.value = true;
-  exportError.value = "";
-  clearOperationOutputs();
-  const beforePlanSnapshot = clonePlanSnapshot(planResult.value);
-
-  try {
-    const payload = await submitLearningFeedback({
-      learnerCode: props.learnerCode,
-      masteryByCode: buildMasteryPayload(),
-      feedbackItems: buildFeedbackItems(),
-    });
-
-    const updatedMasteryByCode = payload.masteryByCode || {};
-    applyMasterySnapshot(updatedMasteryByCode);
-    adjustmentSummary.value = payload.feedbackSummary || null;
-    adjustmentItems.value = payload.adjustments || [];
-    expandedExplanationByCode.value = {};
-    emit("feedback-saved", payload);
-    const nextPlanResult = await generateLearningPath({
-      learnerCode: props.learnerCode,
-      targetCodes: [selectedTargetCode.value],
-      availableMinutes: availableMinutes.value,
-      masteryByCode: updatedMasteryByCode,
-    });
-    planResult.value = nextPlanResult;
-    syncResourceRecommendationContext(nextPlanResult);
-    syncDetailLearningContext();
-    pathComparisonMode.value = "adjust";
-    pathComparison.value = buildPathComparison(beforePlanSnapshot, nextPlanResult);
-    syncFeedbackDrafts();
-    postFeedbackPracticePrompt.value = {
-      targetCode: selectedTargetCode.value,
-      targetName: selectedTargetLabel.value,
-      feedbackBatchId:
-        payload.feedbackSummary?.feedbackBatchId || payload.feedbackBatchId || "",
-      feedbackItemCount:
-        Number(payload.feedbackSummary?.feedbackItemCount ?? payload.feedbackItemCount) || 0,
-    };
-  } catch (error) {
-    adjustError.value =
-      error?.response?.data?.detail ||
-      "学习反馈保存失败。请稍后重试或检查后端日志。";
-    console.error(error);
-  } finally {
-    adjusting.value = false;
   }
 }
 
@@ -1565,7 +1331,6 @@ async function rollbackLatestAdjustment() {
     syncDetailLearningContext();
     pathComparisonMode.value = "rollback";
     pathComparison.value = buildPathComparison(beforePlanSnapshot, nextPlanResult);
-    syncFeedbackDrafts();
   } catch (error) {
     rollbackError.value =
       error?.response?.data?.detail ||

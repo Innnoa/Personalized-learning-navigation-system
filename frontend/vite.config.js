@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { resolveDevProxyTarget } from "./src/utils/devProxyTarget.js";
 
-export default defineConfig(() => {
-  const apiProxyTarget =
-    process.env.VITE_DEV_PROXY_TARGET || "http://127.0.0.1:8080";
+export default defineConfig(async () => {
+  const apiProxyTarget = await resolveDevProxyTarget();
 
   return {
     plugins: [vue()],

@@ -7,12 +7,16 @@ import { useAuthStore } from "../stores/authStore";
 import { fetchLearnerProfile } from "../api/learnerProfile";
 
 const pushMock = vi.fn();
+const replaceMock = vi.fn();
+
+let routeState;
 
 vi.mock("vue-router", async () => {
   const actual = await vi.importActual("vue-router");
   return {
     ...actual,
-    useRouter: () => ({ push: pushMock }),
+    useRouter: () => ({ push: pushMock, replace: replaceMock }),
+    useRoute: () => routeState,
   };
 });
 
@@ -37,6 +41,11 @@ async function flushUi() {
 }
 
 function mountView(options = {}) {
+  routeState = {
+    name: "home",
+    query: options.query || {},
+  };
+
   const pinia = createPinia();
   setActivePinia(pinia);
 
@@ -73,6 +82,7 @@ function mountView(options = {}) {
 describe("HomeView", () => {
   beforeEach(() => {
     pushMock.mockReset();
+    replaceMock.mockReset();
     fetchLearnerProfile.mockClear();
   });
 
@@ -123,6 +133,22 @@ describe("HomeView", () => {
     expect(pushMock).toHaveBeenCalledWith({
       name: "learning-graph",
       query: { focus: "queue" },
+    });
+  });
+
+  it("reloads learner profile and clears the practice updated query on home", async () => {
+    mountView({
+      query: {
+        practiceUpdated: "1",
+      },
+    });
+
+    await flushUi();
+
+    expect(fetchLearnerProfile).toHaveBeenCalledTimes(2);
+    expect(replaceMock).toHaveBeenCalledWith({
+      name: "home",
+      query: {},
     });
   });
 });

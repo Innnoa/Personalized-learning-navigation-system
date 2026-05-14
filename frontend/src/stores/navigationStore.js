@@ -82,6 +82,9 @@ function buildDefaultPracticeCheckContext() {
     scopeLabel: "",
     feedbackBatchId: "",
     feedbackItemCount: 0,
+    previousMasteryPercent: 0,
+    completionStatus: "completed",
+    notes: "",
     generatedAt: "",
   };
 }
@@ -659,7 +662,9 @@ export const useNavigationStore = defineStore("navigation", {
       const nextContext = {
         ...this.practiceCheckContext,
         ...normalizeObjectRecord(payload),
-        learnerCode: String(payload.learnerCode || this.practiceCheckContext.learnerCode || "demo-learner"),
+        learnerCode: String(
+          payload.learnerCode || this.practiceCheckContext.learnerCode || "demo-learner",
+        ),
         sourcePage: String(payload.sourcePage || this.practiceCheckContext.sourcePage || "home"),
         targetCode: String(payload.targetCode || ""),
         targetName: String(payload.targetName || ""),
@@ -669,6 +674,11 @@ export const useNavigationStore = defineStore("navigation", {
         feedbackItemCount: Number.isFinite(Number(payload.feedbackItemCount))
           ? Number(payload.feedbackItemCount)
           : 0,
+        previousMasteryPercent: Number.isFinite(Number(payload.previousMasteryPercent))
+          ? Math.max(0, Math.min(100, Number(payload.previousMasteryPercent)))
+          : 0,
+        completionStatus: String(payload.completionStatus || "completed"),
+        notes: String(payload.notes || ""),
         generatedAt: new Date().toISOString(),
       };
 

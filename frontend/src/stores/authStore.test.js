@@ -111,6 +111,66 @@ describe("authStore", () => {
     setItemSpy.mockRestore();
   });
 
+  it("normalizes the backend auth payload shape returned by the real login API", () => {
+    setActivePinia(createPinia());
+    const store = useAuthStore();
+
+    store.setSession({
+      authenticated: true,
+      user: {
+        id: 1,
+        username: "student_demo",
+        displayName: "演示学生账号",
+      },
+      roles: ["student"],
+      activeRole: "student",
+      linkedLearner: {
+        learnerCode: "demo-learner",
+        learnerName: "演示学习者",
+      },
+    });
+
+    expect(store.isAuthenticated).toBe(true);
+    expect(store.currentUser).toEqual({
+      id: 1,
+      username: "student_demo",
+      displayName: "演示学生账号",
+    });
+    expect(store.currentRoles).toEqual(["student"]);
+    expect(store.activeRole).toBe("student");
+    expect(store.linkedLearner).toEqual({
+      learnerCode: "demo-learner",
+      learnerName: "演示学习者",
+    });
+  });
+
+  it("restores the normalized backend auth payload shape from session storage", () => {
+    window.sessionStorage.setItem(
+      "plns-auth-session",
+      JSON.stringify({
+        authenticated: true,
+        user: {
+          id: 1,
+          username: "student_demo",
+          displayName: "演示学生账号",
+        },
+        roles: ["student"],
+        activeRole: "student",
+        linkedLearner: {
+          learnerCode: "demo-learner",
+        },
+      }),
+    );
+
+    setActivePinia(createPinia());
+    const store = useAuthStore();
+
+    expect(store.isAuthenticated).toBe(true);
+    expect(store.currentUser?.username).toBe("student_demo");
+    expect(store.currentRoles).toEqual(["student"]);
+    expect(store.activeRole).toBe("student");
+  });
+
   it("falls back to default state and clears broken storage when persisted session JSON is damaged", () => {
     window.sessionStorage.setItem("plns-auth-session", "{broken json");
 

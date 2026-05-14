@@ -684,11 +684,6 @@ describe("DetailLearningWorkspace", () => {
     });
 
     await flushUi(6);
-    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
-    await flushUi(6);
-
-    expect(adjustDetailLearningPath).toHaveBeenCalled();
-    expect(wrapper.text()).toContain("是否进入练习检验");
 
     const practiceCheckButton = wrapper
       .findAll("button")
@@ -705,13 +700,15 @@ describe("DetailLearningWorkspace", () => {
       targetName: "链式队列",
       scopeCode: "queue-detail",
       scopeLabel: "队列",
-      feedbackBatchId: "detail-batch-123",
-      feedbackItemCount: 1,
+      previousMasteryPercent: 30,
+      completionStatus: "completed",
+      notes: "",
     });
+    expect(adjustDetailLearningPath).not.toHaveBeenCalled();
     expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
   });
 
-  it("only shows practice prompt after a successful current detail adjustment", async () => {
+  it("shows practice entry without requiring a successful current detail adjustment", async () => {
     const pinia = createPinia();
     setActivePinia(pinia);
     const store = useNavigationStore();
@@ -787,15 +784,10 @@ describe("DetailLearningWorkspace", () => {
 
     await flushUi(6);
 
-    expect(wrapper.text()).not.toContain("是否进入练习检验");
-
-    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
-    await flushUi(6);
-
-    expect(wrapper.text()).toContain("是否进入练习检验");
+    expect(wrapper.text()).toContain("进入练习检验");
   });
 
-  it("clears stale practice prompt when a later detail adjustment attempt fails", async () => {
+  it("shows practice-check-only entry instead of subjective mastery controls", async () => {
     const pinia = createPinia();
     setActivePinia(pinia);
     const store = useNavigationStore();
@@ -870,46 +862,9 @@ describe("DetailLearningWorkspace", () => {
     });
 
     await flushUi(6);
-    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
-    await flushUi(6);
-
-    expect(wrapper.text()).toContain("是否进入练习检验");
-
-    adjustDetailLearningPath.mockRejectedValueOnce(new Error("detail adjust failed"));
-
-    generateDetailLearningPath.mockResolvedValueOnce({
-      summary: {
-        scheduledCount: 1,
-        deferredCount: 0,
-        masteredCount: 0,
-        scheduledMinutes: 20,
-        totalRequiredMinutes: 20,
-        targetReachableWithinBudget: true,
-      },
-      path: [
-        {
-          code: "queue-linked",
-          name: "链式队列",
-          chapterNo: 4,
-          difficultyLevel: 2,
-          estimatedMinutes: 20,
-          masteryPercent: 30,
-          status: "scheduled",
-          explanation: {
-            summary: "当前应先掌握链式队列。",
-          },
-        },
-      ],
-      resourceRecommendations: [],
-    });
-
-    await wrapper.get(".detail-path-form").trigger("submit.prevent");
-    await flushUi(6);
-
-    await wrapper.get(".detail-feedback-form").trigger("submit.prevent");
-    await flushUi(6);
-
-    expect(wrapper.text()).not.toContain("是否进入练习检验");
-    expect(wrapper.text()).toContain("本范围学习反馈调整失败");
+    expect(wrapper.text()).toContain("通过练习检验客观更新局部掌握度");
+    expect(wrapper.text()).toContain("进入练习检验");
+    expect(wrapper.text()).not.toContain("学习后掌握度");
+    expect(wrapper.text()).not.toContain("当前可调区间");
   });
 });

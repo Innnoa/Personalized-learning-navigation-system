@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PathPlannerPanel from "./PathPlannerPanel.vue";
 import { fetchKnowledgeGraph } from "../api/knowledgeGraph";
-import { submitLearningFeedback } from "../api/feedback";
 import { generateLearningPath } from "../api/path";
 import { useNavigationStore } from "../stores/navigationStore";
 
@@ -35,7 +34,6 @@ vi.mock("../api/path", () => ({
 }));
 
 vi.mock("../api/feedback", () => ({
-  submitLearningFeedback: vi.fn(),
   rollbackLatestLearningFeedback: vi.fn(),
 }));
 
@@ -386,7 +384,7 @@ describe("PathPlannerPanel", () => {
     });
   });
 
-  it("clamps feedback mastery to the active completion-status range", async () => {
+  it("shows practice-check-only entry instead of subjective mastery controls", async () => {
     fetchKnowledgeGraph.mockResolvedValue({
       nodes: [
         { code: "stack", label: "栈" },
@@ -441,15 +439,10 @@ describe("PathPlannerPanel", () => {
 
     await flushUi();
 
-    const statusSelect = wrapper.get("[data-testid='feedback-status-queue']");
-    await statusSelect.setValue("blocked");
-    await flushUi();
-
-    const masterySlider = wrapper.get("[data-testid='feedback-mastery-queue']");
-    expect(masterySlider.attributes("min")).toBe("0");
-    expect(masterySlider.attributes("max")).toBe("35");
-    expect(masterySlider.element.value).toBe("35");
-    expect(wrapper.text()).toContain("当前可调区间：0% - 35%");
+    expect(wrapper.text()).toContain("通过练习检验客观更新掌握度");
+    expect(wrapper.text()).toContain("进入练习检验");
+    expect(wrapper.text()).not.toContain("学习后掌握度");
+    expect(wrapper.text()).not.toContain("当前可调区间");
   });
 
   it("exports current learning path as downloadable text", async () => {
@@ -547,7 +540,7 @@ describe("PathPlannerPanel", () => {
     window.URL.revokeObjectURL = originalRevokeObjectURL;
   });
 
-  it("applies quick feedback preset to completion status and mastery slider together", async () => {
+  it("shows practice-check-only entry instead of subjective mastery controls", async () => {
     fetchKnowledgeGraph.mockResolvedValue({
       nodes: [
         { code: "stack", label: "栈" },
@@ -601,104 +594,46 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
-    await wrapper
-      .get("[data-testid='feedback-preset-queue-partial-review']")
-      .trigger("click");
-    await flushUi();
-
-    expect(
-      wrapper.get("[data-testid='feedback-status-queue']").element.value,
-    ).toBe("partial");
-    expect(
-      wrapper.get("[data-testid='feedback-mastery-queue']").element.value,
-    ).toBe("55");
+    expect(wrapper.text()).toContain("通过练习检验客观更新掌握度");
+    expect(wrapper.text()).toContain("进入练习检验");
+    expect(wrapper.text()).not.toContain("学习后掌握度");
+    expect(wrapper.text()).not.toContain("当前可调区间");
   });
 
-  it("routes to practice check after successful feedback submission", async () => {
+  it("routes to practice check directly with pending feedback context", async () => {
     fetchKnowledgeGraph.mockResolvedValue({
       nodes: [
         { code: "stack", label: "栈" },
         { code: "queue", label: "队列" },
       ],
     });
-    generateLearningPath
-      .mockResolvedValueOnce({
-        summary: {
-          targetReachableWithinBudget: true,
-          scheduledCount: 1,
-          deferredCount: 0,
-          masteredCount: 0,
-          scheduledMinutes: 30,
-          totalRequiredMinutes: 30,
-          availableMinutes: 120,
-        },
-        path: [
-          {
-            code: "queue",
-            name: "队列",
-            chapterNo: 4,
-            estimatedMinutes: 30,
-            masteryPercent: 20,
-            status: "scheduled",
-            reasonTrace: {
-              triggerReasons: ["该节点与当前目标直接相关。"],
-              relevanceScore: 0.9,
-              importanceScore: 0.85,
-              timeCostPenalty: 0.2,
-            },
-          },
-        ],
-        resourceRecommendations: [],
-      })
-      .mockResolvedValueOnce({
-        summary: {
-          targetReachableWithinBudget: true,
-          scheduledCount: 0,
-          deferredCount: 0,
-          masteredCount: 1,
-          scheduledMinutes: 0,
-          totalRequiredMinutes: 30,
-          availableMinutes: 120,
-        },
-        path: [
-          {
-            code: "queue",
-            name: "队列",
-            chapterNo: 4,
-            estimatedMinutes: 30,
-            masteryPercent: 95,
-            status: "mastered",
-            reasonTrace: {
-              triggerReasons: ["该节点已完成本轮学习。"],
-              relevanceScore: 0.9,
-              importanceScore: 0.85,
-              timeCostPenalty: 0.2,
-            },
-          },
-        ],
-        resourceRecommendations: [],
-      });
-    submitLearningFeedback.mockResolvedValue({
-      masteryByCode: {
-        stack: 0.4,
-        queue: 0.95,
+    generateLearningPath.mockResolvedValueOnce({
+      summary: {
+        targetReachableWithinBudget: true,
+        scheduledCount: 1,
+        deferredCount: 0,
+        masteredCount: 0,
+        scheduledMinutes: 30,
+        totalRequiredMinutes: 30,
+        availableMinutes: 120,
       },
-      feedbackSummary: {
-        feedbackBatchId: "batch-123",
-        feedbackItemCount: 1,
-        completedCount: 1,
-        partialCount: 0,
-        blockedCount: 0,
-      },
-      adjustments: [
+      path: [
         {
           code: "queue",
-          completionStatus: "completed",
-          previousMastery: 0.2,
-          updatedMastery: 0.95,
-          adjustmentReasons: ["掌握度明显提升。"],
+          name: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          masteryPercent: 20,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["该节点与当前目标直接相关。"],
+            relevanceScore: 0.9,
+            importanceScore: 0.85,
+            timeCostPenalty: 0.2,
+          },
         },
       ],
+      resourceRecommendations: [],
     });
 
     const pinia = createPinia();
@@ -720,11 +655,6 @@ describe("PathPlannerPanel", () => {
     const navigationStore = useNavigationStore();
 
     await flushUi();
-    await wrapper.get(".feedback-form").trigger("submit");
-    await flushUi();
-
-    expect(submitLearningFeedback).toHaveBeenCalled();
-
     const practiceCheckButton = wrapper
       .findAll("button")
       .find((button) => button.text() === "进入练习检验");
@@ -739,8 +669,10 @@ describe("PathPlannerPanel", () => {
       targetCode: "queue",
       targetName: "队列",
       scopeCode: "root",
-      feedbackBatchId: "batch-123",
-      feedbackItemCount: 1,
+      scopeLabel: "课程主图",
+      previousMasteryPercent: 20,
+      completionStatus: "completed",
+      notes: "",
     });
     expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
   });

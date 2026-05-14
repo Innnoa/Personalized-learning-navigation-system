@@ -26,6 +26,9 @@ DEMO_CHECK_AUTO_DOWN=0 ./scripts/demo_check.sh
 - 核心接口链路可用
 - 数据重置与反馈回退正常
 
+补充说明：
+- 直接执行 `npm run dev` 或 `./scripts/run_frontend.sh` 时，前端开发代理会优先连 `8080`，若未探测到服务则自动尝试当前演示默认后端 `18080`
+
 ## 2. 答辩主流程（5~8 分钟）
 
 ### 步骤 1：展示“系统已就绪”

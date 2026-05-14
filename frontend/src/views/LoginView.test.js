@@ -135,8 +135,17 @@ describe("LoginView", () => {
 
     expect(loginMock).toHaveBeenCalledWith({
       username: "student_demo",
-      password: "student_demo",
+      password: "demo123",
     });
+  });
+
+  it("shows the demo credentials hint on the login page", async () => {
+    const { wrapper } = mountView();
+
+    expect(wrapper.text()).toContain("演示账号（密码统一为 demo123）");
+    expect(wrapper.text()).toContain("学生：student_demo");
+    expect(wrapper.text()).toContain("教师：teacher_demo");
+    expect(wrapper.text()).toContain("管理员：admin_demo");
   });
 
   it("routes teachers to the teacher dashboard after login", async () => {
