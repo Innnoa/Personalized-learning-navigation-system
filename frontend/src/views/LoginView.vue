@@ -32,6 +32,15 @@
 
       <p v-if="errorMessage" class="login-error">{{ errorMessage }}</p>
 
+      <section class="demo-credentials" aria-label="演示账号说明">
+        <p class="demo-credentials-title">演示账号（密码统一为 demo123）</p>
+        <ul>
+          <li>学生：student_demo</li>
+          <li>教师：teacher_demo</li>
+          <li>管理员：admin_demo</li>
+        </ul>
+      </section>
+
       <div class="demo-actions">
         <button
           type="button"
@@ -138,7 +147,7 @@ async function handleSubmit(payload = form) {
 function handleDemoLogin(username) {
   return handleSubmit({
     username,
-    password: username,
+    password: "demo123",
   });
 }
 </script>
@@ -188,5 +197,23 @@ function handleDemoLogin(username) {
 .login-error {
   margin: 0;
   color: #c53030;
+}
+
+.demo-credentials {
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background: #f6f8fa;
+  border: 1px solid #e2e8f0;
+}
+
+.demo-credentials-title {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.demo-credentials ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #4a5568;
 }
 </style>

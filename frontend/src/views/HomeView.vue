@@ -19,8 +19,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import PageLayout from "../components/PageLayout.vue";
 import PathPlannerPanel from "../components/PathPlannerPanel.vue";
@@ -28,6 +28,7 @@ import { fetchLearnerProfile } from "../api/learnerProfile";
 import { useAuthStore } from "../stores/authStore";
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const learnerProfile = ref(null);
 const learnerProfileLoading = ref(true);
@@ -39,6 +40,33 @@ const resolvedLearnerCode = computed(
 
 function handleLearnerProfileUpdated(payload) {
   learnerProfile.value = payload;
+}
+
+async function loadLearnerProfile() {
+  learnerProfileLoading.value = true;
+
+  try {
+    learnerProfile.value = authLearnerCode.value
+      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
+      : await fetchLearnerProfile();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    learnerProfileLoading.value = false;
+  }
+}
+
+async function refreshLearnerProfileAfterPracticeUpdate() {
+  const cleanedQuery = { ...route.query };
+  delete cleanedQuery.practiceUpdated;
+
+  await loadLearnerProfile();
+  plannerRenderKey.value += 1;
+
+  await router.replace({
+    name: route.name,
+    query: cleanedQuery,
+  });
 }
 
 async function handleGraphFocusRequested(code) {
@@ -53,16 +81,20 @@ async function handleGraphFocusRequested(code) {
 }
 
 onMounted(async () => {
-  try {
-    learnerProfile.value = authLearnerCode.value
-      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
-      : await fetchLearnerProfile();
-  } catch (error) {
-    console.error(error);
-  } finally {
-    learnerProfileLoading.value = false;
-  }
+  await loadLearnerProfile();
 });
+
+watch(
+  () => route.query.practiceUpdated,
+  async (practiceUpdated) => {
+    if (practiceUpdated !== "1") {
+      return;
+    }
+
+    await refreshLearnerProfileAfterPracticeUpdate();
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>

@@ -17,10 +17,12 @@ function buildDefaultAuthState() {
 
 function normalizeSession(payload = {}) {
   const nextState = buildDefaultAuthState();
-  const currentUser = normalizeObject(payload.currentUser);
+  const currentUser = normalizeObject(payload.currentUser) || normalizeObject(payload.user);
   const linkedLearner = normalizeObject(payload.linkedLearner);
   const currentRoles = Array.isArray(payload.currentRoles)
     ? payload.currentRoles.filter((item) => String(item || ""))
+    : Array.isArray(payload.roles)
+      ? payload.roles.filter((item) => String(item || ""))
     : [];
   const activeRole = String(payload.activeRole || "");
 
