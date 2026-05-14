@@ -3,6 +3,10 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
 
 import LearnerProfileView from "./LearnerProfileView.vue";
+import ProfileActivityComposition from "../components/ProfileActivityComposition.vue";
+import ProfileMasteryTrendChart from "../components/ProfileMasteryTrendChart.vue";
+import ProfileProgressOverview from "../components/ProfileProgressOverview.vue";
+import ProfileWeakPointRanking from "../components/ProfileWeakPointRanking.vue";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 import { fetchLearnerProfile } from "../api/learnerProfile";
@@ -166,6 +170,63 @@ function mountView(options = {}) {
 }
 
 describe("LearnerProfileView", () => {
+  it("does not request the same weak-point preview twice while the first preview is still pending", async () => {
+    fetchLearnerProfile.mockResolvedValue(buildProfilePayload());
+
+    let resolvePreviewRequest;
+    const previewRequest = new Promise((resolve) => {
+      resolvePreviewRequest = resolve;
+    });
+
+    generateLearningPath.mockImplementation(() => previewRequest);
+
+    const wrapper = mountView({
+      session: {
+        currentUser: {
+          id: 8,
+          username: "student8",
+        },
+        currentRoles: ["student"],
+        activeRole: "student",
+        linkedLearner: {
+          learnerCode: "learner-008",
+        },
+      },
+    });
+
+    await flushUi();
+
+    const button = wrapper
+      .findAll("button")
+      .find((item) => item.text().includes("查看推荐资源"));
+    expect(button).toBeTruthy();
+
+    await button.trigger("click");
+    await flushUi();
+    await button.trigger("click");
+
+    expect(generateLearningPath).toHaveBeenCalledTimes(1);
+
+    resolvePreviewRequest({
+      summary: {
+        availableMinutes: 120,
+        scheduledCount: 1,
+        deferredCount: 0,
+      },
+      resourceRecommendations: [
+        {
+          code: "queue",
+          name: "队列",
+          status: "scheduled",
+          resourceCount: 1,
+          recommendedUsage: "先看课程视频，再补文本。",
+          resources: [],
+        },
+      ],
+    });
+    await flushUi();
+  });
+
   it("opens resource page for a weak knowledge point by generating resource context", async () => {
     fetchLearnerProfile.mockResolvedValue(buildProfilePayload());
     generateLearningPath.mockResolvedValue({
@@ -232,7 +293,7 @@ describe("LearnerProfileView", () => {
     });
   });
 
-  it("renders analytics chart section titles", async () => {
+  it("renders the narrative profile layout with spotlight sections", async () => {
     fetchLearnerProfile.mockResolvedValue(buildProfilePayload());
     generateLearningPath.mockResolvedValue({
       summary: {
@@ -259,12 +320,21 @@ describe("LearnerProfileView", () => {
 
     await flushUi();
 
-    expect(wrapper.text()).toContain("掌握度分布");
-    expect(wrapper.text()).toContain("学习反馈趋势");
-    expect(wrapper.text()).toContain("学习活动结构");
+    expect(wrapper.text()).toContain("进度总览");
+    expect(wrapper.text()).toContain("聚焦观察");
+    expect(wrapper.text()).toContain("薄弱点排行");
+    expect(wrapper.text()).toContain("最近学习记录");
+    expect(wrapper.text()).toContain("最近资源行为");
+    expect(wrapper.text()).toContain("支撑证据");
+    expect(wrapper.find(".profile-narrative").exists()).toBe(true);
+    expect(wrapper.find(".profile-spotlight-grid").exists()).toBe(true);
+    expect(wrapper.findComponent(ProfileProgressOverview).exists()).toBe(true);
+    expect(wrapper.findComponent(ProfileMasteryTrendChart).exists()).toBe(true);
+    expect(wrapper.findComponent(ProfileActivityComposition).exists()).toBe(true);
+    expect(wrapper.findComponent(ProfileWeakPointRanking).exists()).toBe(true);
   });
 
-  it("renders empty state instead of zero activity structure bars", async () => {
+  it("renders spotlight empty state instead of zero activity composition bars", async () => {
     fetchLearnerProfile.mockResolvedValue(buildZeroActivityProfilePayload());
     generateLearningPath.mockResolvedValue({
       summary: {
@@ -291,8 +361,8 @@ describe("LearnerProfileView", () => {
 
     await flushUi();
 
-    expect(wrapper.text()).toContain("学习活动结构");
-    expect(wrapper.text()).toContain("暂无学习活动结构数据。");
+    expect(wrapper.text()).toContain("聚焦观察");
+    expect(wrapper.text()).toContain("暂无学习活动数据。");
     expect(wrapper.text()).not.toContain("0 条 · 0%");
   });
 });
