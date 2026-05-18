@@ -12,19 +12,25 @@ export function mapCorrectCountToPracticeMastery({ correctCount, totalCount }) {
   const normalizedTotal = Math.max(0, Number(totalCount) || 0);
   const normalizedCorrect = Math.max(0, Math.min(normalizedTotal, Number(correctCount) || 0));
 
-  if (normalizedTotal !== 3) {
+  if (normalizedTotal <= 0) {
     return 20;
   }
 
-  if (normalizedCorrect === 3) {
-    return 85;
+  const correctRate = normalizedCorrect / normalizedTotal;
+
+  if (correctRate >= 1) {
+    return 90;
   }
 
-  if (normalizedCorrect === 2) {
-    return 65;
+  if (correctRate >= 0.8) {
+    return 75;
   }
 
-  if (normalizedCorrect === 1) {
+  if (correctRate >= 0.6) {
+    return 60;
+  }
+
+  if (correctRate >= 0.4) {
     return 40;
   }
 

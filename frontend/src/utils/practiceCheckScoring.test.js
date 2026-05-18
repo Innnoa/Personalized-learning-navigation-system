@@ -7,11 +7,13 @@ import {
 } from "./practiceCheckScoring";
 
 describe("practiceCheckScoring", () => {
-  it("maps three fixed demo questions to the agreed mastery buckets", () => {
-    expect(mapCorrectCountToPracticeMastery({ correctCount: 3, totalCount: 3 })).toBe(85);
-    expect(mapCorrectCountToPracticeMastery({ correctCount: 2, totalCount: 3 })).toBe(65);
-    expect(mapCorrectCountToPracticeMastery({ correctCount: 1, totalCount: 3 })).toBe(40);
-    expect(mapCorrectCountToPracticeMastery({ correctCount: 0, totalCount: 3 })).toBe(20);
+  it("maps five-question practice results to the agreed mastery buckets", () => {
+    expect(mapCorrectCountToPracticeMastery({ correctCount: 5, totalCount: 5 })).toBe(90);
+    expect(mapCorrectCountToPracticeMastery({ correctCount: 4, totalCount: 5 })).toBe(75);
+    expect(mapCorrectCountToPracticeMastery({ correctCount: 3, totalCount: 5 })).toBe(60);
+    expect(mapCorrectCountToPracticeMastery({ correctCount: 2, totalCount: 5 })).toBe(40);
+    expect(mapCorrectCountToPracticeMastery({ correctCount: 1, totalCount: 5 })).toBe(20);
+    expect(mapCorrectCountToPracticeMastery({ correctCount: 0, totalCount: 5 })).toBe(20);
   });
 
   it("weights previous mastery at 40% and practice mastery at 60%", () => {
@@ -33,9 +35,9 @@ describe("practiceCheckScoring", () => {
   });
 
   it("derives completion status from the actual number of correct answers", () => {
-    expect(resolvePracticeCompletionStatus({ correctCount: 3, totalCount: 3 })).toBe("completed");
-    expect(resolvePracticeCompletionStatus({ correctCount: 2, totalCount: 3 })).toBe("partial");
-    expect(resolvePracticeCompletionStatus({ correctCount: 1, totalCount: 3 })).toBe("partial");
-    expect(resolvePracticeCompletionStatus({ correctCount: 0, totalCount: 3 })).toBe("blocked");
+    expect(resolvePracticeCompletionStatus({ correctCount: 5, totalCount: 5 })).toBe("completed");
+    expect(resolvePracticeCompletionStatus({ correctCount: 4, totalCount: 5 })).toBe("partial");
+    expect(resolvePracticeCompletionStatus({ correctCount: 1, totalCount: 5 })).toBe("partial");
+    expect(resolvePracticeCompletionStatus({ correctCount: 0, totalCount: 5 })).toBe("blocked");
   });
 });

@@ -74,24 +74,42 @@
             v-for="(question, questionIndex) in questionSet"
             :key="question.id"
             class="question-item"
+            :class="getQuestionReportClass(question.id)"
           >
-            <p class="question-number">第 {{ questionIndex + 1 }} 题</p>
+            <p class="question-number">{{ getQuestionNumberLabel(question.id, questionIndex) }}</p>
             <p class="question-prompt">{{ question.prompt }}</p>
             <div class="question-options">
               <label
                 v-for="(option, optionIndex) in question.options"
                 :key="`${question.id}-${optionIndex}`"
                 class="option-item"
+                :class="getOptionReportClass(question.id, optionIndex)"
               >
                 <input
                   :name="question.id"
                   :value="optionIndex"
                   :checked="answers[question.id] === optionIndex"
                   type="radio"
+                  :disabled="showReport || submitting"
                   @change="selectAnswer(question.id, optionIndex)"
                 />
                 <span>{{ option }}</span>
               </label>
+            </div>
+
+            <div v-if="showReport" class="question-report-block">
+              <p class="question-report-line">
+                你的答案：{{ getSelectedOptionLabel(question.id) }}
+              </p>
+              <p v-if="!isQuestionCorrect(question.id)" class="question-report-line question-report-line--answer">
+                正确答案：{{ getCorrectOptionLabel(question.id) }}
+              </p>
+              <p
+                v-if="!isQuestionCorrect(question.id) && question.explanation"
+                class="question-report-line question-report-line--reason"
+              >
+                理由：{{ question.explanation }}
+              </p>
             </div>
           </article>
 
@@ -100,11 +118,49 @@
             {{ submitSuccessMessage }}
           </p>
 
+          <article v-if="reportSummary" class="report-summary-card">
+            <div class="section-headline">
+              <div>
+                <p class="label page-section-label">批改报告</p>
+                <h3>本次练习结果摘要</h3>
+              </div>
+            </div>
+
+            <dl class="report-summary-grid">
+              <div class="report-summary-item">
+                <dt>答题结果</dt>
+                <dd>答对 {{ reportSummary.correctCount }} / {{ reportSummary.totalCount }} 题</dd>
+              </div>
+              <div class="report-summary-item">
+                <dt>提交前掌握度</dt>
+                <dd>{{ reportSummary.previousMasteryPercent }}%</dd>
+              </div>
+              <div class="report-summary-item">
+                <dt>练习掌握度</dt>
+                <dd>{{ reportSummary.practiceMasteryPercent }}%</dd>
+              </div>
+              <div class="report-summary-item">
+                <dt>加权后掌握度</dt>
+                <dd>{{ reportSummary.weightedMasteryPercent }}%</dd>
+              </div>
+              <div class="report-summary-item">
+                <dt>掌握度变化</dt>
+                <dd>{{ formatMasteryDelta(reportSummary.masteryDeltaPercent) }}</dd>
+              </div>
+            </dl>
+          </article>
+
           <div class="action-row">
-            <button type="submit" class="primary-button" :disabled="submitting">
+            <button v-if="!showReport" type="submit" class="primary-button" :disabled="submitting">
               {{ submitting ? "提交中..." : "提交练习结果" }}
             </button>
-            <button type="button" class="ghost-button" @click="goHome">返回首页</button>
+            <button
+              type="button"
+              class="ghost-button"
+              @click="goHome"
+            >
+              {{ showReport ? "返回首页并刷新路径" : "返回首页" }}
+            </button>
           </div>
         </form>
         <p v-else class="question-placeholder">该知识点练习题待补充</p>
@@ -121,6 +177,7 @@ import { submitLearningFeedback } from "../api/feedback";
 import PageLayout from "../components/PageLayout.vue";
 import { useNavigationStore } from "../stores/navigationStore";
 import {
+  getPracticeCheckAnswerKey,
   getPracticeCheckQuestionSet,
   resolvePracticeQuestionTargetCode,
 } from "../utils/practiceCheckQuestions";
@@ -136,14 +193,7 @@ const answers = reactive({});
 const submitError = ref("");
 const submitSuccessMessage = ref("");
 const submitting = ref(false);
-
-const CORRECT_OPTION_INDEX_BY_TARGET = {
-  queue: {
-    "queue-1": 1,
-    "queue-2": 0,
-    "queue-3": 2,
-  },
-};
+const reportSummary = ref(null);
 
 const practiceCheckContext = computed(
   () => navigationStore.practiceCheckContext || {},
@@ -173,15 +223,27 @@ const practiceScopeText = computed(() => {
 });
 
 const questionSet = computed(() =>
-  getPracticeCheckQuestionSet(practiceCheckContext.value.targetCode) || [],
+  getPracticeCheckQuestionSet(practiceCheckContext.value.targetCode, {
+    previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent,
+  }) || [],
 );
 
 const hasSupportedQuestions = computed(() => questionSet.value.length > 0);
 const resolvedQuestionTargetCode = computed(() =>
   resolvePracticeQuestionTargetCode(practiceCheckContext.value.targetCode),
 );
+const answerKey = computed(() =>
+  getPracticeCheckAnswerKey(resolvedQuestionTargetCode.value, {
+    previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent,
+  }),
+);
+const showReport = computed(() => Boolean(reportSummary.value));
 
 function selectAnswer(questionId, optionIndex) {
+  if (showReport.value) {
+    return;
+  }
+
   answers[questionId] = optionIndex;
   submitError.value = "";
   submitSuccessMessage.value = "";
@@ -192,10 +254,8 @@ function hasAnsweredAllQuestions() {
 }
 
 function countCorrectAnswers() {
-  const answerKey = CORRECT_OPTION_INDEX_BY_TARGET[resolvedQuestionTargetCode.value] || {};
-
   return questionSet.value.reduce((count, question) => {
-    if (answers[question.id] === answerKey[question.id]) {
+    if (answers[question.id] === answerKey.value[question.id]) {
       return count + 1;
     }
 
@@ -203,9 +263,82 @@ function countCorrectAnswers() {
   }, 0);
 }
 
+function isQuestionCorrect(questionId) {
+  return answers[questionId] === answerKey.value[questionId];
+}
+
+function getSelectedOptionLabel(questionId) {
+  const question = questionSet.value.find((item) => item.id === questionId);
+  const selectedOptionIndex = answers[questionId];
+
+  if (!question || !Number.isInteger(selectedOptionIndex)) {
+    return "未作答";
+  }
+
+  return question.options[selectedOptionIndex] || "未作答";
+}
+
+function getCorrectOptionLabel(questionId) {
+  const question = questionSet.value.find((item) => item.id === questionId);
+  const correctOptionIndex = answerKey.value[questionId];
+
+  if (!question || !Number.isInteger(correctOptionIndex)) {
+    return "未配置";
+  }
+
+  return question.options[correctOptionIndex] || "未配置";
+}
+
+function getQuestionReportClass(questionId) {
+  if (!showReport.value) {
+    return "";
+  }
+
+  return isQuestionCorrect(questionId)
+    ? "question-item--correct"
+    : "question-item--incorrect";
+}
+
+function getQuestionNumberLabel(questionId, questionIndex) {
+  const baseLabel = `第 ${questionIndex + 1} 题`;
+
+  if (!showReport.value) {
+    return baseLabel;
+  }
+
+  return `${baseLabel} · ${isQuestionCorrect(questionId) ? "回答正确" : "回答错误"}`;
+}
+
+function getOptionReportClass(questionId, optionIndex) {
+  if (!showReport.value) {
+    return "";
+  }
+
+  const classNames = [];
+  if (answers[questionId] === optionIndex) {
+    classNames.push("option-item--selected");
+  }
+  if (answerKey.value[questionId] === optionIndex) {
+    classNames.push("option-item--correct");
+  }
+
+  return classNames.join(" ");
+}
+
+function formatMasteryDelta(deltaPercent) {
+  const roundedDelta = Math.round(Number(deltaPercent) || 0);
+
+  if (roundedDelta > 0) {
+    return `+${roundedDelta}%`;
+  }
+
+  return `${roundedDelta}%`;
+}
+
 async function submitPractice() {
   submitError.value = "";
   submitSuccessMessage.value = "";
+  reportSummary.value = null;
 
   if (!hasAnsweredAllQuestions()) {
     submitError.value = "请先完成全部题目再提交。";
@@ -224,6 +357,7 @@ async function submitPractice() {
     previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent,
     practiceMasteryPercent,
   });
+  const correctCount = countCorrectAnswers();
 
   submitting.value = true;
 
@@ -244,10 +378,18 @@ async function submitPractice() {
     });
 
     submitSuccessMessage.value = "练习结果已提交。";
-    await router.push({
-      name: "home",
-      query: { practiceUpdated: "1" },
-    });
+    reportSummary.value = {
+      correctCount,
+      totalCount: questionSet.value.length,
+      previousMasteryPercent: Math.round(
+        Number(practiceCheckContext.value.previousMasteryPercent) || 0,
+      ),
+      practiceMasteryPercent,
+      weightedMasteryPercent,
+      masteryDeltaPercent:
+        weightedMasteryPercent -
+        Math.round(Number(practiceCheckContext.value.previousMasteryPercent) || 0),
+    };
   } catch (error) {
     submitError.value = "练习结果未成功写入，请重试。";
     console.error(error);
@@ -327,10 +469,24 @@ h3,
   background: rgba(12, 106, 113, 0.05);
 }
 
+.question-item--correct {
+  border: 1px solid rgba(23, 107, 57, 0.22);
+  background: rgba(23, 107, 57, 0.08);
+}
+
+.question-item--incorrect {
+  border: 1px solid rgba(180, 35, 24, 0.2);
+  background: rgba(180, 35, 24, 0.06);
+}
+
 .question-number {
   margin: 0 0 8px;
   color: #0c5960;
   font-weight: 700;
+}
+
+.question-result-label {
+  color: #32404a;
 }
 
 .question-prompt {
@@ -350,6 +506,67 @@ h3,
   align-items: flex-start;
   color: #5f6c7a;
   line-height: 1.6;
+}
+
+.option-item--selected {
+  font-weight: 700;
+}
+
+.option-item--correct {
+  color: #176b39;
+}
+
+.question-report-block {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(12, 106, 113, 0.18);
+}
+
+.question-report-line {
+  margin: 0;
+  color: #32404a;
+  line-height: 1.6;
+}
+
+.question-report-line--answer,
+.question-report-line--reason {
+  color: #17303d;
+}
+
+.report-summary-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(12, 106, 113, 0.08);
+}
+
+.report-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.report-summary-item {
+  display: grid;
+  gap: 6px;
+}
+
+.report-summary-item dt,
+.report-summary-item dd {
+  margin: 0;
+}
+
+.report-summary-item dt {
+  color: #5f6c7a;
+  font-size: 0.92rem;
+}
+
+.report-summary-item dd {
+  color: #17303d;
+  font-weight: 700;
 }
 
 .question-placeholder {
