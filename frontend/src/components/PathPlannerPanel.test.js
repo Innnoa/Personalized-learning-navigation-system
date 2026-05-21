@@ -676,4 +676,112 @@ describe("PathPlannerPanel", () => {
     });
     expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
   });
+
+  it("shows one practice-check button per scheduled item and routes the clicked item", async () => {
+    fetchKnowledgeGraph.mockResolvedValue({
+      nodes: [
+        { code: "linear-list", label: "线性表" },
+        { code: "queue", label: "队列" },
+        { code: "graph-basic", label: "图的存储与遍历" },
+      ],
+    });
+    generateLearningPath.mockResolvedValueOnce({
+      summary: {
+        targetReachableWithinBudget: true,
+        scheduledCount: 3,
+        deferredCount: 0,
+        masteredCount: 0,
+        scheduledMinutes: 110,
+        totalRequiredMinutes: 110,
+        availableMinutes: 120,
+      },
+      path: [
+        {
+          code: "linear-list",
+          name: "线性表",
+          chapterNo: 2,
+          estimatedMinutes: 35,
+          masteryPercent: 82,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["主链路节点。"],
+            relevanceScore: 0.8,
+            importanceScore: 0.7,
+            timeCostPenalty: 0.1,
+          },
+        },
+        {
+          code: "queue",
+          name: "队列",
+          chapterNo: 3,
+          estimatedMinutes: 30,
+          masteryPercent: 35,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["主链路节点。"],
+            relevanceScore: 0.9,
+            importanceScore: 0.85,
+            timeCostPenalty: 0.2,
+          },
+        },
+        {
+          code: "graph-basic",
+          name: "图的存储与遍历",
+          chapterNo: 6,
+          estimatedMinutes: 45,
+          masteryPercent: 15,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["主链路节点。"],
+            relevanceScore: 0.95,
+            importanceScore: 0.9,
+            timeCostPenalty: 0.3,
+          },
+        },
+      ],
+      resourceRecommendations: [],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mount(PathPlannerPanel, {
+      props: {
+        learnerCode: "demo-learner",
+        initialMasteryByCode: {
+          "linear-list": 0.82,
+          queue: 0.35,
+          "graph-basic": 0.15,
+        },
+        profileLoading: false,
+      },
+      global: {
+        plugins: [pinia],
+      },
+    });
+    const navigationStore = useNavigationStore();
+
+    await flushUi();
+
+    const practiceButtons = wrapper.findAll('[data-testid^="practice-check-"]');
+    expect(practiceButtons).toHaveLength(3);
+    expect(wrapper.text()).toContain("线性表");
+    expect(wrapper.text()).toContain("队列");
+    expect(wrapper.text()).toContain("图的存储与遍历");
+
+    await wrapper.get('[data-testid="practice-check-graph-basic"]').trigger("click");
+
+    expect(navigationStore.practiceCheckContext).toMatchObject({
+      learnerCode: "demo-learner",
+      sourcePage: "home",
+      targetCode: "graph-basic",
+      targetName: "图的存储与遍历",
+      scopeCode: "root",
+      scopeLabel: "课程主图",
+      previousMasteryPercent: 15,
+      completionStatus: "completed",
+      notes: "",
+    });
+    expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
+  });
 });

@@ -6,7 +6,6 @@ import {
   buildFeedbackTrendPoints,
   buildTrendSummary,
   buildMasteryBarItems,
-  buildWeakPointRankingItems,
 } from "./profileCharts";
 
 describe("profileCharts helpers", () => {
@@ -75,50 +74,6 @@ describe("profileCharts helpers", () => {
       inProgressCount: 4,
       notStartedCount: 2,
     },
-    masteryItems: [
-      {
-        code: "graph",
-        name: "图",
-        chapterNo: 6,
-        chapterName: "图",
-        masteryPercent: 55,
-      },
-      {
-        code: "queue",
-        name: "队列",
-        chapterNo: 4,
-        chapterName: "栈与队列",
-        masteryPercent: 20,
-      },
-      {
-        code: "stack",
-        name: "栈",
-        chapterNo: 4,
-        chapterName: "栈与队列",
-        masteryPercent: 80,
-      },
-      {
-        code: "tree",
-        name: "树",
-        chapterNo: 5,
-        chapterName: "树与二叉树",
-        masteryPercent: 10,
-      },
-      {
-        code: "sort",
-        name: "排序",
-        chapterNo: 8,
-        chapterName: "排序",
-        masteryPercent: 90,
-      },
-      {
-        code: "search",
-        name: "查找",
-        chapterNo: 7,
-        chapterName: "查找",
-        masteryPercent: "35",
-      },
-    ],
   };
 
   it("buildMasteryBarItems sorts mastery distribution and maps widths", () => {
@@ -402,79 +357,11 @@ describe("profileCharts helpers", () => {
     });
   });
 
-  it("buildWeakPointRankingItems ranks weak points by mastery percent", () => {
-    expect(buildWeakPointRankingItems(profile.masteryItems)).toEqual([
-      {
-        code: "tree",
-        name: "树",
-        chapterNo: 5,
-        chapterName: "树与二叉树",
-        masteryPercent: 10,
-      },
-      {
-        code: "queue",
-        name: "队列",
-        chapterNo: 4,
-        chapterName: "栈与队列",
-        masteryPercent: 20,
-      },
-      {
-        code: "search",
-        name: "查找",
-        chapterNo: 7,
-        chapterName: "查找",
-        masteryPercent: 35,
-      },
-      {
-        code: "graph",
-        name: "图",
-        chapterNo: 6,
-        chapterName: "图",
-        masteryPercent: 55,
-      },
-      {
-        code: "stack",
-        name: "栈",
-        chapterNo: 4,
-        chapterName: "栈与队列",
-        masteryPercent: 80,
-      },
-    ]);
-  });
-
-  it("buildWeakPointRankingItems skips invalid, missing, or empty-string mastery values", () => {
-    expect(
-      buildWeakPointRankingItems([
-        { code: "missing", name: "未测", masteryPercent: undefined },
-        { code: "nan", name: "无效", masteryPercent: "NaN" },
-        { code: "null", name: "空值", masteryPercent: null },
-        { code: "empty", name: "空字符串", masteryPercent: "" },
-        { code: "valid-low", name: "薄弱", masteryPercent: "35" },
-        { code: "valid-high", name: "较好", masteryPercent: 88 },
-      ]),
-    ).toEqual([
-      { code: "valid-low", name: "薄弱", masteryPercent: 35 },
-    ]);
-  });
-
-  it("buildWeakPointRankingItems treats whitespace-only mastery values as missing", () => {
-    expect(
-      buildWeakPointRankingItems([
-        { code: "spaces", name: "空白", masteryPercent: "   " },
-        { code: "tab", name: "制表符", masteryPercent: "\t" },
-        { code: "valid-low", name: "薄弱", masteryPercent: "35" },
-      ]),
-    ).toEqual([
-      { code: "valid-low", name: "薄弱", masteryPercent: 35 },
-    ]);
-  });
-
   it("returns empty arrays for empty analytics input", () => {
     expect(buildMasteryBarItems()).toEqual([]);
     expect(buildFeedbackTrendPoints()).toEqual([]);
     expect(buildFeedbackCompositionItems()).toEqual([]);
     expect(buildProgressSegments()).toEqual([]);
-    expect(buildWeakPointRankingItems()).toEqual([]);
     expect(buildTrendSummary()).toEqual(null);
   });
 

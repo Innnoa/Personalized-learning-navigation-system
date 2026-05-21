@@ -186,31 +186,3 @@ export function buildTrendSummary(analytics = {}) {
     message,
   };
 }
-
-export function buildWeakPointRankingItems(items = []) {
-  const normalizedItems = Array.isArray(items) ? items : [];
-
-  return [...normalizedItems]
-    .filter(
-      (item) => {
-        const { masteryPercent } = item;
-
-        if (masteryPercent == null) {
-          return false;
-        }
-
-        if (typeof masteryPercent === "string" && masteryPercent.trim() === "") {
-          return false;
-        }
-
-        return Number.isFinite(Number(masteryPercent));
-      },
-    )
-    .map((item) => ({
-      ...item,
-      masteryPercent: toFinitePercent(item.masteryPercent),
-    }))
-    .filter((item) => item.masteryPercent < 85)
-    .sort((left, right) => left.masteryPercent - right.masteryPercent)
-    .slice(0, 5);
-}

@@ -88,34 +88,6 @@
           </div>
         </section>
 
-        <section class="section narrative-section">
-          <div class="section-head">
-            <div>
-              <p class="section-label">薄弱点排行</p>
-              <h3>优先补强知识点</h3>
-            </div>
-            <span>低掌握度节点优先进入资源预览</span>
-          </div>
-
-          <div
-            class="weak-ranking-shell"
-            :class="{ 'weak-ranking-shell--busy': Boolean(resourcePreviewCode) }"
-          >
-            <ProfileWeakPointRanking
-              :items="weakRankingItems"
-              @open-resource="handleOpenWeakPointResource"
-            />
-          </div>
-
-          <p v-if="resourcePreviewCode" class="state state--loading state--inline">
-            正在准备该知识点的资源预览，请稍候...
-          </p>
-
-          <p v-if="resourcePreviewError" class="state state--error state--inline">
-            {{ resourcePreviewError }}
-          </p>
-        </section>
-
         <section class="section narrative-section narrative-section--supporting">
           <div class="section-head">
             <div>
@@ -224,12 +196,10 @@ import {
   buildFeedbackTrendPoints,
   buildProgressSegments,
   buildTrendSummary,
-  buildWeakPointRankingItems,
 } from "./profileCharts";
 import ProfileActivityComposition from "./ProfileActivityComposition.vue";
 import ProfileMasteryTrendChart from "./ProfileMasteryTrendChart.vue";
 import ProfileProgressOverview from "./ProfileProgressOverview.vue";
-import ProfileWeakPointRanking from "./ProfileWeakPointRanking.vue";
 
 const props = defineProps({
   profile: {
@@ -244,16 +214,7 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  resourcePreviewCode: {
-    type: String,
-    default: "",
-  },
-  resourcePreviewError: {
-    type: String,
-    default: "",
-  },
 });
-const emit = defineEmits(["open-resource"]);
 
 const feedbackStatusLabelMap = {
   completed: "已完成",
@@ -288,23 +249,6 @@ const feedbackCompositionItems = computed(() =>
 const trendSummary = computed(() =>
   buildTrendSummary(props.profile?.analytics),
 );
-const weakRankingItems = computed(() =>
-  buildWeakPointRankingItems(props.profile?.masteryItems),
-);
-
-function handleOpenWeakPointResource(payload) {
-  if (props.resourcePreviewCode) {
-    return;
-  }
-
-  const item = weakRankingItems.value.find((candidate) => candidate.code === payload?.code);
-
-  if (!item) {
-    return;
-  }
-
-  emit("open-resource", item);
-}
 
 function resourceInteractionBadgeClass(interactionType) {
   return {
@@ -429,11 +373,6 @@ dd {
 .supporting-section {
   display: grid;
   gap: 14px;
-}
-
-.weak-ranking-shell--busy {
-  pointer-events: none;
-  opacity: 0.76;
 }
 
 h4 {

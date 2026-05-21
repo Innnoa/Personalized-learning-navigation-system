@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 import ProfileActivityComposition from "./ProfileActivityComposition.vue";
 import ProfileMasteryTrendChart from "./ProfileMasteryTrendChart.vue";
 import ProfileProgressOverview from "./ProfileProgressOverview.vue";
-import ProfileWeakPointRanking from "./ProfileWeakPointRanking.vue";
 
 const getPropValidator = (component, propName) => component.props?.[propName]?.validator
   ?? component.__vccOpts?.props?.[propName]?.validator;
@@ -304,24 +303,6 @@ describe("Profile progress visualization components", () => {
       },
     });
 
-    const weakPoints = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [
-          null,
-          {
-            code: "blank-name",
-            name: "   ",
-            masteryPercent: 18,
-          },
-          {
-            code: "valid-weak-point",
-            name: "图",
-            masteryPercent: 42,
-          },
-        ],
-      },
-    });
-
     expect(overview.findAll(".segment-item")).toHaveLength(1);
     expect(overview.text()).toContain("进行中");
     expect(overview.text()).not.toContain("未命名分段");
@@ -330,14 +311,10 @@ describe("Profile progress visualization components", () => {
     expect(activity.text()).toContain("已完成");
     expect(activity.text()).not.toContain("未命名活动");
 
-    expect(weakPoints.findAll(".weak-item")).toHaveLength(1);
-    expect(weakPoints.text()).toContain("图");
-    expect(weakPoints.text()).not.toContain("未命名知识点");
-
     warnSpy.mockRestore();
   });
 
-  it("drops malformed overview, activity, and weak point rows instead of coercing numeric fields", () => {
+  it("drops malformed overview and activity rows instead of coercing numeric fields", () => {
     const overview = mount(ProfileProgressOverview, {
       props: {
         averageMasteryPercent: 68,
@@ -389,28 +366,6 @@ describe("Profile progress visualization components", () => {
       },
     });
 
-    const weakPoints = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [
-          {
-            code: "string-mastery",
-            name: "字符串掌握度",
-            masteryPercent: "42",
-          },
-          {
-            code: "nan-mastery",
-            name: "无效掌握度",
-            masteryPercent: Number.NaN,
-          },
-          {
-            code: "valid-weak-point",
-            name: "图",
-            masteryPercent: 42,
-          },
-        ],
-      },
-    });
-
     expect(overview.findAll(".segment-item")).toHaveLength(1);
     expect(overview.findAll(".segment-item").map((itemWrapper) => itemWrapper.text())).toEqual([
       "进行中1 个知识点 · 70%",
@@ -426,14 +381,6 @@ describe("Profile progress visualization components", () => {
     expect(activity.text()).toContain("已完成");
     expect(activity.text()).not.toContain("字符串占比");
     expect(activity.text()).not.toContain("无效数量");
-
-    expect(weakPoints.findAll(".weak-item")).toHaveLength(1);
-    expect(weakPoints.findAll(".weak-item").map((itemWrapper) => itemWrapper.text())).toEqual([
-      "图章节信息待补充42% 查看推荐资源",
-    ]);
-    expect(weakPoints.text()).toContain("图");
-    expect(weakPoints.text()).not.toContain("字符串掌握度");
-    expect(weakPoints.text()).not.toContain("无效掌握度");
   });
 
   it("keeps duplicate list rows stable when prepending unrelated items", async () => {
@@ -514,38 +461,6 @@ describe("Profile progress visualization components", () => {
       ],
     });
 
-    const weakPoints = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [
-          {
-            name: "重复知识点",
-            masteryPercent: 18,
-          },
-          {
-            name: "图",
-            masteryPercent: 42,
-          },
-        ],
-      },
-    });
-
-    await weakPoints.setProps({
-      items: [
-        {
-          name: "新增知识点",
-          masteryPercent: 12,
-        },
-        {
-          name: "重复知识点",
-          masteryPercent: 18,
-        },
-        {
-          name: "图",
-          masteryPercent: 42,
-        },
-      ],
-    });
-
     expect(overview.findAll(".segment-item").map((itemWrapper) => itemWrapper.text())).toEqual([
       "新增分段3 个知识点 · 20%",
       "重复分段2 个知识点 · 30%",
@@ -556,11 +471,6 @@ describe("Profile progress visualization components", () => {
       "重复活动2 条 · 40%",
       "已完成3 条 · 60%",
     ]);
-    expect(weakPoints.findAll(".weak-item").map((itemWrapper) => itemWrapper.text())).toEqual([
-      "新增知识点章节信息待补充12% 查看推荐资源",
-      "重复知识点章节信息待补充18% 查看推荐资源",
-      "图章节信息待补充42% 查看推荐资源",
-    ]);
 
     expect(
       warnSpy.mock.calls.some(([message]) => String(message).includes("Duplicate keys")),
@@ -569,7 +479,7 @@ describe("Profile progress visualization components", () => {
     warnSpy.mockRestore();
   });
 
-  it("treats null array props as empty states across all visualization components", () => {
+  it("treats null array props as empty states across visualization components", () => {
     const overview = mount(ProfileProgressOverview, {
       props: {
         averageMasteryPercent: 68,
@@ -589,16 +499,9 @@ describe("Profile progress visualization components", () => {
       },
     });
 
-    const weakPoints = mount(ProfileWeakPointRanking, {
-      props: {
-        items: null,
-      },
-    });
-
     expect(overview.text()).toContain("暂无可展示的进度分布。");
     expect(trend.text()).toContain("暂无掌握度趋势数据。");
     expect(activity.text()).toContain("暂无学习活动数据。");
-    expect(weakPoints.text()).toContain("当前没有需要重点补强的知识点。");
   });
 
   it("normalizes unsupported trend directions to a stable summary style", () => {
@@ -660,7 +563,6 @@ describe("Profile progress visualization components", () => {
     const overviewSegmentsValidator = getPropValidator(ProfileProgressOverview, "segments");
     const activityItemsValidator = getPropValidator(ProfileActivityComposition, "items");
     const trendPointsValidator = getPropValidator(ProfileMasteryTrendChart, "points");
-    const weakPointItemsValidator = getPropValidator(ProfileWeakPointRanking, "items");
 
     expect(overviewSegmentsValidator(null)).toBe(true);
     expect(overviewSegmentsValidator([
@@ -685,128 +587,5 @@ describe("Profile progress visualization components", () => {
     expect(trendPointsValidator([
       { label: "   ", value: 40 },
     ])).toBe(false);
-
-    expect(weakPointItemsValidator(null)).toBe(true);
-    expect(weakPointItemsValidator([
-      { name: "图", masteryPercent: 42 },
-    ])).toBe(true);
-    expect(weakPointItemsValidator([
-      { name: "图", masteryPercent: Number.POSITIVE_INFINITY },
-    ])).toBe(false);
-  });
-
-  it("renders weak points in provided order and emits resource event on click", async () => {
-    const wrapper = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [
-          {
-            code: "graph",
-            name: "图",
-            chapterNo: 6,
-            chapterName: "图",
-            masteryPercent: 91,
-          },
-          {
-            code: "queue",
-            name: "队列",
-            chapterNo: 4,
-            chapterName: "栈与队列",
-            masteryPercent: 18,
-          },
-          {
-            code: "sort",
-            name: "排序",
-            chapterNo: 8,
-            chapterName: "排序",
-            masteryPercent: 42,
-          },
-        ],
-      },
-    });
-
-    const rows = wrapper.findAll(".weak-item");
-    expect(rows).toHaveLength(3);
-    expect(wrapper.text()).toContain("按传入顺序展示");
-    expect(rows[0].text()).toContain("图");
-    expect(rows[1].text()).toContain("队列");
-    expect(rows[1].text()).toContain("18%");
-    expect(rows[2].text()).toContain("排序");
-
-    await rows[1].find("button").trigger("click");
-
-    expect(wrapper.emitted("open-resource")).toEqual([
-      [
-        {
-          code: "queue",
-        },
-      ],
-    ]);
-  });
-
-  it("validates the open-resource payload contract", () => {
-    const wrapper = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [],
-      },
-    });
-
-    const emitValidator = wrapper.vm.$options.emits["open-resource"];
-
-    expect(emitValidator({ code: "queue" })).toBe(true);
-    expect(emitValidator("queue")).toBe(false);
-    expect(emitValidator({})).toBe(false);
-  });
-
-  it("renders available chapter details instead of collapsing partial chapter info", () => {
-    const wrapper = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [
-          {
-            code: "hash",
-            name: "哈希",
-            chapterNo: 5,
-            masteryPercent: 0,
-          },
-          {
-            code: "tree",
-            name: "树",
-            chapterName: "树结构",
-            masteryPercent: 0,
-          },
-          {
-            code: "graph",
-            name: "图",
-            masteryPercent: 0,
-          },
-        ],
-      },
-    });
-
-    const rows = wrapper.findAll(".weak-item");
-
-    expect(rows[0].text()).toContain("第5章");
-    expect(rows[0].text()).not.toContain("章节信息待补充");
-    expect(rows[1].text()).toContain("树结构");
-    expect(rows[1].text()).not.toContain("章节信息待补充");
-    expect(rows[2].text()).toContain("章节信息待补充");
-    expect(wrapper.text()).toContain("0%");
-    expect(wrapper.text()).not.toContain("undefined");
-  });
-
-  it("does not emit open-resource when weak point code is missing", async () => {
-    const wrapper = mount(ProfileWeakPointRanking, {
-      props: {
-        items: [
-          {
-            name: "未编码知识点",
-            masteryPercent: 15,
-          },
-        ],
-      },
-    });
-
-    await wrapper.find("button").trigger("click");
-
-    expect(wrapper.emitted("open-resource")).toBeUndefined();
   });
 });

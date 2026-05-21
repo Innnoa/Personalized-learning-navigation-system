@@ -436,15 +436,17 @@
                   <p class="path-item-reason">
                     当前节点将通过练习检验结果自动判断掌握度，并据此更新推荐路径。
                   </p>
+                  <div class="feedback-item-actions">
+                    <button
+                      :data-testid="`practice-check-${item.code}`"
+                      type="button"
+                      class="ghost-button"
+                      @click="goToPracticeCheck(item)"
+                    >
+                      进入练习检验
+                    </button>
+                  </div>
                 </article>
-
-                <button
-                  type="button"
-                  class="submit-button"
-                  @click="goToPracticeCheck"
-                >
-                  进入练习检验
-                </button>
               </div>
 
               <div v-if="rollbackError" class="state state--error state--result">
@@ -1170,23 +1172,24 @@ function clearOperationOutputs() {
   pathComparison.value = null;
 }
 
-function goToPracticeCheck() {
-  const targetItem =
+function goToPracticeCheck(targetItem = null) {
+  const resolvedTargetItem =
+    targetItem ||
     scheduledItems.value.find((item) => item.code === selectedTargetCode.value) ||
     scheduledItems.value[0] ||
     null;
-  if (!targetItem) {
+  if (!resolvedTargetItem) {
     return;
   }
 
   navigationStore.setPracticeCheckContext({
     learnerCode: props.learnerCode,
     sourcePage: "home",
-    targetCode: targetItem.code,
-    targetName: targetItem.name,
+    targetCode: resolvedTargetItem.code,
+    targetName: resolvedTargetItem.name,
     scopeCode: "root",
     scopeLabel: "课程主图",
-    previousMasteryPercent: Math.round(Number(targetItem.masteryPercent) || 0),
+    previousMasteryPercent: Math.round(Number(resolvedTargetItem.masteryPercent) || 0),
     completionStatus: "completed",
     notes: "",
   });
