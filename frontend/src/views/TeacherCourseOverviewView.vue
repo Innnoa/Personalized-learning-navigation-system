@@ -1,10 +1,5 @@
 <template>
-  <PageLayout
-    eyebrow="教师工作台 · 课程概览"
-    :title="course?.courseName || '课程概览'"
-    description="面向教师的只读课程信息页，当前聚焦知识点规模与后续维护提示。"
-  >
-    <section class="overview-stack">
+  <section class="overview-stack">
       <p v-if="loadError" class="state-message state-message--error">{{ loadError }}</p>
       <p v-else-if="loading" class="state-message">正在加载课程概览...</p>
 
@@ -33,15 +28,13 @@
           </ul>
         </article>
       </template>
-    </section>
-  </PageLayout>
+  </section>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import PageLayout from "../components/PageLayout.vue";
 import { fetchTeacherCourseOverview } from "../api/teacher";
 import { useAuthStore } from "../stores/authStore";
 

@@ -32,15 +32,6 @@
 
       <p v-if="errorMessage" class="login-error">{{ errorMessage }}</p>
 
-      <section class="demo-credentials" aria-label="演示账号说明">
-        <p class="demo-credentials-title">演示账号（密码统一为 demo123）</p>
-        <ul>
-          <li>学生：student_demo</li>
-          <li>教师：teacher_demo</li>
-          <li>管理员：admin_demo</li>
-        </ul>
-      </section>
-
       <div class="demo-actions">
         <button
           type="button"
@@ -67,6 +58,10 @@
           管理员演示
         </button>
       </div>
+
+      <p class="login-footer">
+        没有账号？<RouterLink :to="{ name: 'register' }">注册学生/教师账号</RouterLink>
+      </p>
     </section>
   </main>
 </template>
@@ -99,7 +94,7 @@ function resolveTargetRoute(activeRole) {
     return { name: "admin-dashboard" };
   }
 
-  return { name: "home" };
+  return { name: "learning-graph" };
 }
 
 function resolveRedirectTarget(activeRole) {
@@ -163,12 +158,15 @@ function handleDemoLogin(username) {
 
 .login-panel {
   width: min(100%, 24rem);
+  max-width: 100%;
+  box-sizing: border-box;
   display: grid;
   gap: 1rem;
   padding: 1.5rem;
   border: 1px solid #d9d9d9;
   border-radius: 0.75rem;
   background: #ffffff;
+  overflow: hidden;
 }
 
 .login-form {
@@ -179,6 +177,8 @@ function handleDemoLogin(username) {
 .login-form input,
 .login-form button,
 .demo-actions button {
+  width: 100%;
+  box-sizing: border-box;
   padding: 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #c7c7c7;
@@ -215,5 +215,17 @@ function handleDemoLogin(username) {
   margin: 0;
   padding-left: 1.25rem;
   color: #4a5568;
+}
+
+.login-footer {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #51606d;
+}
+
+.login-footer a {
+  color: #0c6a71;
+  font-weight: 700;
 }
 </style>

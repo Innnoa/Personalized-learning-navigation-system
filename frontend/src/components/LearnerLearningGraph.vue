@@ -856,10 +856,10 @@ async function loadGraph(scopeCode = "root", options = {}) {
   loadError.value = "";
 
   try {
-    const payload =
-      scopeCode === "root"
-        ? await fetchKnowledgeGraph()
-        : await fetchKnowledgeGraph({ scopeCode });
+    const params = {};
+    if (scopeCode !== "root") params.scopeCode = scopeCode;
+    if (props.profile?.course?.code) params.courseCode = props.profile.course.code;
+    const payload = await fetchKnowledgeGraph(params);
 
     const normalizedPayload = normalizePayload(payload, masteryByCode.value);
     graphData.value = payload;

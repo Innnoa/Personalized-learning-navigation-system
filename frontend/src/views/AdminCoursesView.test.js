@@ -6,23 +6,15 @@ import { fetchAdminCourses } from "../api/admin";
 
 vi.mock("../api/admin", () => ({
   fetchAdminCourses: vi.fn(),
+  updateAdminCourse: vi.fn(),
+  deleteAdminCourse: vi.fn(),
 }));
 
 async function flushUi() {
   await Promise.resolve();
   await Promise.resolve();
-}
-
-function mountView() {
-  return mount(AdminCoursesView, {
-    global: {
-      stubs: {
-        PageLayout: {
-          template: "<div><slot /></div>",
-        },
-      },
-    },
-  });
+  await Promise.resolve();
+  await Promise.resolve();
 }
 
 describe("AdminCoursesView", () => {
@@ -33,20 +25,17 @@ describe("AdminCoursesView", () => {
   it("contains data-structures course", async () => {
     fetchAdminCourses.mockResolvedValue({
       courses: [
-        {
-          courseCode: "data-structures",
-          courseName: "数据结构",
-          knowledgePointCount: 14,
-          targetAudience: "2022级计算机类本科生",
-        },
+        { courseCode: "data-structures", courseName: "数据结构", targetAudience: "大二", knowledgePointCount: 14 },
       ],
     });
 
-    const wrapper = mountView();
+    const wrapper = mount(AdminCoursesView, {
+      global: { stubs: { PageLayout: { template: "<div><slot /></div>" } } },
+    });
     await flushUi();
 
-    expect(wrapper.get("[data-testid='admin-course-list']").text()).toContain(
-      "data-structures",
-    );
+    const text = wrapper.find("table").text();
+    expect(text).toContain("data-structures");
+    expect(text).toContain("数据结构");
   });
 });

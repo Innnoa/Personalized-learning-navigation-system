@@ -31,7 +31,7 @@ describe("router role guards", () => {
     await navigateTo("/teacher/courses/COS101");
 
     expect(router.currentRoute.value.name).toBe("login");
-    expect(router.currentRoute.value.query.redirect).toBe("/teacher/courses/COS101");
+    expect(router.currentRoute.value.query.redirect).toBe("/teacher/courses/COS101/overview");
   });
 
   it("blocks students from teacher-only routes", async () => {

@@ -2,6 +2,12 @@
 
 #include "repositories/UserAccountRepository.h"
 
+#include <drogon/drogon.h>
+
+#include <openssl/sha.h>
+
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 namespace
@@ -38,13 +44,29 @@ Json::Value buildAuthenticatedPayload(
 
     if (payload["activeRole"].asString() == "student")
     {
-        const auto learnerLink =
-            repositories::UserAccountRepository::findLearnerLinkForUser(user.id);
-        if (learnerLink.has_value())
+        const auto allLinks =
+            repositories::UserAccountRepository::findAllLearnerLinksForUser(user.id);
+
+        Json::Value linkedLearnersArr(Json::arrayValue);
+        for (const auto &link : allLinks)
         {
-            payload["linkedLearner"]["learnerId"] = learnerLink->learnerId;
-            payload["linkedLearner"]["learnerCode"] = learnerLink->learnerCode;
-            payload["linkedLearner"]["learnerName"] = learnerLink->learnerName;
+            Json::Value item;
+            item["learnerId"] = link.learnerId;
+            item["learnerCode"] = link.learnerCode;
+            item["learnerName"] = link.learnerName;
+            item["courseCode"] = link.courseCode;
+            item["courseName"] = link.courseName;
+            linkedLearnersArr.append(item);
+        }
+        payload["linkedLearners"] = linkedLearnersArr;
+
+        if (!allLinks.empty())
+        {
+            payload["linkedLearner"]["learnerId"] = allLinks.front().learnerId;
+            payload["linkedLearner"]["learnerCode"] = allLinks.front().learnerCode;
+            payload["linkedLearner"]["learnerName"] = allLinks.front().learnerName;
+            payload["linkedLearner"]["courseCode"] = allLinks.front().courseCode;
+            payload["linkedLearner"]["courseName"] = allLinks.front().courseName;
         }
         else
         {
@@ -73,7 +95,7 @@ Json::Value AuthService::login(const std::string &username,
         throw std::invalid_argument("用户名或密码错误。");
     }
 
-    if (user->passwordHash != password)
+    if (user->passwordHash != hashPassword(password))
     {
         throw std::invalid_argument("用户名或密码错误。");
     }
@@ -93,5 +115,89 @@ Json::Value AuthService::buildSessionPayload(const std::string &username)
 
     const auto roles = repositories::UserAccountRepository::listRolesForUser(user->id);
     return buildAuthenticatedPayload(*user, roles);
+}
+
+std::string AuthService::hashPassword(const std::string &password)
+{
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(reinterpret_cast<const unsigned char *>(password.c_str()),
+           password.size(), hash);
+    std::ostringstream oss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i)
+        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
+    return oss.str();
+}
+
+Json::Value AuthService::registerStudent(const std::string &username,
+                                         const std::string &password,
+                                         const std::string &displayName,
+                                         const std::string &major,
+                                         const std::string &gradeLabel)
+{
+    if (username.empty() || password.empty())
+        throw std::invalid_argument("用户名和密码不能为空。");
+    if (password.size() < 4)
+        throw std::invalid_argument("密码至少需要 4 个字符。");
+
+    auto existing = repositories::UserAccountRepository::findUserByUsername(username);
+    if (existing.has_value())
+        throw std::invalid_argument("用户名已存在。");
+
+    auto client = drogon::app().getDbClient("sqlite_client");
+    if (!client)
+        throw std::runtime_error("数据库连接失败。");
+
+    const auto hashed = hashPassword(password);
+
+    client->execSqlSync(
+        "insert into users (username, password_hash, display_name, status) "
+        "values (?, ?, ?, 'active')", username, hashed, displayName);
+
+    const auto userResult = client->execSqlSync(
+        "select id from users where username = ? limit 1", username);
+    const int userId = userResult.front()["id"].as<int>();
+
+    client->execSqlSync(
+        "insert or ignore into user_roles (user_id, role_code) values (?, 'student')",
+        std::to_string(userId));
+
+    // Do NOT auto-create learner record — teacher/admin assigns course later
+
+    return buildSessionPayload(username);
+}
+
+Json::Value AuthService::registerTeacher(const std::string &username,
+                                         const std::string &password,
+                                         const std::string &displayName,
+                                         const std::string &employeeCode)
+{
+    if (username.empty() || password.empty())
+        throw std::invalid_argument("用户名和密码不能为空。");
+    if (password.size() < 4)
+        throw std::invalid_argument("密码至少需要 4 个字符。");
+
+    auto existing = repositories::UserAccountRepository::findUserByUsername(username);
+    if (existing.has_value())
+        throw std::invalid_argument("用户名已存在。");
+
+    auto client = drogon::app().getDbClient("sqlite_client");
+    if (!client)
+        throw std::runtime_error("数据库连接失败。");
+
+    const auto hashed = hashPassword(password);
+
+    client->execSqlSync(
+        "insert into users (username, password_hash, display_name, status) "
+        "values (?, ?, ?, 'active')", username, hashed, displayName);
+
+    const auto userResult = client->execSqlSync(
+        "select id from users where username = ? limit 1", username);
+    const int userId = userResult.front()["id"].as<int>();
+
+    client->execSqlSync(
+        "insert or ignore into user_roles (user_id, role_code) values (?, 'teacher')",
+        std::to_string(userId));
+
+    return buildSessionPayload(username);
 }
 }

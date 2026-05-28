@@ -123,7 +123,7 @@ int queryResourceViewRecordCount(const std::string &learnerCode)
 
 DROGON_TEST(LearnerProfileServiceBuildsDefaultLearnerPayload)
 {
-    const auto payload = services::LearnerProfileService::buildProfilePayload();
+    const auto payload = services::LearnerProfileService::buildProfilePayload("demo-learner");
 
     CHECK(payload["status"].asString() == "ok");
     CHECK(payload["learner"]["code"].asString() == "demo-learner");
@@ -222,7 +222,7 @@ DROGON_TEST(LearnerProfileServiceBuildsChartAnalyticsPayload)
 
 DROGON_TEST(LearnerProfileServiceBuildsGraphMasteryForDetailNodes)
 {
-    const auto payload = services::LearnerProfileService::buildProfilePayload();
+    const auto payload = services::LearnerProfileService::buildProfilePayload("demo-learner");
 
     CHECK(payload["graphMasteryByCode"].isObject());
     CHECK(payload["detailMasteryByCode"].isObject());

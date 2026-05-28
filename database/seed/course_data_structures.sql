@@ -252,9 +252,9 @@ INSERT OR IGNORE INTO users (
     status
 )
 VALUES
-    ('student_demo', 'demo123', '演示学生账号', 'active'),
-    ('teacher_demo', 'demo123', '演示教师账号', 'active'),
-    ('admin_demo', 'demo123', '演示管理员账号', 'active');
+    ('student_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '演示学生账号', 'active'),
+    ('teacher_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '演示教师账号', 'active'),
+    ('admin_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '演示管理员账号', 'active');
 
 INSERT OR IGNORE INTO user_roles (
     user_id,

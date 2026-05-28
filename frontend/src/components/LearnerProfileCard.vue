@@ -3,7 +3,7 @@
     <div class="card-head">
       <div>
         <p class="label">学习者画像</p>
-        <h2>默认演示学习者</h2>
+        <h2>{{ profile?.learner?.name || "学习者" }}</h2>
       </div>
       <p class="caption">当前数据库中的掌握度将作为路径规划默认输入</p>
     </div>

@@ -4,7 +4,10 @@ import { nextTick } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PageLayout from "./PageLayout.vue";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
+
+const pushMock = vi.fn();
 
 const routeState = {
   name: "home",
@@ -17,16 +20,28 @@ vi.mock("vue-router", async () => {
   return {
     ...actual,
     useRoute: () => routeState,
+    useRouter: () => ({ push: pushMock }),
   };
 });
 
-function mountLayout() {
+vi.mock("../api/auth", () => ({
+  logout: vi.fn().mockResolvedValue({ authenticated: false }),
+}));
+
+function mountLayout(props = {}) {
   const pinia = createPinia();
   setActivePinia(pinia);
+  if (props.session) {
+    useAuthStore().setSession(props.session);
+  }
 
   return {
     store: useNavigationStore(),
+    authStore: useAuthStore(),
     wrapper: mount(PageLayout, {
+      props: {
+        ...props,
+      },
       global: {
         plugins: [pinia],
         stubs: {
@@ -42,6 +57,7 @@ describe("PageLayout", () => {
     routeState.name = "home";
     routeState.params = {};
     routeState.query = {};
+    pushMock.mockReset();
     window.sessionStorage.clear();
   });
 
@@ -123,5 +139,44 @@ describe("PageLayout", () => {
         scope: "queue-detail",
       },
     });
+  });
+
+  it("renders teacher navigation when roleScope is teacher", () => {
+    const { wrapper } = mountLayout({ roleScope: "teacher" });
+
+    const navText = wrapper.find("nav.page-nav").text();
+    expect(navText).toContain("我的课程");
+    expect(navText).toContain("课程列表");
+    expect(navText).not.toContain("学习图谱");
+    expect(navText).not.toContain("主图路径规划");
+  });
+
+  it("renders student navigation by default", () => {
+    const { wrapper } = mountLayout();
+
+    const navText = wrapper.find("nav.page-nav").text();
+    expect(navText).toContain("学习图谱");
+    expect(navText).toContain("主图路径规划");
+    expect(navText).not.toContain("我的课程");
+  });
+
+  it("logout button clears session and redirects to login", async () => {
+    const { wrapper, authStore } = mountLayout({
+      roleScope: "teacher",
+      session: {
+        user: { username: "teacher_demo" },
+        roles: ["teacher"],
+        activeRole: "teacher",
+      },
+    });
+
+    const logoutBtn = wrapper.find("button.logout-btn");
+    expect(logoutBtn.exists()).toBe(true);
+
+    await logoutBtn.trigger("click");
+    await nextTick();
+
+    expect(authStore.isAuthenticated).toBe(false);
+    expect(pushMock).toHaveBeenCalledWith({ name: "login" });
   });
 });

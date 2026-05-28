@@ -50,9 +50,12 @@ function mountView(options = {}) {
   setActivePinia(pinia);
 
   const authStore = useAuthStore();
-  if (options.session) {
-    authStore.setSession(options.session);
-  }
+  authStore.setSession(options.session || {
+    user: { username: "student_demo" },
+    roles: ["student"],
+    activeRole: "student",
+    linkedLearner: { learnerCode: "demo-learner", learnerName: "演示学习者" },
+  });
 
   return {
     authStore,

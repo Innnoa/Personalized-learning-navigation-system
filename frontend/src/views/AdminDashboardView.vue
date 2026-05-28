@@ -2,7 +2,8 @@
   <PageLayout
     eyebrow="管理后台"
     title="后台概览"
-    description="当前阶段提供只读后台总览，便于快速查看用户、课程与授课分配的基础规模。"
+    description="用户管理、课程管理、教师分配、学习者管理。"
+    role-scope="admin"
   >
     <section class="dashboard-stack">
       <p v-if="loadError" class="state-message state-message--error">{{ loadError }}</p>
@@ -24,9 +25,11 @@
       </div>
 
       <div v-if="!loading && !loadError" class="quick-links">
-        <RouterLink class="quick-link" :to="{ name: 'admin-users' }">查看用户列表</RouterLink>
-        <RouterLink class="quick-link" :to="{ name: 'admin-courses' }">查看课程列表</RouterLink>
-        <RouterLink class="quick-link" :to="{ name: 'admin-assignments' }">查看分配列表</RouterLink>
+        <RouterLink class="quick-link" :to="{ name: 'admin-users' }">用户管理</RouterLink>
+        <RouterLink class="quick-link" :to="{ name: 'admin-courses' }">课程管理</RouterLink>
+        <RouterLink class="quick-link" :to="{ name: 'admin-assignments' }">教师分配</RouterLink>
+        <RouterLink class="quick-link" :to="{ name: 'admin-learners' }">学习者管理</RouterLink>
+        <RouterLink class="quick-link" :to="{ name: 'admin-logs' }">操作日志</RouterLink>
       </div>
     </section>
   </PageLayout>

@@ -81,8 +81,9 @@ namespace services
 Json::Value LearnerProfileService::buildProfilePayload(
     const std::string &learnerCode)
 {
-    const auto effectiveLearnerCode =
-        learnerCode.empty() ? readDefaultLearnerCode() : learnerCode;
+    if (learnerCode.empty())
+        throw std::invalid_argument("未提供学习者编码（learnerCode）。请确认已分配课程。");
+    const auto effectiveLearnerCode = learnerCode;
     const auto learner =
         repositories::LearnerProfileRepository::findLearnerByCode(
             effectiveLearnerCode);

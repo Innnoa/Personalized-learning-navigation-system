@@ -5,6 +5,11 @@
     :description="pageDescription"
   >
     <section class="detail-learning-layout">
+      <div v-if="!authLearnerCode" class="unassigned-card">
+        <h2>暂未分配课程</h2>
+        <p>你尚未被分配到任何课程。请联系教师或管理员为你分配课程后查看细化路径规划。</p>
+      </div>
+      <template v-else>
       <article class="card surface-panel detail-branch-card">
         <div class="section-headline">
           <div>
@@ -62,6 +67,7 @@
       >
         {{ learnerProfileError }}
       </article>
+      </template>
     </section>
   </PageLayout>
 </template>
@@ -98,7 +104,7 @@ const summary = computed(
 );
 const requestedScopeCode = computed(() => String(route.query.scope || ""));
 const detailLearningLearnerCode = computed(
-  () => authLearnerCode.value || navigationStore.detailLearningLearnerCode || "demo-learner",
+  () => authLearnerCode.value || navigationStore.detailLearningLearnerCode || "",
 );
 const currentSection = computed(() => {
   if (availableSections.value.length === 0) {

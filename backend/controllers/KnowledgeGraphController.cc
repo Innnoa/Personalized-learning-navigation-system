@@ -11,8 +11,9 @@ void KnowledgeGraphController::get(
     try
     {
         const auto scopeCode = req->getParameter("scopeCode");
+        const auto courseCode = req->getParameter("courseCode");
         auto response = drogon::HttpResponse::newHttpJsonResponse(
-            services::KnowledgeGraphService::buildGraphPayload(scopeCode));
+            services::KnowledgeGraphService::buildGraphPayload(scopeCode, courseCode));
         callback(response);
     }
     catch (const std::invalid_argument &error)

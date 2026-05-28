@@ -5,6 +5,16 @@
     description="本页用于统一浏览课程图谱、学习状态和层级下钻，也支持把节点直接设为当前学习目标。"
   >
     <section class="graph-layout">
+      <div v-if="!authLearnerCode" class="unassigned-card">
+        <h2>暂未分配课程</h2>
+        <p>你尚未被分配到任何课程。请联系教师或管理员为你分配课程后查看学习图谱。</p>
+      </div>
+      <template v-else>
+      <div v-if="isEmptyCourse" class="unassigned-card">
+        <h2>该课程暂无知识点</h2>
+        <p>当前课程 {{ learnerProfile?.course?.name || '' }} 尚未添加知识点，请等待教师编辑课程内容。</p>
+      </div>
+      <template v-else>
       <LearnerLearningGraph
         :profile="learnerProfile"
         :preferred-selected-code="preferredSelectedCode"
@@ -17,6 +27,8 @@
       >
         {{ learnerProfileError }}
       </article>
+      </template>
+      </template>
     </section>
   </PageLayout>
 </template>
@@ -38,14 +50,20 @@ const learnerProfileError = ref("");
 
 const preferredSelectedCode = computed(() => String(route.query.focus || ""));
 const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
+const isEmptyCourse = computed(
+  () => learnerProfile.value && learnerProfile.value.summary?.knowledgePointCount === 0,
+);
 
 async function loadLearnerProfile() {
   learnerProfileError.value = "";
 
+  if (!authLearnerCode.value) {
+    learnerProfileError.value = "暂未分配课程，请等待教师分配后查看。";
+    return;
+  }
+
   try {
-    learnerProfile.value = authLearnerCode.value
-      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
-      : await fetchLearnerProfile();
+    learnerProfile.value = await fetchLearnerProfile({ learnerCode: authLearnerCode.value });
   } catch (error) {
     learnerProfileError.value =
       "未能读取学习者画像。请先启动后端并确认数据库已初始化。";
@@ -88,5 +106,19 @@ h2 {
 
 .hero-note p {
   color: #32404a;
+}
+
+.unassigned-card {
+  padding: 32px;
+  border: 1px solid #d8e0e6;
+  border-radius: 16px;
+  background: #fff8f0;
+  text-align: center;
+}
+
+.unassigned-card h2 {
+  margin: 0 0 8px;
+  color: #8a6d1b;
+  font-size: 1.2rem;
 }
 </style>

@@ -8,41 +8,76 @@
           {{ description }}
         </p>
         <nav class="page-nav">
-          <RouterLink to="/learning-graph" class="page-nav-link">
-            学习图谱
-          </RouterLink>
-          <RouterLink to="/" class="page-nav-link">
-            主图路径规划
-          </RouterLink>
-          <RouterLink
-            v-if="detailLearningNavTarget"
-            :to="detailLearningNavTarget"
-            class="page-nav-link"
-            :class="{
-              'page-nav-link--active': isDetailLearningNavActive,
-            }"
-          >
-            细化路径规划
-          </RouterLink>
-          <span v-else class="page-nav-link page-nav-link--disabled">
-            细化路径规划
-          </span>
-          <RouterLink
-            v-if="resourceNavTarget"
-            :to="resourceNavTarget"
-            class="page-nav-link"
-            :class="{
-              'page-nav-link--active': isResourceNavActive,
-            }"
-          >
-            推荐资源
-          </RouterLink>
-          <span v-else class="page-nav-link page-nav-link--disabled">
-            推荐资源
-          </span>
-          <RouterLink to="/learner-profile" class="page-nav-link">
-            学习者画像
-          </RouterLink>
+          <template v-if="roleScope === 'admin'">
+            <RouterLink to="/admin" class="page-nav-link">后台概览</RouterLink>
+            <RouterLink to="/admin/users" class="page-nav-link">用户管理</RouterLink>
+            <RouterLink to="/admin/courses" class="page-nav-link">课程管理</RouterLink>
+            <RouterLink to="/admin/assignments" class="page-nav-link">分配管理</RouterLink>
+            <RouterLink to="/admin/learners" class="page-nav-link">学习者</RouterLink>
+            <RouterLink to="/admin/logs" class="page-nav-link">日志</RouterLink>
+            <button type="button" class="page-nav-link logout-btn" @click="handleLogout">退出</button>
+          </template>
+          <template v-else-if="roleScope === 'teacher'">
+            <RouterLink to="/teacher" class="page-nav-link">
+              我的课程
+            </RouterLink>
+            <RouterLink to="/teacher/courses" class="page-nav-link">
+              课程列表
+            </RouterLink>
+            <button type="button" class="page-nav-link logout-btn" @click="handleLogout">
+              退出
+            </button>
+          </template>
+          <template v-else>
+            <RouterLink to="/learning-graph" class="page-nav-link">
+              学习图谱
+            </RouterLink>
+            <RouterLink to="/" class="page-nav-link">
+              主图路径规划
+            </RouterLink>
+            <RouterLink
+              v-if="detailLearningNavTarget"
+              :to="detailLearningNavTarget"
+              class="page-nav-link"
+              :class="{
+                'page-nav-link--active': isDetailLearningNavActive,
+              }"
+            >
+              细化路径规划
+            </RouterLink>
+            <span v-else class="page-nav-link page-nav-link--disabled">
+              细化路径规划
+            </span>
+            <RouterLink
+              v-if="resourceNavTarget"
+              :to="resourceNavTarget"
+              class="page-nav-link"
+              :class="{
+                'page-nav-link--active': isResourceNavActive,
+              }"
+            >
+              推荐资源
+            </RouterLink>
+            <span v-else class="page-nav-link page-nav-link--disabled">
+              推荐资源
+            </span>
+            <RouterLink to="/learner-profile" class="page-nav-link">
+              学习者画像
+            </RouterLink>
+            <select
+              v-if="authStore.linkedLearners.length > 1"
+              :value="authStore.activeLearnerCode"
+              class="course-switcher"
+              @change="switchCourse($event.target.value)"
+            >
+              <option v-for="ll in authStore.linkedLearners" :key="ll.learnerCode" :value="ll.learnerCode">
+                {{ ll.courseName || ll.courseCode }}
+              </option>
+            </select>
+            <button type="button" class="page-nav-link logout-btn" @click="handleLogout">
+              退出
+            </button>
+          </template>
         </nav>
       </div>
       <slot name="hero-side" />
@@ -56,8 +91,10 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+import { logout } from "../api/auth";
+import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 
 defineProps({
@@ -72,11 +109,17 @@ defineProps({
   description: {
     type: String,
     default:
-      "当前课程固定为“数据结构”，页面按路径规划、学习图谱、推荐资源和学习者画像组织，便于分模块演示。",
+      "当前课程固定为数据结构，页面按路径规划、学习图谱、推荐资源和学习者画像组织，便于分模块演示。",
+  },
+  roleScope: {
+    type: String,
+    default: "student",
   },
 });
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 const navigationStore = useNavigationStore();
 
 const detailLearningNavTarget = computed(() => {
@@ -149,6 +192,21 @@ const isDetailLearningNavActive = computed(() => route.name === "detail-learning
 const isResourceNavActive = computed(
   () => route.name === "resource-recommendation" || Boolean(route.params?.code),
 );
+
+async function handleLogout() {
+  try {
+    await logout();
+  } catch {
+    // proceed to clear local session even if server call fails
+  }
+  authStore.clearSession();
+  router.push({ name: "login" });
+}
+
+function switchCourse(learnerCode) {
+  authStore.switchLearner(learnerCode);
+  window.location.reload();
+}
 </script>
 
 <style scoped>
@@ -237,18 +295,18 @@ h1 {
 }
 
 .page-nav-link--disabled:hover {
-  transform: none;
-  background: rgba(241, 245, 247, 0.92);
+  background: inherit;
+  color: inherit;
 }
 
-.content {
-  display: grid;
-  gap: 18px;
-}
-
-@media (max-width: 860px) {
-  .hero {
-    grid-template-columns: 1fr;
-  }
+.course-switcher {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(12, 106, 113, 0.24);
+  background: rgba(255, 255, 255, 0.86);
+  color: #0c6a71;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 </style>

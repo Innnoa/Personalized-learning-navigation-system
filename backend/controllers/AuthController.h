@@ -11,6 +11,7 @@ class AuthController : public drogon::HttpController<AuthController>
     ADD_METHOD_TO(AuthController::login, "/api/auth/login", drogon::Post);
     ADD_METHOD_TO(AuthController::logout, "/api/auth/logout", drogon::Post);
     ADD_METHOD_TO(AuthController::session, "/api/auth/session", drogon::Get);
+    ADD_METHOD_TO(AuthController::registerStudent, "/api/auth/register", drogon::Post);
     METHOD_LIST_END
 
     void login(const drogon::HttpRequestPtr &req,
@@ -19,5 +20,7 @@ class AuthController : public drogon::HttpController<AuthController>
                 std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
     void session(const drogon::HttpRequestPtr &req,
                  std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
+    void registerStudent(const drogon::HttpRequestPtr &req,
+                         std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
 };
 }

@@ -19,7 +19,9 @@ add_executable(${PROJECT_NAME}
                PathAdjusterTest.cc
                PathExplanationTest.cc
                LearnerProfileFeedbackServiceTest.cc
-               TestSupport.cc)
+                TeacherStudentServiceTest.cc
+                TeacherCourseEditServiceTest.cc
+                TestSupport.cc)
 target_sources(${PROJECT_NAME}
                PRIVATE
                ${TEST_CONTROLLER_SRC}
@@ -38,6 +40,6 @@ target_include_directories(${PROJECT_NAME}
 # target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
 #
 # and comment out the following lines
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon sqlite3)
+target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon sqlite3 OpenSSL::SSL OpenSSL::Crypto)
 
 ParseAndAddDrogonTests(${PROJECT_NAME})

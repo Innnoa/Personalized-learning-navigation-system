@@ -4,11 +4,25 @@
 
 #include "services/AuthService.h"
 
+#include <openssl/sha.h>
+
 #include <future>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 namespace
 {
+std::string sha256(const std::string &s)
+{
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(reinterpret_cast<const unsigned char *>(s.c_str()), s.size(), hash);
+    std::ostringstream oss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i)
+        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
+    return oss.str();
+}
+
 constexpr uint16_t kAuthTestPort = 18991;
 
 drogon::orm::DbClientPtr getClient()
@@ -30,7 +44,7 @@ void insertUser(const std::string &username,
     getClient()->execSqlSync(
         "insert into users (username, password_hash, display_name, status) values (?, ?, ?, ?)",
         username,
-        password,
+        sha256(password),
         displayName,
         status);
 }

@@ -62,6 +62,17 @@ CREATE TABLE IF NOT EXISTS learners (
 CREATE INDEX IF NOT EXISTS idx_learners_target_course
     ON learners(target_course_id);
 
+CREATE TABLE IF NOT EXISTS user_learner_links (
+    user_id INTEGER NOT NULL,
+    learner_id INTEGER NOT NULL,
+    PRIMARY KEY (user_id, learner_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (learner_id) REFERENCES learners(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_learner_links_learner
+    ON user_learner_links(learner_id);
+
 CREATE TABLE IF NOT EXISTS learner_mastery (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     learner_id INTEGER NOT NULL,

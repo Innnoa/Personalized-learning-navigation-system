@@ -3,6 +3,7 @@
     eyebrow="教师工作台 · 课程列表"
     title="课程管理"
     description="展示教师当前已分配课程，保持只读列表形态，便于后续逐步接入维护能力。"
+    role-scope="teacher"
   >
     <section class="courses-stack">
       <p v-if="loadError" class="state-message state-message--error">{{ loadError }}</p>
@@ -16,7 +17,7 @@
           </div>
           <RouterLink
             class="course-link"
-            :to="{ name: 'teacher-course-detail', params: { courseCode: course.courseCode } }"
+            :to="{ name: 'teacher-course-overview', params: { courseCode: course.courseCode } }"
           >
             打开课程概览
           </RouterLink>

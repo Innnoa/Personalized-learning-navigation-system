@@ -5,6 +5,11 @@
     :description="pageDescription"
   >
     <section class="resource-page-layout">
+      <div v-if="!authLearnerCode" class="unassigned-card">
+        <h2>暂未分配课程</h2>
+        <p>你尚未被分配到任何课程。请联系教师或管理员为你分配课程后查看推荐资源。</p>
+      </div>
+      <template v-else>
       <article class="card surface-panel resource-summary-card">
         <div class="section-headline">
           <div>
@@ -333,6 +338,7 @@
           </button>
         </div>
       </article>
+      </template>
     </section>
   </PageLayout>
 </template>
@@ -906,7 +912,7 @@ async function recordResourceInteraction(section, resource, interactionType) {
 
   const payload = await recordResourceView({
     learnerCode:
-      authLearnerCode.value || navigationStore.activeLearnerCode || "demo-learner",
+      authLearnerCode.value || navigationStore.activeLearnerCode || "",
     knowledgePointCode: section.recordingKnowledgePointCode || section.code,
     resourceTitle: resource.title,
     resourceUrl: resource.url,

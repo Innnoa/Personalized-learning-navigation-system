@@ -644,7 +644,7 @@ import { downloadLearningPathExport } from "../utils/learningPathExport";
 const props = defineProps({
   learnerCode: {
     type: String,
-    default: "demo-learner",
+    default: "",
   },
   masteryByCode: {
     type: Object,

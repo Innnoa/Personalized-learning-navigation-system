@@ -6,23 +6,16 @@ import { fetchAdminUsers } from "../api/admin";
 
 vi.mock("../api/admin", () => ({
   fetchAdminUsers: vi.fn(),
+  createAdminUser: vi.fn(),
+  toggleAdminUserStatus: vi.fn(),
+  setAdminUserRoles: vi.fn(),
 }));
 
 async function flushUi() {
   await Promise.resolve();
   await Promise.resolve();
-}
-
-function mountView() {
-  return mount(AdminUsersView, {
-    global: {
-      stubs: {
-        PageLayout: {
-          template: "<div><slot /></div>",
-        },
-      },
-    },
-  });
+  await Promise.resolve();
+  await Promise.resolve();
 }
 
 describe("AdminUsersView", () => {
@@ -33,16 +26,18 @@ describe("AdminUsersView", () => {
   it("contains student_demo, teacher_demo and admin_demo", async () => {
     fetchAdminUsers.mockResolvedValue({
       users: [
-        { username: "admin_demo", roles: ["admin"] },
-        { username: "student_demo", roles: ["student"] },
-        { username: "teacher_demo", roles: ["teacher"] },
+        { username: "admin_demo", displayName: "Admin", roles: ["admin"], status: "active" },
+        { username: "student_demo", displayName: "Student", roles: ["student"], status: "active" },
+        { username: "teacher_demo", displayName: "Teacher", roles: ["teacher"], status: "active" },
       ],
     });
 
-    const wrapper = mountView();
+    const wrapper = mount(AdminUsersView, {
+      global: { stubs: { PageLayout: { template: "<div><slot /></div>" } } },
+    });
     await flushUi();
 
-    const text = wrapper.get("[data-testid='admin-user-list']").text();
+    const text = wrapper.find("table").text();
     expect(text).toContain("student_demo");
     expect(text).toContain("teacher_demo");
     expect(text).toContain("admin_demo");

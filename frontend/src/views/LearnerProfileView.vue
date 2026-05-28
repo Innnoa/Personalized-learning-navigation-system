@@ -6,8 +6,7 @@
   >
     <template #hero-side>
       <div class="hero-side">
-        <HealthStatusCard :health="health" :error="healthError" />
-        <div class="demo-reset-section">
+        <div v-if="authStore.currentUser?.username === 'student_demo'" class="demo-reset-section">
           <button
             type="button"
             class="demo-reset-button"
@@ -43,18 +42,14 @@
 import { computed, onMounted, ref } from "vue";
 
 import { resetDemoState } from "../api/demo";
-import HealthStatusCard from "../components/HealthStatusCard.vue";
 import LearnerProfileCard from "../components/LearnerProfileCard.vue";
 import PageLayout from "../components/PageLayout.vue";
-import { fetchHealth } from "../api/health";
 import { fetchLearnerProfile } from "../api/learnerProfile";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
 
 const authStore = useAuthStore();
 const navigationStore = useNavigationStore();
-const health = ref(null);
-const healthError = ref("");
 const learnerProfile = ref(null);
 const learnerProfileLoading = ref(true);
 const learnerProfileError = ref("");
@@ -67,33 +62,23 @@ async function loadLearnerProfile() {
   learnerProfileLoading.value = true;
   learnerProfileError.value = "";
 
+  if (!authLearnerCode.value) {
+    learnerProfileError.value = "暂未分配课程，请等待教师分配后查看。";
+    learnerProfileLoading.value = false;
+    return;
+  }
+
   try {
-    learnerProfile.value = authLearnerCode.value
-      ? await fetchLearnerProfile({ learnerCode: authLearnerCode.value })
-      : await fetchLearnerProfile();
+    learnerProfile.value = await fetchLearnerProfile({ learnerCode: authLearnerCode.value });
   } catch (error) {
     learnerProfileError.value =
-      "未能读取学习者画像。请先启动后端并确认数据库已初始化。";
+      error?.response?.data?.detail ||
+      "未能读取学习者画像。请确认后端已启动且数据库已初始化。";
     console.error(error);
   } finally {
     learnerProfileLoading.value = false;
   }
 }
-
-onMounted(async () => {
-  const [healthResult] = await Promise.allSettled([
-    fetchHealth(),
-    loadLearnerProfile(),
-  ]);
-
-  if (healthResult.status === "fulfilled") {
-    health.value = healthResult.value;
-  } else {
-    healthError.value =
-      "未能连接后端。请先启动 Drogon 服务；若在 WSL 中运行，也请检查当前代理配置。";
-    console.error(healthResult.reason);
-  }
-});
 
 async function handleResetDemo() {
   resettingDemo.value = true;
@@ -117,6 +102,8 @@ async function handleResetDemo() {
     resettingDemo.value = false;
   }
 }
+
+onMounted(loadLearnerProfile);
 </script>
 
 <style scoped>

@@ -665,7 +665,7 @@ import { downloadLearningPathExport } from "../utils/learningPathExport";
 const props = defineProps({
   learnerCode: {
     type: String,
-    default: "demo-learner",
+    default: "",
   },
   externalTargetCode: {
     type: String,
@@ -1247,8 +1247,6 @@ async function loadKnowledgePoints() {
   try {
     const payload = await fetchKnowledgeGraph();
     knowledgePoints.value = payload.nodes;
-    selectedTargetCode.value =
-      payload.nodes[payload.nodes.length - 1]?.code || "";
     applyRequestedTargetCode();
   } catch (error) {
     optionsError.value =
@@ -1272,7 +1270,6 @@ async function initializePlannerFromProfile() {
 
   applyRequestedTargetCode();
   initialPlanInitialized.value = true;
-  await submitPlan();
 }
 
 async function submitPlan() {
@@ -1289,6 +1286,19 @@ async function submitPlan() {
       availableMinutes: availableMinutes.value,
       masteryByCode: buildMasteryPayload(),
     });
+    // Persist plan result
+    if (props.learnerCode) {
+      try {
+        window.sessionStorage.setItem(
+          `plns-plan-${props.learnerCode}`,
+          JSON.stringify({
+            planResult: planResult.value,
+            availableMinutes: availableMinutes.value,
+            selectedTargetCode: selectedTargetCode.value,
+          }),
+        );
+      } catch {}
+    }
     syncResourceRecommendationContext(planResult.value);
     syncDetailLearningContext();
   } catch (error) {
@@ -1400,8 +1410,45 @@ watch(
 onMounted(async () => {
   await loadKnowledgePoints();
   optionsReady.value = true;
+
+  // Restore last selected target
+  if (!selectedTargetCode.value && props.learnerCode) {
+    try {
+      const saved = window.sessionStorage.getItem(`plns-target-${props.learnerCode}`);
+      if (saved && knowledgePoints.value.some((n) => n.code === saved)) {
+        selectedTargetCode.value = saved;
+      }
+    } catch {}
+  }
+
+  // Restore saved plan
+  if (props.learnerCode) {
+    try {
+      const raw = window.sessionStorage.getItem(`plns-plan-${props.learnerCode}`);
+      if (raw) {
+        const cached = JSON.parse(raw);
+        if (cached.planResult) {
+          planResult.value = cached.planResult;
+          availableMinutes.value = cached.availableMinutes || 60;
+          selectedTargetCode.value = cached.selectedTargetCode || selectedTargetCode.value;
+          syncResourceRecommendationContext(cached.planResult);
+          syncDetailLearningContext();
+        }
+      }
+    } catch {}
+  }
+
   if (!optionsError.value) {
     await initializePlannerFromProfile();
+  }
+});
+
+// Persist target selection
+watch(selectedTargetCode, (val) => {
+  if (val && props.learnerCode) {
+    try {
+      window.sessionStorage.setItem(`plns-target-${props.learnerCode}`, val);
+    } catch {}
   }
 });
 </script>

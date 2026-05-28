@@ -7,14 +7,24 @@ import LearningGraphView from "../views/LearningGraphView.vue";
 import LearnerProfileView from "../views/LearnerProfileView.vue";
 import PracticeCheckView from "../views/PracticeCheckView.vue";
 import LoginView from "../views/LoginView.vue";
+import RegisterView from "../views/RegisterView.vue";
 import ResourceRecommendationView from "../views/ResourceRecommendationView.vue";
 import AdminAssignmentsView from "../views/AdminAssignmentsView.vue";
 import AdminCoursesView from "../views/AdminCoursesView.vue";
 import AdminDashboardView from "../views/AdminDashboardView.vue";
+import AdminLearnersView from "../views/AdminLearnersView.vue";
+import AdminLogsView from "../views/AdminLogsView.vue";
 import AdminUsersView from "../views/AdminUsersView.vue";
 import TeacherCourseOverviewView from "../views/TeacherCourseOverviewView.vue";
+import TeacherCoursePage from "../views/TeacherCoursePage.vue";
 import TeacherCoursesView from "../views/TeacherCoursesView.vue";
+import TeacherCourseStatsView from "../views/TeacherCourseStatsView.vue";
 import TeacherDashboardView from "../views/TeacherDashboardView.vue";
+import TeacherKnowledgeStatsView from "../views/TeacherKnowledgeStatsView.vue";
+import TeacherStudentsView from "../views/TeacherStudentsView.vue";
+import TeacherStudentProgressView from "../views/TeacherStudentProgressView.vue";
+import TeacherResourcesView from "../views/TeacherResourcesView.vue";
+import TeacherQuestionsView from "../views/TeacherQuestionsView.vue";
 
 function resolveRoleFallback(activeRole) {
   if (activeRole === "teacher") {
@@ -25,7 +35,7 @@ function resolveRoleFallback(activeRole) {
     return { name: "admin-dashboard" };
   }
 
-  return { name: "home" };
+  return { name: "learning-graph" };
 }
 
 const router = createRouter({
@@ -67,6 +77,11 @@ const router = createRouter({
       component: LoginView,
     },
     {
+      path: "/register",
+      name: "register",
+      component: RegisterView,
+    },
+    {
       path: "/teacher",
       name: "teacher-dashboard",
       component: TeacherDashboardView,
@@ -80,8 +95,57 @@ const router = createRouter({
     },
     {
       path: "/teacher/courses/:courseCode",
-      name: "teacher-course-detail",
-      component: TeacherCourseOverviewView,
+      component: TeacherCoursePage,
+      props: true,
+      meta: { roleScope: "teacher" },
+      children: [
+        {
+          path: "",
+          redirect: { name: "teacher-course-overview" },
+        },
+        {
+          path: "overview",
+          name: "teacher-course-overview",
+          component: TeacherCourseOverviewView,
+          meta: { roleScope: "teacher" },
+        },
+        {
+          path: "stats",
+          name: "teacher-course-stats",
+          component: TeacherCourseStatsView,
+          meta: { roleScope: "teacher" },
+        },
+        {
+          path: "students",
+          name: "teacher-course-students",
+          component: TeacherStudentsView,
+          meta: { roleScope: "teacher" },
+        },
+        {
+          path: "points",
+          name: "teacher-course-points",
+          component: TeacherKnowledgeStatsView,
+          meta: { roleScope: "teacher" },
+        },
+        {
+          path: "resources",
+          name: "teacher-course-resources",
+          component: TeacherResourcesView,
+          meta: { roleScope: "teacher" },
+        },
+        {
+          path: "questions",
+          name: "teacher-course-questions",
+          component: TeacherQuestionsView,
+          meta: { roleScope: "teacher" },
+        },
+      ],
+    },
+    {
+      path: "/teacher/courses/:courseCode/students/:learnerCode",
+      name: "teacher-student-progress",
+      component: TeacherStudentProgressView,
+      props: true,
       meta: { roleScope: "teacher" },
     },
     {
@@ -106,6 +170,18 @@ const router = createRouter({
       path: "/admin/assignments",
       name: "admin-assignments",
       component: AdminAssignmentsView,
+      meta: { roleScope: "admin" },
+    },
+    {
+      path: "/admin/learners",
+      name: "admin-learners",
+      component: AdminLearnersView,
+      meta: { roleScope: "admin" },
+    },
+    {
+      path: "/admin/logs",
+      name: "admin-logs",
+      component: AdminLogsView,
       meta: { roleScope: "admin" },
     },
     {

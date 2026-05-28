@@ -25,6 +25,8 @@ struct UserLearnerLinkRecord
     int learnerId = 0;
     std::string learnerCode;
     std::string learnerName;
+    std::string courseCode;
+    std::string courseName;
 };
 
 class UserAccountRepository
@@ -34,5 +36,6 @@ class UserAccountRepository
         const std::string &username);
     static std::vector<UserRoleRecord> listRolesForUser(int userId);
     static std::optional<UserLearnerLinkRecord> findLearnerLinkForUser(int userId);
+    static std::vector<UserLearnerLinkRecord> findAllLearnerLinksForUser(int userId);
 };
 }

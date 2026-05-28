@@ -49,3 +49,10 @@ database/data/*.db
 database/data/*.sqlite
 !database/data/.gitkeep
 AI_GUIDE.md
+
+# Runtime / upload artifacts
+outputs/
+uploads/
+public/uploads/
+frontend/Testing/
+backend/config/operation_logs.json

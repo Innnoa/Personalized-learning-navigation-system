@@ -1,109 +1,105 @@
 <template>
-  <PageLayout
-    eyebrow="管理后台 · 课程列表"
-    title="课程总览"
-    description="展示系统内课程与知识点规模，当前仅作为只读后台列表使用。"
-  >
-    <section class="courses-stack">
-      <p v-if="loadError" class="state-message state-message--error">{{ loadError }}</p>
-      <p v-else-if="loading" class="state-message">正在加载课程列表...</p>
-
-      <ul v-else class="course-list" data-testid="admin-course-list">
-        <li v-for="course in courses" :key="course.courseCode" class="course-row">
-          <div>
-            <p class="course-name">{{ course.courseName }}</p>
-            <p class="course-meta">{{ course.courseCode }} · {{ course.targetAudience }}</p>
-          </div>
-          <div class="course-count">{{ course.knowledgePointCount }} knowledge points</div>
-        </li>
-      </ul>
-    </section>
+  <PageLayout eyebrow="管理后台" title="课程管理" description="编辑课程名称和适用对象，删除课程。" role-scope="admin">
+    <div class="admin-actions">
+      <span v-if="msg" class="edit-message" :class="msgClass">{{ msg }}</span>
+    </div>
+    <p v-if="loadError" class="state-message--error">{{ loadError }}</p>
+    <p v-else-if="loading" class="state-message">加载中...</p>
+    <table v-else class="admin-table">
+      <thead>
+        <tr><th>课程代码</th><th>名称</th><th>适用对象</th><th>知识点数</th><th>操作</th></tr>
+      </thead>
+      <tbody>
+        <tr v-for="c in courses" :key="c.courseCode">
+          <template v-if="editingCode === c.courseCode">
+            <td>{{ c.courseCode }}</td>
+            <td><input v-model="editForm.name" class="edit-input" /></td>
+            <td><input v-model="editForm.targetAudience" class="edit-input" /></td>
+            <td>{{ c.knowledgePointCount }}</td>
+            <td class="cell-actions">
+              <button class="btn btn--small btn--primary" @click="saveEdit(c.courseCode)">保存</button>
+              <button class="btn btn--small" @click="editingCode = null">取消</button>
+            </td>
+          </template>
+          <template v-else>
+            <td>{{ c.courseCode }}</td>
+            <td>{{ c.courseName }}</td>
+            <td>{{ c.targetAudience }}</td>
+            <td>{{ c.knowledgePointCount }}</td>
+            <td class="cell-actions">
+              <button class="btn btn--small" @click="startEdit(c)">编辑</button>
+              <button class="btn btn--small" style="color:#9b3333" @click="confirmDelete(c)">删除</button>
+            </td>
+          </template>
+        </tr>
+      </tbody>
+    </table>
   </PageLayout>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
-
+import { onMounted, reactive, ref } from "vue";
 import PageLayout from "../components/PageLayout.vue";
-import { fetchAdminCourses } from "../api/admin";
+import { fetchAdminCourses, updateAdminCourse, deleteAdminCourse } from "../api/admin";
 
 const loading = ref(true);
 const loadError = ref("");
-const coursesPayload = ref([]);
-const courses = computed(() => coursesPayload.value);
+const courses = ref([]);
+const editingCode = ref(null);
+const msg = ref("");
+const msgClass = ref("");
 
-async function loadCourses() {
+const editForm = reactive({ name: "", targetAudience: "" });
+
+async function load() {
   loading.value = true;
-  loadError.value = "";
-
-  try {
-    const payload = await fetchAdminCourses();
-    coursesPayload.value = Array.isArray(payload?.courses) ? payload.courses : [];
-  } catch (error) {
-    loadError.value = "未能读取课程列表，请稍后重试。";
-    console.error(error);
-  } finally {
-    loading.value = false;
-  }
+  try { courses.value = (await fetchAdminCourses())?.courses || []; }
+  catch { loadError.value = "加载失败"; }
+  finally { loading.value = false; }
 }
 
-onMounted(loadCourses);
+function startEdit(c) {
+  editingCode.value = c.courseCode;
+  editForm.name = c.courseName;
+  editForm.targetAudience = c.targetAudience || "";
+}
+
+async function saveEdit(code) {
+  try {
+    await updateAdminCourse(code, { name: editForm.name, targetAudience: editForm.targetAudience });
+    msg.value = "已更新"; msgClass.value = "edit-message--ok";
+    editingCode.value = null;
+    await load();
+  } catch (e) { msg.value = "失败"; msgClass.value = "edit-message--error"; }
+}
+
+async function confirmDelete(c) {
+  if (!confirm(`确定删除课程 "${c.courseName}"？`)) return;
+  try {
+    await deleteAdminCourse(c.courseCode);
+    msg.value = "已删除"; msgClass.value = "edit-message--ok";
+    await load();
+  } catch (e) { msg.value = "删除失败: " + (e?.response?.data?.detail || e.message); msgClass.value = "edit-message--error"; }
+}
+
+onMounted(load);
 </script>
 
 <style scoped>
-.courses-stack {
-  display: grid;
-  gap: 18px;
-}
-
-.course-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 14px;
-}
-
-.course-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 18px;
-  border: 1px solid #d8e0e6;
-  border-radius: 16px;
-  background: #ffffff;
-}
-
-.course-name,
-.course-meta,
-.state-message {
-  margin: 0;
-}
-
-.course-name {
-  font-weight: 700;
-  color: #15364a;
-}
-
-.course-meta,
-.course-count {
-  margin-top: 6px;
-  color: #51606d;
-}
-
-.course-count {
-  white-space: nowrap;
-}
-
-.state-message--error {
-  color: #9b3333;
-}
-
-@media (max-width: 720px) {
-  .course-row {
-    align-items: start;
-    flex-direction: column;
-  }
-}
+.admin-view { display: grid; gap: 16px; }
+.admin-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.admin-table th, .admin-table td { padding: 10px 12px; border-bottom: 1px solid #d8e0e6; text-align: left; }
+.admin-table th { color: #51606d; }
+.btn { padding: 8px 16px; border: 1px solid #d8e0e6; border-radius: 8px; background: #fff; color: #15364a; font-weight: 600; cursor: pointer; }
+.btn:hover { background: #eef7f8; }
+.btn--primary { background: #0c6a71; color: #fff; border-color: #0c6a71; }
+.btn--small { padding: 4px 10px; font-size: 0.85rem; }
+.cell-actions { display: flex; gap: 6px; }
+.edit-input { padding: 4px 6px; border: 1px solid #a0b8c4; border-radius: 4px; font-size: 0.85rem; width: 100%; box-sizing: border-box; }
+.edit-message { font-size: 0.9rem; }
+.edit-message--ok { color: #1a7a3a; }
+.edit-message--error { color: #9b3333; }
+.state-message, .state-message--error { color: #51606d; }
+.state-message--error { color: #9b3333; }
 </style>

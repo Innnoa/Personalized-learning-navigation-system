@@ -14,3 +14,8 @@ export async function fetchSession() {
   const { data } = await http.get("/auth/session");
   return data;
 }
+
+export async function register(payload = {}) {
+  const { data } = await http.post("/auth/register", payload);
+  return data;
+}

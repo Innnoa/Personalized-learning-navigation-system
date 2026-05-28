@@ -78,4 +78,29 @@ UserAccountRepository::findLearnerLinkForUser(int userId)
                                  row["learner_code"].as<std::string>(),
                                  row["learner_name"].as<std::string>()};
 }
+
+std::vector<UserLearnerLinkRecord>
+UserAccountRepository::findAllLearnerLinksForUser(int userId)
+{
+    const auto result = getClient()->execSqlSync(
+        "select l.id as learner_id, l.code as learner_code, l.name as learner_name, "
+        "c.code as course_code, c.name as course_name "
+        "from user_learner_links ull "
+        "join learners l on l.id = ull.learner_id "
+        "join courses c on c.id = l.target_course_id "
+        "where ull.user_id = ?", userId);
+
+    std::vector<UserLearnerLinkRecord> links;
+    for (const auto &row : result)
+    {
+        UserLearnerLinkRecord link;
+        link.learnerId = row["learner_id"].as<int>();
+        link.learnerCode = row["learner_code"].as<std::string>();
+        link.learnerName = row["learner_name"].as<std::string>();
+        link.courseCode = row["course_code"].as<std::string>();
+        link.courseName = row["course_name"].as<std::string>();
+        links.push_back(link);
+    }
+    return links;
+}
 }

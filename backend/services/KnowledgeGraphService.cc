@@ -244,30 +244,52 @@ Json::Value buildDetailScopePayload(
 
 namespace services
 {
-algorithm::graph::KnowledgeGraph KnowledgeGraphService::loadKnowledgeGraph()
+algorithm::graph::KnowledgeGraph KnowledgeGraphService::loadKnowledgeGraph(const std::string &courseCode)
 {
-    const auto courseName = readSelectedCourseName();
-    const auto course =
-        repositories::KnowledgeGraphRepository::findCourseByName(courseName);
+    repositories::CourseRecord courseRecord;
+    bool found = false;
 
-    if (!course.has_value())
+    if (!courseCode.empty())
     {
-        throw std::runtime_error("未找到当前课程的图谱数据，请先执行数据库初始化脚本。");
+        auto client = drogon::app().getDbClient("sqlite_client");
+        auto result = client->execSqlSync(
+            "select id, code, name, description, target_audience "
+            "from courses where code = ? limit 1", courseCode);
+        if (!result.empty())
+        {
+            auto row = result.front();
+            courseRecord.id = row["id"].as<int>();
+            courseRecord.code = row["code"].as<std::string>();
+            courseRecord.name = row["name"].as<std::string>();
+            courseRecord.description = row["description"].as<std::string>();
+            courseRecord.targetAudience = row["target_audience"].as<std::string>();
+            found = true;
+        }
     }
 
+    if (!found)
+    {
+        const auto courseName = readSelectedCourseName();
+        const auto course = repositories::KnowledgeGraphRepository::findCourseByName(courseName);
+        if (!course.has_value())
+            throw std::runtime_error("未找到当前课程的图谱数据，请先执行数据库初始化脚本。");
+        courseRecord = *course;
+    }
+
+    const auto &c = courseRecord;
+    const int courseId = c.id;
+
     const auto pointRecords =
-        repositories::KnowledgeGraphRepository::listKnowledgePointsByCourseId(
-            course->id);
+        repositories::KnowledgeGraphRepository::listKnowledgePointsByCourseId(courseId);
     const auto dependencyRecords =
-        repositories::KnowledgeGraphRepository::listDependenciesByCourseId(
-            course->id);
+        repositories::KnowledgeGraphRepository::listDependenciesByCourseId(courseId);
 
     algorithm::graph::KnowledgeGraph graph;
-    graph.courseId = course->id;
-    graph.courseCode = course->code;
-    graph.courseName = course->name;
-    graph.courseDescription = course->description;
-    graph.targetAudience = course->targetAudience;
+    graph.courseId = c.id;
+    graph.courseCode = c.code;
+    graph.courseName = c.name;
+    graph.courseDescription = c.description;
+    graph.targetAudience = c.targetAudience;
 
     graph.points.reserve(pointRecords.size());
     for (const auto &point : pointRecords)
@@ -315,9 +337,10 @@ algorithm::graph::KnowledgeGraph KnowledgeGraphService::loadKnowledgeGraph()
     return graph;
 }
 
-Json::Value KnowledgeGraphService::buildGraphPayload(const std::string &scopeCode)
+Json::Value KnowledgeGraphService::buildGraphPayload(const std::string &scopeCode,
+                                                     const std::string &courseCode)
 {
-    const auto graph = loadKnowledgeGraph();
+    const auto graph = loadKnowledgeGraph(courseCode);
     const auto &detailScopes =
         DetailScopeCatalogService::getCatalog().scopesByCode;
     const auto normalizedScopeCode =
