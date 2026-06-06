@@ -43,7 +43,7 @@
 # Project runtime/build artifacts
 frontend/node_modules/
 frontend/dist/
-backend/build/
+backend/build*/
 .worktrees/
 database/data/*.db
 database/data/*.sqlite

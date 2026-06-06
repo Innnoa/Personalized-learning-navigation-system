@@ -9,6 +9,8 @@ BACKEND_BIN="${BUILD_DIR}/backend"
 BACKEND_CONFIG="${BACKEND_DIR}/config/config.json"
 RUNTIME_DIR="${BUILD_DIR}/.demo-runtime"
 
+source "${ROOT_DIR}/scripts/lib_backend_deps.sh"
+
 BACKEND_PORT="${DEMO_BACKEND_PORT:-8080}"
 FRONTEND_PORT="${DEMO_FRONTEND_PORT:-5173}"
 AUTO_RESET="${DEMO_AUTO_RESET:-1}"
@@ -83,8 +85,11 @@ start_backend() {
   log "初始化数据库..."
   "${ROOT_DIR}/scripts/init_database.sh"
 
+  prepare_backend_build_env "${BUILD_DIR}"
+  require_backend_build_dependencies "${ROOT_DIR}" || fail "后端构建依赖检查未通过。"
+
   log "构建后端..."
-  cmake -S "${BACKEND_DIR}" -B "${BUILD_DIR}"
+  cmake --fresh -S "${BACKEND_DIR}" -B "${BUILD_DIR}"
   cmake --build "${BUILD_DIR}" -j"$(nproc)"
 
   log "启动后端（端口 ${BACKEND_PORT}）..."

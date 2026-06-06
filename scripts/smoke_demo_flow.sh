@@ -7,6 +7,8 @@ BUILD_DIR="${BACKEND_DIR}/build"
 BACKEND_BIN="${BUILD_DIR}/backend"
 BACKEND_CONFIG="${BACKEND_DIR}/config/config.json"
 
+source "${ROOT_DIR}/scripts/lib_backend_deps.sh"
+
 REUSE_EXISTING_BACKEND="${SMOKE_REUSE_EXISTING_BACKEND:-0}"
 BACKEND_PORT="${SMOKE_BACKEND_PORT:-18080}"
 API_BASE_URL="${API_BASE_URL:-}"
@@ -134,7 +136,10 @@ start_backend_if_needed() {
   log "初始化数据库并启动独立后端实例（端口 ${BACKEND_PORT}）..."
   "${ROOT_DIR}/scripts/init_database.sh"
 
-  cmake -S "${BACKEND_DIR}" -B "${BUILD_DIR}"
+  prepare_backend_build_env "${BUILD_DIR}"
+  require_backend_build_dependencies "${ROOT_DIR}" || fail "后端构建依赖检查未通过。"
+
+  cmake --fresh -S "${BACKEND_DIR}" -B "${BUILD_DIR}"
   cmake --build "${BUILD_DIR}" -j"$(nproc)"
 
   RUNTIME_CONFIG_PATH="${TMP_DIR}/smoke_backend_config.json"
