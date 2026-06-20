@@ -134,7 +134,7 @@ require_drogon_package() {
 
   cat >&2 <<'EOF'
 [backend-deps] 未检测到可用的 Drogon CMake 依赖链。
-[backend-deps] 请先安装 Drogon 开发包，并确认其依赖（如 jsoncpp、zlib、sqlite3、uuid、libpq、mysqlclient/mariadb、brotli）可被 CMake 发现。
+[backend-deps] 请先安装 Drogon 开发包，并确认其依赖（如 jsoncpp、zlib、sqlite3、uuid、libpq、mysqlclient/mariadb、brotli、hiredis、yaml-cpp）可被 CMake 发现。
 [backend-deps] 也可以通过 CMAKE_PREFIX_PATH / Drogon_DIR 指向 DrogonConfig.cmake。
 [backend-deps] Arch Linux / AUR 可执行：paru -S drogon
 [backend-deps] 也可执行：yay -S drogon

@@ -103,6 +103,8 @@ ensure_base_packages() {
     uuid-dev \
     libpq-dev \
     libbrotli-dev \
+    libhiredis-dev \
+    libyaml-cpp-dev \
     zlib1g-dev \
     libjsoncpp-dev
 
