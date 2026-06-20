@@ -1,8 +1,8 @@
 <template>
   <PageLayout
-    eyebrow="学习图谱 · 独立页面"
+    eyebrow="学习图谱 · 默认入口"
     title="课程知识图谱与学习状态"
-    description="本页用于统一浏览课程图谱、学习状态和层级下钻，也支持把节点直接设为当前学习目标。"
+    description="本页用于统一浏览课程图谱、学习状态和层级下钻，也支持把节点直接设为一级或二级学习目标。"
   >
     <section class="graph-layout">
       <div v-if="!authLearnerCode" class="unassigned-card">
@@ -79,7 +79,7 @@ async function handleSetTarget({ code, scopeCode } = {}) {
   const isRootScope = !scopeCode || scopeCode === "root";
 
   await router.push({
-    name: isRootScope ? "home" : "detail-learning",
+    name: "home",
     query: isRootScope ? { target: code } : { scope: scopeCode, target: code },
   });
 }

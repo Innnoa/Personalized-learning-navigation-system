@@ -80,7 +80,7 @@ describe("LoginView", () => {
     routeMock.query = {};
   });
 
-  it("submits username and password, updates auth store, and routes students home", async () => {
+  it("submits username and password, updates auth store, and routes students to learning graph", async () => {
     loginMock.mockResolvedValue({
       currentUser: {
         id: "student-001",
@@ -112,7 +112,7 @@ describe("LoginView", () => {
     });
     expect(authStore.currentRoles).toEqual(["student"]);
     expect(authStore.activeRole).toBe("student");
-    expect(pushMock).toHaveBeenCalledWith({ name: "home" });
+    expect(pushMock).toHaveBeenCalledWith({ name: "learning-graph" });
   });
 
   it("uses the demo shortcut to log in as the student demo account", async () => {
@@ -139,13 +139,13 @@ describe("LoginView", () => {
     });
   });
 
-  it("shows the demo credentials hint on the login page", async () => {
+  it("shows the demo login entry points on the login page", async () => {
     const { wrapper } = mountView();
 
-    expect(wrapper.text()).toContain("演示账号（密码统一为 demo123）");
-    expect(wrapper.text()).toContain("学生：student_demo");
-    expect(wrapper.text()).toContain("教师：teacher_demo");
-    expect(wrapper.text()).toContain("管理员：admin_demo");
+    expect(wrapper.text()).toContain("使用账号密码或演示账号进入对应角色视图");
+    expect(wrapper.text()).toContain("学生演示");
+    expect(wrapper.text()).toContain("教师演示");
+    expect(wrapper.text()).toContain("管理员演示");
   });
 
   it("routes teachers to the teacher dashboard after login", async () => {

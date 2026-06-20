@@ -4,6 +4,7 @@ const RESOURCE_CONTEXT_STORAGE_KEY = "plns-resource-context";
 const LEARNING_GRAPH_CONTEXT_STORAGE_KEY = "plns-learning-graph-context";
 const DETAIL_LEARNING_CONTEXT_STORAGE_KEY = "plns-detail-learning-context";
 const PRACTICE_CHECK_CONTEXT_STORAGE_KEY = "plns-practice-check-context";
+const PLANNER_CONTEXT_STORAGE_KEY = "plns-planner-context";
 
 function buildDefaultResourceSummary() {
   return {
@@ -86,6 +87,14 @@ function buildDefaultPracticeCheckContext() {
     completionStatus: "completed",
     notes: "",
     generatedAt: "",
+  };
+}
+
+function buildDefaultPlannerContext() {
+  return {
+    scopeCode: "root",
+    targetCode: "",
+    updatedAt: "",
   };
 }
 
@@ -342,12 +351,43 @@ function readPersistedPracticeCheckContext() {
   }
 }
 
+function readPersistedPlannerContext() {
+  if (typeof window === "undefined") {
+    return {
+      plannerContext: buildDefaultPlannerContext(),
+    };
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(PLANNER_CONTEXT_STORAGE_KEY);
+    if (!raw) {
+      return {
+        plannerContext: buildDefaultPlannerContext(),
+      };
+    }
+
+    const parsed = JSON.parse(raw);
+    return {
+      plannerContext: {
+        ...buildDefaultPlannerContext(),
+        ...normalizeObjectRecord(parsed.plannerContext),
+      },
+    };
+  } catch (error) {
+    console.warn("读取路径规划上下文失败，将回退到默认状态。", error);
+    return {
+      plannerContext: buildDefaultPlannerContext(),
+    };
+  }
+}
+
 export const useNavigationStore = defineStore("navigation", {
   state: () => ({
     ...readPersistedResourceContext(),
     ...readPersistedLearningGraphContext(),
     ...readPersistedDetailLearningContext(),
     ...readPersistedPracticeCheckContext(),
+    ...readPersistedPlannerContext(),
   }),
   getters: {
     resourceSectionByCode: (state) => (code) =>
@@ -452,6 +492,18 @@ export const useNavigationStore = defineStore("navigation", {
         PRACTICE_CHECK_CONTEXT_STORAGE_KEY,
         JSON.stringify({
           practiceCheckContext: this.practiceCheckContext,
+        }),
+      );
+    },
+    persistPlannerContext() {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        PLANNER_CONTEXT_STORAGE_KEY,
+        JSON.stringify({
+          plannerContext: this.plannerContext,
         }),
       );
     },
@@ -688,6 +740,19 @@ export const useNavigationStore = defineStore("navigation", {
     clearPracticeCheckContext() {
       this.practiceCheckContext = buildDefaultPracticeCheckContext();
       this.persistPracticeCheckContext();
+    },
+    setPlannerContext(payload = {}) {
+      this.plannerContext = {
+        ...this.plannerContext,
+        scopeCode: String(payload.scopeCode || "root"),
+        targetCode: String(payload.targetCode || ""),
+        updatedAt: new Date().toISOString(),
+      };
+      this.persistPlannerContext();
+    },
+    clearPlannerContext() {
+      this.plannerContext = buildDefaultPlannerContext();
+      this.persistPlannerContext();
     },
     setLearningGraphViewState(payload = {}) {
       const nextState = {

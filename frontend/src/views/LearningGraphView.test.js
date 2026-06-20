@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import LearningGraphView from "./LearningGraphView.vue";
+import { useAuthStore } from "../stores/authStore";
 
 const pushMock = vi.fn();
 const routeQuery = {
@@ -35,6 +36,19 @@ async function flushUi() {
 function mountView(options = {}) {
   const pinia = createPinia();
   setActivePinia(pinia);
+
+  const authStore = useAuthStore();
+  authStore.setSession({
+    currentUser: {
+      id: 1,
+      username: "student-demo",
+    },
+    currentRoles: ["student"],
+    activeRole: "student",
+    linkedLearner: {
+      learnerCode: "demo-learner",
+    },
+  });
 
   return mount(LearningGraphView, {
     global: {
@@ -94,7 +108,7 @@ describe("LearningGraphView", () => {
     });
   });
 
-  it("redirects selected node to detail-learning for non-root scope", async () => {
+  it("redirects selected node to unified planner for non-root scope", async () => {
     const wrapper = mountView({
       stubs: {
         PageLayout: {
@@ -112,7 +126,7 @@ describe("LearningGraphView", () => {
     await wrapper.get("[data-testid='set-target']").trigger("click");
 
     expect(pushMock).toHaveBeenCalledWith({
-      name: "detail-learning",
+      name: "home",
       query: { scope: "stack-detail", target: "stack-push" },
     });
   });

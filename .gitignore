@@ -57,5 +57,7 @@ public/uploads/
 frontend/Testing/
 backend/config/operation_logs.json
 .codex
+.agents/
+{{CODEX_HOME}}/
 AIREAD.md
 .serena/

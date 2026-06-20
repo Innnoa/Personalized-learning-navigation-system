@@ -727,6 +727,13 @@ const initialPlanInitialized = ref(false);
 const expandedExplanationByCode = ref({});
 const externalTargetCode = computed(() => String(props.externalTargetCode || ""));
 const routeTargetCode = computed(() => String(route.query.target || ""));
+const routeScopeCode = computed(() => String(route.query.scope || "root"));
+const plannerDraftStorageKey = computed(
+  () => `plns-draft-${props.learnerCode || "demo"}-${routeScopeCode.value}`,
+);
+const plannerPlanStorageKey = computed(
+  () => `plns-plan-${props.learnerCode || "demo"}-${routeScopeCode.value}`,
+);
 
 const selectedTargetLabel = computed(() => {
   const target = knowledgePoints.value.find(
@@ -1042,13 +1049,20 @@ function buildDetailLearningSections(currentPlan = planResult.value) {
     return [];
   }
 
-  return scheduledItems.value
+  const seenCodes = new Set();
+
+  return (currentPlan.path || [])
     .map((item) => {
+      if (!item?.code || seenCodes.has(item.code)) {
+        return null;
+      }
+
       const metadata = knowledgePointMetaByCode.value.get(item.code);
       if (!metadata?.detailScopeCode) {
         return null;
       }
 
+      seenCodes.add(item.code);
       return {
         code: item.code,
         name: item.name,
@@ -1138,9 +1152,10 @@ function openDetailLearningSection(code) {
   }
 
   router.push({
-    name: "detail-learning",
+    name: "home",
     query: {
       scope: selectedSection.scopeCode,
+      target: code,
     },
   });
 }
@@ -1240,6 +1255,56 @@ function applyRequestedTargetCode(preferredCode = "") {
   return true;
 }
 
+function buildPlannerDraftSnapshot() {
+  return {
+    selectedTargetCode: selectedTargetCode.value,
+    availableMinutes: availableMinutes.value,
+    showMasteryEditor: showMasteryEditor.value,
+    masteryPercentByCode: { ...masteryPercentByCode.value },
+  };
+}
+
+function restorePlannerDraftSnapshot(snapshot = {}) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return;
+  }
+
+  if (
+    snapshot.selectedTargetCode &&
+    knowledgePoints.value.some((node) => node.code === snapshot.selectedTargetCode)
+  ) {
+    selectedTargetCode.value = snapshot.selectedTargetCode;
+  }
+
+  if (minuteOptions.includes(Number(snapshot.availableMinutes))) {
+    availableMinutes.value = Number(snapshot.availableMinutes);
+  }
+
+  showMasteryEditor.value = Boolean(snapshot.showMasteryEditor);
+
+  if (snapshot.masteryPercentByCode && typeof snapshot.masteryPercentByCode === "object") {
+    masteryPercentByCode.value = Object.fromEntries(
+      knowledgePoints.value.map((node) => [
+        node.code,
+        Math.round(Number(snapshot.masteryPercentByCode[node.code] ?? masteryPercentByCode.value[node.code] ?? 0)),
+      ]),
+    );
+  }
+}
+
+function persistPlannerDraftSnapshot() {
+  if (!props.learnerCode) {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      plannerDraftStorageKey.value,
+      JSON.stringify(buildPlannerDraftSnapshot()),
+    );
+  } catch {}
+}
+
 async function loadKnowledgePoints() {
   optionsLoading.value = true;
   optionsError.value = "";
@@ -1255,6 +1320,13 @@ async function loadKnowledgePoints() {
   } finally {
     optionsLoading.value = false;
   }
+}
+
+function syncPlannerContext() {
+  navigationStore.setPlannerContext({
+    scopeCode: routeScopeCode.value,
+    targetCode: selectedTargetCode.value,
+  });
 }
 
 async function initializePlannerFromProfile() {
@@ -1290,7 +1362,7 @@ async function submitPlan() {
     if (props.learnerCode) {
       try {
         window.sessionStorage.setItem(
-          `plns-plan-${props.learnerCode}`,
+          plannerPlanStorageKey.value,
           JSON.stringify({
             planResult: planResult.value,
             availableMinutes: availableMinutes.value,
@@ -1382,12 +1454,7 @@ watch(
       return;
     }
 
-    const applied = applyRequestedTargetCode();
-    if (!applied || !initialPlanInitialized.value) {
-      return;
-    }
-
-    await submitPlan();
+    applyRequestedTargetCode();
   },
 );
 
@@ -1398,12 +1465,7 @@ watch(
       return;
     }
 
-    const applied = applyRequestedTargetCode(targetCode);
-    if (!applied || !initialPlanInitialized.value) {
-      return;
-    }
-
-    await submitPlan();
+    applyRequestedTargetCode(targetCode);
   },
 );
 
@@ -1411,12 +1473,11 @@ onMounted(async () => {
   await loadKnowledgePoints();
   optionsReady.value = true;
 
-  // Restore last selected target
-  if (!selectedTargetCode.value && props.learnerCode) {
+  if (props.learnerCode) {
     try {
-      const saved = window.sessionStorage.getItem(`plns-target-${props.learnerCode}`);
-      if (saved && knowledgePoints.value.some((n) => n.code === saved)) {
-        selectedTargetCode.value = saved;
+      const draftRaw = window.sessionStorage.getItem(plannerDraftStorageKey.value);
+      if (draftRaw) {
+        restorePlannerDraftSnapshot(JSON.parse(draftRaw));
       }
     } catch {}
   }
@@ -1424,7 +1485,7 @@ onMounted(async () => {
   // Restore saved plan
   if (props.learnerCode) {
     try {
-      const raw = window.sessionStorage.getItem(`plns-plan-${props.learnerCode}`);
+      const raw = window.sessionStorage.getItem(plannerPlanStorageKey.value);
       if (raw) {
         const cached = JSON.parse(raw);
         if (cached.planResult) {
@@ -1447,10 +1508,32 @@ onMounted(async () => {
 watch(selectedTargetCode, (val) => {
   if (val && props.learnerCode) {
     try {
-      window.sessionStorage.setItem(`plns-target-${props.learnerCode}`, val);
+      persistPlannerDraftSnapshot();
     } catch {}
   }
+  if (val) {
+    syncPlannerContext();
+  }
 });
+
+watch(
+  [availableMinutes, showMasteryEditor, masteryPercentByCode],
+  () => {
+    persistPlannerDraftSnapshot();
+  },
+  {
+    deep: true,
+  },
+);
+
+watch(
+  routeScopeCode,
+  () => {
+    if (selectedTargetCode.value) {
+      syncPlannerContext();
+    }
+  },
+);
 </script>
 
 <style scoped>

@@ -399,8 +399,17 @@ async function submitPractice() {
 }
 
 async function goHome() {
+  const query = {};
+  if (practiceCheckContext.value.scopeCode && practiceCheckContext.value.scopeCode !== "root") {
+    query.scope = practiceCheckContext.value.scopeCode;
+  }
+  if (practiceCheckContext.value.targetCode) {
+    query.target = practiceCheckContext.value.targetCode;
+  }
+
   await router.push({
     name: "home",
+    query,
   });
 }
 </script>

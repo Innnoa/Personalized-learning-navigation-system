@@ -204,6 +204,25 @@ describe("navigationStore", () => {
     expect(restoredStore.practiceCheckContext.feedbackBatchId).toBe("batch-001");
   });
 
+  it("persists planner context and restores the latest scope/target", () => {
+    setActivePinia(createPinia());
+    const store = useNavigationStore();
+
+    store.setPlannerContext({
+      scopeCode: "queue-detail",
+      targetCode: "queue-linked",
+    });
+
+    expect(store.plannerContext.scopeCode).toBe("queue-detail");
+    expect(store.plannerContext.targetCode).toBe("queue-linked");
+
+    setActivePinia(createPinia());
+    const restoredStore = useNavigationStore();
+
+    expect(restoredStore.plannerContext.scopeCode).toBe("queue-detail");
+    expect(restoredStore.plannerContext.targetCode).toBe("queue-linked");
+  });
+
   it("persists detail learning context and restores selected scope", () => {
     setActivePinia(createPinia());
     const store = useNavigationStore();

@@ -102,6 +102,8 @@ describe("learningPathExport", () => {
       targetCode: "queue-array",
       targetLabel: "顺序队列",
       scopeLabel: "队列二级范围",
+      parentTargetLabel: "队列",
+      parentTargetCode: "queue",
       documentTitle: "细化学习路径导出结果",
       availableMinutes: 40,
       generatedAt: new Date(2026, 2, 24, 9, 20, 0),
@@ -138,6 +140,7 @@ describe("learningPathExport", () => {
 
     expect(content).toContain("细化学习路径导出结果");
     expect(content).toContain("当前范围：队列二级范围");
+    expect(content).toContain("一级目标：队列（queue）");
     expect(content).toContain("目标节点：顺序队列（queue-array）");
     expect(fileName).toBe("detail-learning-path-queue-array-20260324-0920.txt");
   });

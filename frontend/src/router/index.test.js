@@ -45,7 +45,7 @@ describe("router role guards", () => {
 
     await navigateTo("/teacher");
 
-    expect(router.currentRoute.value.name).toBe("home");
+    expect(router.currentRoute.value.name).toBe("learning-graph");
   });
 
   it("allows teachers to visit teacher routes", async () => {
@@ -85,5 +85,21 @@ describe("router role guards", () => {
     await navigateTo("/admin/users");
 
     expect(router.currentRoute.value.name).toBe("admin-users");
+  });
+
+  it("redirects legacy detail-learning route to unified planner", async () => {
+    const authStore = useAuthStore();
+    authStore.setSession({
+      currentUser: { id: "student-001", username: "student_demo" },
+      currentRoles: ["student"],
+      activeRole: "student",
+      linkedLearner: { learnerCode: "learner-001" },
+    });
+
+    await navigateTo("/detail-learning?scope=queue-detail&target=queue-linked");
+
+    expect(router.currentRoute.value.name).toBe("home");
+    expect(router.currentRoute.value.query.scope).toBe("queue-detail");
+    expect(router.currentRoute.value.query.target).toBe("queue-linked");
   });
 });

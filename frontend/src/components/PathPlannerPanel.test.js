@@ -377,9 +377,95 @@ describe("PathPlannerPanel", () => {
     await wrapper.get("[data-testid='detail-learning-queue']").trigger("click");
 
     expect(pushMock).toHaveBeenCalledWith({
-      name: "detail-learning",
+      name: "home",
       query: {
         scope: "queue-detail",
+        target: "queue",
+      },
+    });
+  });
+
+  it("includes deferred detail branches in detail learning context", async () => {
+    fetchKnowledgeGraph.mockResolvedValue({
+      nodes: [
+        { code: "graph-basic", label: "图的存储与遍历", chapterNo: 6, detailScopeCode: "graph-basic" },
+        { code: "topological-sort", label: "拓扑排序与关键路径", chapterNo: 6, detailScopeCode: "topological-sort" },
+      ],
+    });
+    generateLearningPath.mockResolvedValue({
+      summary: {
+        targetReachableWithinBudget: false,
+        scheduledCount: 1,
+        deferredCount: 1,
+        masteredCount: 0,
+        scheduledMinutes: 35,
+        totalRequiredMinutes: 70,
+        availableMinutes: 35,
+      },
+      path: [
+        {
+          code: "graph-basic",
+          name: "图的存储与遍历",
+          chapterNo: 6,
+          estimatedMinutes: 35,
+          masteryPercent: 42,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["需要先补图基础。"],
+            relevanceScore: 0.9,
+            importanceScore: 0.85,
+            timeCostPenalty: 0.2,
+          },
+        },
+        {
+          code: "topological-sort",
+          name: "拓扑排序与关键路径",
+          chapterNo: 6,
+          estimatedMinutes: 35,
+          masteryPercent: 28,
+          status: "deferred",
+          reasonTrace: {
+            triggerReasons: ["当前预算不足，顺延到下一轮。"],
+            relevanceScore: 1,
+            importanceScore: 0.95,
+            timeCostPenalty: 0.4,
+          },
+        },
+      ],
+      resourceRecommendations: [],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useNavigationStore();
+
+    const wrapper = mount(PathPlannerPanel, {
+      props: {
+        learnerCode: "demo-learner",
+        initialMasteryByCode: {
+          "graph-basic": 0.42,
+          "topological-sort": 0.28,
+        },
+        profileLoading: false,
+      },
+      global: {
+        plugins: [pinia],
+      },
+    });
+
+    await flushUi();
+    await wrapper.get("[data-testid='detail-learning-graph-basic']").trigger("click");
+
+    expect(store.detailLearningSections).toHaveLength(2);
+    expect(store.detailLearningSections.map((item) => item.code)).toEqual([
+      "graph-basic",
+      "topological-sort",
+    ]);
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "home",
+      query: {
+        scope: "graph-basic",
+        target: "graph-basic",
       },
     });
   });

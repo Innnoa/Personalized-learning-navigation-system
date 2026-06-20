@@ -155,6 +155,8 @@ export function buildLearningPathExportText({
   learnerCode = "demo-learner",
   targetCode = "",
   targetLabel = "未命名目标",
+  parentTargetCode = "",
+  parentTargetLabel = "",
   availableMinutes = 0,
   planResult = null,
   generatedAt = new Date(),
@@ -177,6 +179,9 @@ export function buildLearningPathExportText({
     `导出时间：${formatTimestamp(generatedAt)}`,
     `学习者：${learnerCode}`,
     ...(scopeLabel ? [`当前范围：${scopeLabel}`] : []),
+    ...(parentTargetLabel
+      ? [`一级目标：${parentTargetLabel}${parentTargetCode ? `（${parentTargetCode}）` : ""}`]
+      : []),
     `目标节点：${targetLabel}${targetCode ? `（${targetCode}）` : ""}`,
     `时间预算：${availableMinutes} 分钟`,
     "",

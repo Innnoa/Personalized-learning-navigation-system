@@ -10,44 +10,9 @@
         <p>你尚未被分配到任何课程。请联系教师或管理员为你分配课程后查看细化路径规划。</p>
       </div>
       <template v-else>
-      <article class="card surface-panel detail-branch-card">
-        <div class="section-headline">
-          <div>
-            <p class="label page-section-label">当前可细化分支</p>
-            <h3>只展示当前路径中存在二级图谱的一级节点</h3>
-          </div>
-          <p class="caption">
-            进入本页后可在这些一级节点之间切换，每次只规划当前一个二级范围。
-          </p>
-        </div>
-
-        <div v-if="availableSections.length === 0" class="empty-tip">
-          当前还没有可用的细化学习分支，请先回首页生成学习路径。
-        </div>
-
-        <div v-else class="detail-branch-list">
-          <button
-            v-for="section in availableSections"
-            :key="`detail-section-${section.scopeCode}`"
-            :data-testid="`detail-section-${section.scopeCode}`"
-            type="button"
-            class="detail-branch-button"
-            :class="{
-              'detail-branch-button--active':
-                currentSection && currentSection.scopeCode === section.scopeCode,
-            }"
-            @click="goToSection(section.scopeCode)"
-          >
-            <strong>{{ section.name }}</strong>
-            <span>第{{ section.chapterNo }}章</span>
-            <span>{{ section.estimatedMinutes }} 分钟</span>
-          </button>
-        </div>
-      </article>
-
       <article v-if="!currentSection" class="card surface-panel state state--warning">
-        <p>当前页尚未收到首页路径规划的细化分支上下文。</p>
-        <p>建议先在首页生成路径，再从“本轮推荐学习”中的一级节点点击“细化学习”。</p>
+        <p>当前页尚未指定可细化范围。</p>
+        <p>请先进入学习图谱，再从带有细化图谱的节点进入本页。</p>
       </article>
 
       <DetailLearningWorkspace
@@ -81,6 +46,7 @@ import DetailLearningWorkspace from "../components/DetailLearningWorkspace.vue";
 import PageLayout from "../components/PageLayout.vue";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigationStore } from "../stores/navigationStore";
+import { fetchKnowledgeGraph } from "../api/knowledgeGraph";
 
 const route = useRoute();
 const router = useRouter();
@@ -89,39 +55,14 @@ const navigationStore = useNavigationStore();
 const learnerProfile = ref(null);
 const learnerProfileError = ref("");
 const learnerProfileVersion = ref(0);
+const routeSection = ref(null);
+const routeSectionError = ref("");
 const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
-
-const availableSections = computed(() => navigationStore.detailLearningSections || []);
-const summary = computed(
-  () =>
-    navigationStore.detailLearningSummary || {
-      sourceTargetLabel: "",
-      selectedScopeCode: "",
-      availableScopeCount: 0,
-      sourcePage: "home",
-      generatedAt: "",
-    },
-);
 const requestedScopeCode = computed(() => String(route.query.scope || ""));
 const detailLearningLearnerCode = computed(
-  () => authLearnerCode.value || navigationStore.detailLearningLearnerCode || "",
+  () => authLearnerCode.value || "demo-learner",
 );
-const currentSection = computed(() => {
-  if (availableSections.value.length === 0) {
-    return null;
-  }
-
-  return (
-    navigationStore.detailLearningSectionByScopeCode(requestedScopeCode.value) ||
-    navigationStore.detailLearningSectionByScopeCode(summary.value.selectedScopeCode) ||
-    availableSections.value[0]
-  );
-});
-const hasStoredDetailLearningContext = computed(
-  () =>
-    availableSections.value.length > 0 ||
-    Boolean(navigationStore.detailLearningSummary?.selectedScopeCode),
-);
+const currentSection = computed(() => routeSection.value);
 const workspaceKey = computed(
   () =>
     `${currentSection.value?.scopeCode || "empty"}-${detailLearningLearnerCode.value}-${learnerProfileVersion.value}`,
@@ -133,29 +74,38 @@ const pageTitle = computed(() =>
 
 const pageDescription = computed(() => {
   if (!currentSection.value) {
-    return "本页用于承接首页最近一次路径规划中的二级细化节点。若暂无上下文，请先回首页生成路径。";
+    return "本页用于承接学习图谱中的细化节点。若暂无范围参数，请先回学习图谱选择可细化节点。";
   }
 
-  return "首页负责一级路径规划；本页负责对应一级节点内部的二级学习顺序、局部反馈与路径变化。";
+  return "学习图谱负责进入当前细化范围；本页负责该一级节点内部的二级学习顺序、局部反馈与路径变化。";
 });
 
-async function ensureCurrentScopeSynced() {
-  if (!currentSection.value) {
+async function loadRouteSection(scopeCode) {
+  if (!scopeCode) {
+    routeSection.value = null;
+    routeSectionError.value = "";
     return;
   }
 
-  navigationStore.setDetailLearningScope(currentSection.value.scopeCode);
+  routeSectionError.value = "";
 
-  if (requestedScopeCode.value === currentSection.value.scopeCode) {
-    return;
+  try {
+    const payload = await fetchKnowledgeGraph({ scopeCode });
+    const view = payload?.view || {};
+    routeSection.value = {
+      code: view.parentNodeCode || "",
+      name: view.scopeName || scopeCode,
+      scopeCode: view.scopeCode || scopeCode,
+      scopeLabel: view.scopeName || scopeCode,
+      chapterNo: payload?.nodes?.[0]?.chapterNo || 0,
+      estimatedMinutes: 0,
+      status: "scheduled",
+    };
+  } catch (error) {
+    routeSection.value = null;
+    routeSectionError.value = "未能读取当前细化范围。请检查后端服务或图谱配置。";
+    console.error(error);
   }
-
-  await router.replace({
-    name: "detail-learning",
-    query: {
-      scope: currentSection.value.scopeCode,
-    },
-  });
 }
 
 async function loadLearnerProfile() {
@@ -172,20 +122,6 @@ async function loadLearnerProfile() {
   } finally {
     learnerProfileVersion.value += 1;
   }
-}
-
-async function goToSection(scopeCode) {
-  if (!scopeCode) {
-    return;
-  }
-
-  navigationStore.setDetailLearningScope(scopeCode);
-  await router.push({
-    name: "detail-learning",
-    query: {
-      scope: scopeCode,
-    },
-  });
 }
 
 async function goHome() {
@@ -211,32 +147,10 @@ async function handleProfileUpdated() {
   await loadLearnerProfile();
 }
 
-function clearStaleDetailLearningContext() {
-  if (!authLearnerCode.value || !hasStoredDetailLearningContext.value) {
-    return;
-  }
-
-  if (authLearnerCode.value === navigationStore.detailLearningLearnerCode) {
-    return;
-  }
-
-  navigationStore.clearDetailLearningContext();
-}
-
 watch(
-  [availableSections, requestedScopeCode],
+  requestedScopeCode,
   async () => {
-    await ensureCurrentScopeSynced();
-  },
-  {
-    immediate: true,
-  },
-);
-
-watch(
-  [authLearnerCode, () => navigationStore.detailLearningLearnerCode, hasStoredDetailLearningContext],
-  () => {
-    clearStaleDetailLearningContext();
+    await loadRouteSection(requestedScopeCode.value);
   },
   {
     immediate: true,
@@ -311,36 +225,6 @@ h3 {
 .caption {
   max-width: 420px;
   font-size: 0.92rem;
-}
-
-.detail-branch-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-top: 18px;
-}
-
-.detail-branch-button {
-  display: grid;
-  gap: 6px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(12, 106, 113, 0.12);
-  background: rgba(255, 255, 255, 0.92);
-  color: #21405f;
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.detail-branch-button:hover {
-  transform: translateY(-1px);
-}
-
-.detail-branch-button--active {
-  border-color: rgba(12, 106, 113, 0.32);
-  box-shadow: 0 10px 24px rgba(12, 106, 113, 0.12);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 248, 247, 0.96));
 }
 
 .state {

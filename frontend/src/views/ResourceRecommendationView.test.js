@@ -29,9 +29,19 @@ function mountView(options = {}) {
   setActivePinia(pinia);
 
   const authStore = useAuthStore();
-  if (options.session) {
-    authStore.setSession(options.session);
-  }
+  authStore.setSession(
+    options.session || {
+      currentUser: {
+        id: 1,
+        username: "student-demo",
+      },
+      currentRoles: ["student"],
+      activeRole: "student",
+      linkedLearner: {
+        learnerCode: "demo-learner",
+      },
+    },
+  );
 
   return {
     authStore,
@@ -167,6 +177,21 @@ describe("ResourceRecommendationView", () => {
     await Promise.resolve();
 
     expect(wrapper.text()).toContain("所属一级节点队列");
+
+    const backButton = wrapper
+      .findAll("button")
+      .find((item) => item.text().includes("返回二级路径规划"));
+    expect(backButton).toBeTruthy();
+
+    await backButton.trigger("click");
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "home",
+      query: {
+        scope: "queue-detail",
+        target: "queue-linked",
+      },
+    });
   });
 
   it("supports switching between 一级页面 and 二级页面", async () => {

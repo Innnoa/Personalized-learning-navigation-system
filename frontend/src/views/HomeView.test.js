@@ -35,7 +35,26 @@ vi.mock("../api/learnerProfile", () => ({
   }),
 }));
 
+vi.mock("../api/knowledgeGraph", () => ({
+  fetchKnowledgeGraph: vi.fn().mockResolvedValue({
+    view: {
+      scopeCode: "queue-detail",
+      scopeName: "队列",
+      parentScopeCode: "root",
+      parentNodeCode: "queue",
+      isRoot: false,
+    },
+    nodes: [
+      {
+        code: "queue-array",
+        chapterNo: 4,
+      },
+    ],
+  }),
+}));
+
 async function flushUi() {
+  await Promise.resolve();
   await Promise.resolve();
   await Promise.resolve();
 }
@@ -65,6 +84,12 @@ function mountView(options = {}) {
         stubs: {
           PageLayout: {
             template: "<div><slot /></div>",
+          },
+          DetailLearningWorkspace: {
+            props: ["section"],
+            emits: ["profile-updated"],
+            template:
+              "<div data-testid='detail-workspace' :data-scope='section?.scopeCode' :data-parent='section?.code'></div>",
           },
           PathPlannerPanel: {
             props: [
@@ -153,5 +178,21 @@ describe("HomeView", () => {
       name: "home",
       query: {},
     });
+  });
+
+  it("renders detail workspace when scope query indicates detail planning mode", async () => {
+    const { wrapper } = mountView({
+      query: {
+        scope: "queue-detail",
+        target: "queue-array",
+      },
+    });
+
+    await flushUi();
+
+    expect(wrapper.find("[data-testid='planner-panel']").exists()).toBe(false);
+    expect(wrapper.get("[data-testid='detail-workspace']").attributes("data-scope")).toBe(
+      "queue-detail",
+    );
   });
 });

@@ -1,6 +1,6 @@
 <template>
   <section class="detail-workspace">
-    <article class="card detail-graph-card">
+    <article v-if="!props.compactMode" class="card detail-graph-card">
       <div class="card-head">
         <div>
           <p class="label">细化图谱</p>
@@ -286,6 +286,10 @@
 
         <template v-if="detailPlanResult">
           <dl class="detail-summary-grid">
+            <div>
+              <dt>一级目标</dt>
+              <dd>{{ props.section?.name || currentScopeName }}</dd>
+            </div>
             <div>
               <dt>当前目标</dt>
               <dd>{{ detailTargetLabel }}</dd>
@@ -625,7 +629,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { fetchKnowledgeGraph } from "../api/knowledgeGraph";
 import { adjustDetailLearningPath, generateDetailLearningPath } from "../api/path";
@@ -654,9 +658,14 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  compactMode: {
+    type: Boolean,
+    default: false,
+  },
 });
 const emit = defineEmits(["profile-updated"]);
 
+const route = useRoute();
 const router = useRouter();
 const navigationStore = useNavigationStore();
 const graphRef = ref(null);
@@ -719,6 +728,7 @@ const scopePlannerTitle = computed(() => {
 
 const breadcrumbs = computed(() => graphData.value?.breadcrumbs || []);
 const currentScopeCode = computed(() => graphData.value?.view?.scopeCode || "");
+const routeTargetCode = computed(() => String(route.query.target || ""));
 const currentScopeName = computed(() => graphData.value?.view?.scopeName || "当前细化范围");
 const currentScopeLevel = computed(() => resolveScopeLevel(graphData.value));
 
@@ -1440,10 +1450,13 @@ function restoreScopeState(payload, viewState = null) {
   const edges = payload.edges || [];
   const nodeCodeSet = new Set(nodes.map((node) => node.code));
   const defaultTargetCode = resolveDefaultDetailTargetCode(nodes, edges);
+  const requestedTargetCode = String(routeTargetCode.value || "");
   const rememberedTargetCode = String(viewState?.targetNodeCode || "");
-  const nextTargetCode = nodeCodeSet.has(rememberedTargetCode)
-    ? rememberedTargetCode
-    : defaultTargetCode;
+  const nextTargetCode = nodeCodeSet.has(requestedTargetCode)
+    ? requestedTargetCode
+    : nodeCodeSet.has(rememberedTargetCode)
+      ? rememberedTargetCode
+      : defaultTargetCode;
 
   detailAvailableMinutes.value = normalizeDetailAvailableMinutes(viewState?.availableMinutes);
   detailTargetCode.value = nextTargetCode;
@@ -1795,6 +1808,8 @@ function exportDetailPlan() {
       learnerCode: props.learnerCode,
       targetCode: detailTargetCode.value,
       targetLabel: detailTargetLabel.value,
+      parentTargetCode: props.section?.code || "",
+      parentTargetLabel: props.section?.name || currentScopeName.value,
       availableMinutes: detailAvailableMinutes.value,
       planResult: detailPlanResult.value,
       scopeLabel: currentScopeName.value,

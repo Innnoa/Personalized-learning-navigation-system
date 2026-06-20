@@ -657,7 +657,7 @@ function clearStaleResourceContext() {
 }
 
 const returnButtonLabel = computed(() =>
-  isDetailMode.value ? "返回细化学习" : "返回首页路径规划",
+  isDetailMode.value ? "返回二级路径规划" : "返回一级路径规划",
 );
 
 const resourceSectionHeading = computed(() =>
@@ -825,17 +825,23 @@ function goToResourcePageLevel(level) {
 }
 
 function goToPlannerHome() {
+  const targetCode = currentSection.value?.code || currentSectionCode.value || "";
+
   if (isDetailMode.value && summary.value.scopeCode) {
     router.push({
-      name: "detail-learning",
-      query: {
-        scope: summary.value.scopeCode,
-      },
+      name: "home",
+      query: targetCode
+        ? {
+            scope: summary.value.scopeCode,
+            target: targetCode,
+          }
+        : {
+            scope: summary.value.scopeCode,
+          },
     });
     return;
   }
 
-  const targetCode = currentSection.value?.code || currentSectionCode.value || "";
   router.push({
     name: "home",
     query: targetCode

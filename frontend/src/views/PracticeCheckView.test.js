@@ -406,6 +406,37 @@ describe("PracticeCheckView", () => {
     });
   });
 
+  it("returns to unified planner with scope and target when practice context comes from detail mode", async () => {
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      targetCode: "queue-linked",
+      targetName: "链式队列",
+      scopeCode: "queue-detail",
+      scopeLabel: "队列",
+      previousMasteryPercent: 30,
+    });
+
+    await nextTick();
+
+    const backButton = wrapper
+      .findAll("button")
+      .find((item) => item.text().includes("返回首页"));
+    expect(backButton).toBeTruthy();
+
+    await backButton.trigger("click");
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "home",
+      query: {
+        scope: "queue-detail",
+        target: "queue-linked",
+      },
+    });
+  });
+
   it("shows submission failure message when feedback write fails", async () => {
     submitLearningFeedback.mockRejectedValue(new Error("network"));
 

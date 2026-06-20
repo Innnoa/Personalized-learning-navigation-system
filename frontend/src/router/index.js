@@ -43,26 +43,33 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "learning-graph",
+      component: LearningGraphView,
+      alias: "/learning-graph",
+      meta: { roleScope: "student" },
+    },
+    {
+      path: "/path-planning",
       name: "home",
       component: HomeView,
+      meta: { roleScope: "student" },
+    },
+    {
+      path: "/detail-learning",
+      name: "detail-learning",
+      redirect: (to) => ({
+        name: "home",
+        query: {
+          ...(to.query?.scope ? { scope: String(to.query.scope) } : {}),
+          ...(to.query?.target ? { target: String(to.query.target) } : {}),
+        },
+      }),
       meta: { roleScope: "student" },
     },
     {
       path: "/learner-profile",
       name: "learner-profile",
       component: LearnerProfileView,
-      meta: { roleScope: "student" },
-    },
-    {
-      path: "/learning-graph",
-      name: "learning-graph",
-      component: LearningGraphView,
-      meta: { roleScope: "student" },
-    },
-    {
-      path: "/detail-learning",
-      name: "detail-learning",
-      component: DetailLearningView,
       meta: { roleScope: "student" },
     },
     {

@@ -4,11 +4,15 @@ import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const pushMock = vi.fn();
+const routeState = {
+  query: {},
+};
 
 vi.mock("vue-router", async () => {
   const actual = await vi.importActual("vue-router");
   return {
     ...actual,
+    useRoute: () => routeState,
     useRouter: () => ({
       push: pushMock,
     }),
@@ -162,6 +166,7 @@ describe("DetailLearningWorkspace", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     pushMock.mockReset();
+    routeState.query = {};
     window.sessionStorage.clear();
     fetchKnowledgeGraph.mockResolvedValue(buildScopePayload());
     generateDetailLearningPath.mockResolvedValue({
@@ -285,6 +290,90 @@ describe("DetailLearningWorkspace", () => {
         },
       };
     });
+  });
+
+  it("prefers route target code over remembered target when entering from learning graph", async () => {
+    routeState.query = {
+      target: "queue-array",
+    };
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useNavigationStore();
+
+    store.setDetailLearningContext({
+      learnerCode: "demo-learner",
+      detailLearningSections: [
+        {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      ],
+      selectedScopeCode: "queue-detail",
+      sourceTargetLabel: "队列",
+      sourcePage: "learning-graph",
+    });
+    store.setDetailLearningViewState("queue-detail", {
+      targetNodeCode: "queue-linked",
+      availableMinutes: 60,
+      planResult: {
+        summary: {
+          scheduledCount: 1,
+          deferredCount: 0,
+          masteredCount: 0,
+          scheduledMinutes: 25,
+          totalRequiredMinutes: 25,
+          targetReachableWithinBudget: true,
+        },
+        path: [
+          {
+            code: "queue-linked",
+            name: "链式队列",
+            chapterNo: 4,
+            difficultyLevel: 2,
+            estimatedMinutes: 25,
+            masteryPercent: 55,
+            status: "scheduled",
+            explanation: {
+              summary: "记忆状态中的局部结果。",
+            },
+          },
+        ],
+        resourceRecommendations: [],
+      },
+    });
+
+    const wrapper = mount(DetailLearningWorkspace, {
+      global: {
+        plugins: [pinia],
+      },
+      props: {
+        learnerCode: "demo-learner",
+        masteryByCode: {
+          "queue-array": 0.2,
+          "queue-linked": 0.1,
+        },
+        section: {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      },
+    });
+
+    await flushUi(6);
+
+    const selects = wrapper.findAll("select");
+    expect(selects[0].element.value).toBe("queue-array");
   });
 
   it("restores remembered branch state and skips regenerating local plan", async () => {
@@ -577,6 +666,8 @@ describe("DetailLearningWorkspace", () => {
         scopeLabel: "队列",
         documentTitle: "细化学习路径导出结果",
         filePrefix: "detail-learning-path",
+        parentTargetCode: "queue",
+        parentTargetLabel: "队列",
       }),
     );
   });

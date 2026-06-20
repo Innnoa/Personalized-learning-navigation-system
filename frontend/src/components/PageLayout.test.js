@@ -105,42 +105,6 @@ describe("PageLayout", () => {
     });
   });
 
-  it("links detail learning nav item to the latest cached detail scope", async () => {
-    const { wrapper, store } = mountLayout();
-
-    store.setDetailLearningContext({
-      learnerCode: "demo-learner",
-      detailLearningSections: [
-        {
-          code: "queue",
-          name: "队列",
-          scopeCode: "queue-detail",
-          scopeLabel: "队列",
-          chapterNo: 4,
-          estimatedMinutes: 30,
-          status: "scheduled",
-        },
-      ],
-      selectedScopeCode: "queue-detail",
-      sourceTargetLabel: "图",
-      sourcePage: "home",
-    });
-
-    await nextTick();
-
-    const detailLink = wrapper
-      .findAllComponents(RouterLinkStub)
-      .find((item) => item.text() === "细化路径规划");
-
-    expect(detailLink).toBeTruthy();
-    expect(detailLink.props("to")).toEqual({
-      name: "detail-learning",
-      query: {
-        scope: "queue-detail",
-      },
-    });
-  });
-
   it("renders teacher navigation when roleScope is teacher", () => {
     const { wrapper } = mountLayout({ roleScope: "teacher" });
 
@@ -148,7 +112,7 @@ describe("PageLayout", () => {
     expect(navText).toContain("我的课程");
     expect(navText).toContain("课程列表");
     expect(navText).not.toContain("学习图谱");
-    expect(navText).not.toContain("主图路径规划");
+    expect(navText).not.toContain("路径规划");
   });
 
   it("renders student navigation by default", () => {
@@ -156,8 +120,35 @@ describe("PageLayout", () => {
 
     const navText = wrapper.find("nav.page-nav").text();
     expect(navText).toContain("学习图谱");
-    expect(navText).toContain("主图路径规划");
+    expect(navText).toContain("路径规划");
     expect(navText).not.toContain("我的课程");
+
+    const plannerLink = wrapper
+      .findAllComponents(RouterLinkStub)
+      .find((item) => item.text() === "路径规划");
+    expect(plannerLink?.props("to")).toBe("/path-planning");
+  });
+
+  it("keeps planner nav on current detail scope when detail context exists", async () => {
+    const { wrapper, store } = mountLayout();
+
+    store.setPlannerContext({
+      scopeCode: "queue-detail",
+      targetCode: "queue-linked",
+    });
+
+    await nextTick();
+
+    const plannerLink = wrapper
+      .findAllComponents(RouterLinkStub)
+      .find((item) => item.text() === "路径规划");
+    expect(plannerLink?.props("to")).toEqual({
+      name: "home",
+      query: {
+        scope: "queue-detail",
+        target: "queue-linked",
+      },
+    });
   });
 
   it("logout button clears session and redirects to login", async () => {

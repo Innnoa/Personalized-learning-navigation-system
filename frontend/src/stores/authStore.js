@@ -94,6 +94,10 @@ function clearNavStorage() {
     window.sessionStorage.removeItem("plns-learning-graph-context");
     window.sessionStorage.removeItem("plns-detail-learning-context");
     window.sessionStorage.removeItem("plns-practice-check-context");
+    window.sessionStorage.removeItem("plns-planner-context");
+    Object.keys(window.sessionStorage)
+      .filter((key) => key.startsWith("plns-plan-") || key.startsWith("plns-target-") || key.startsWith("plns-draft-"))
+      .forEach((key) => window.sessionStorage.removeItem(key));
   } catch {}
 }
 

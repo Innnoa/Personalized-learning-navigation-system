@@ -32,22 +32,9 @@
             <RouterLink to="/learning-graph" class="page-nav-link">
               学习图谱
             </RouterLink>
-            <RouterLink to="/" class="page-nav-link">
-              主图路径规划
+            <RouterLink :to="plannerNavTarget" class="page-nav-link">
+              路径规划
             </RouterLink>
-            <RouterLink
-              v-if="detailLearningNavTarget"
-              :to="detailLearningNavTarget"
-              class="page-nav-link"
-              :class="{
-                'page-nav-link--active': isDetailLearningNavActive,
-              }"
-            >
-              细化路径规划
-            </RouterLink>
-            <span v-else class="page-nav-link page-nav-link--disabled">
-              细化路径规划
-            </span>
             <RouterLink
               v-if="resourceNavTarget"
               :to="resourceNavTarget"
@@ -121,35 +108,36 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const navigationStore = useNavigationStore();
+const plannerNavTarget = computed(() => {
+  const scopeCode = String(navigationStore.plannerContext?.scopeCode || "root");
+  const targetCode = String(navigationStore.plannerContext?.targetCode || "");
 
-const detailLearningNavTarget = computed(() => {
-  const currentScopeCode = String(route.query?.scope || "");
-  if (
-    route.name === "detail-learning" &&
-    currentScopeCode &&
-    navigationStore.detailLearningSectionByScopeCode(currentScopeCode)
-  ) {
+  if (!scopeCode || scopeCode === "root") {
+    if (!targetCode) {
+      return "/path-planning";
+    }
+
     return {
-      name: "detail-learning",
+      name: "home",
       query: {
-        scope: currentScopeCode,
+        target: targetCode,
       },
     };
   }
 
-  const fallbackScopeCode =
-    navigationStore.detailLearningSummary?.selectedScopeCode ||
-    navigationStore.detailLearningSections[0]?.scopeCode ||
-    "";
-  if (!fallbackScopeCode) {
-    return null;
+  if (!scopeCode) {
+    return "/path-planning";
   }
-
   return {
-    name: "detail-learning",
-    query: {
-      scope: fallbackScopeCode,
-    },
+    name: "home",
+    query: targetCode
+      ? {
+          scope: scopeCode,
+          target: targetCode,
+        }
+      : {
+          scope: scopeCode,
+        },
   };
 });
 
@@ -186,8 +174,6 @@ const resourceNavTarget = computed(() => {
     },
   };
 });
-
-const isDetailLearningNavActive = computed(() => route.name === "detail-learning");
 
 const isResourceNavActive = computed(
   () => route.name === "resource-recommendation" || Boolean(route.params?.code),
