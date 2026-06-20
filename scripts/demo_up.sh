@@ -89,7 +89,7 @@ start_backend() {
   require_backend_build_dependencies "${ROOT_DIR}" || fail "后端构建依赖检查未通过。"
 
   log "构建后端..."
-  cmake --fresh -S "${BACKEND_DIR}" -B "${BUILD_DIR}"
+  run_backend_cmake_configure "${BACKEND_DIR}" "${BUILD_DIR}"
   cmake --build "${BUILD_DIR}" -j"$(nproc)"
 
   log "启动后端（端口 ${BACKEND_PORT}）..."

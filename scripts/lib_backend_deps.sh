@@ -25,6 +25,77 @@ detect_drogon_config_dir() {
   return 1
 }
 
+detect_mysql_include_dir() {
+  local candidate
+
+  for candidate in \
+    "${MYSQL_INCLUDE_DIRS:-}" \
+    "/usr/include/mysql" \
+    "/usr/include/mariadb" \
+    "/usr/local/include/mysql" \
+    "/usr/local/include/mariadb"
+  do
+    if [[ -n "${candidate}" && -f "${candidate}/mysql.h" ]]; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+detect_mysql_library_file() {
+  local candidate
+
+  for candidate in \
+    "${MYSQL_LIBRARIES:-}" \
+    "/usr/lib/libmysqlclient.so" \
+    "/usr/lib/x86_64-linux-gnu/libmysqlclient.so" \
+    "/usr/local/lib/libmysqlclient.so" \
+    "/usr/lib/libmariadb.so" \
+    "/usr/lib/x86_64-linux-gnu/libmariadb.so" \
+    "/usr/local/lib/libmariadb.so"
+  do
+    if [[ -n "${candidate}" && -f "${candidate}" ]]; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+get_backend_cmake_args() {
+  local drogon_dir=""
+  local mysql_include_dir=""
+  local mysql_library_file=""
+
+  drogon_dir="$(detect_drogon_config_dir || true)"
+  mysql_include_dir="$(detect_mysql_include_dir || true)"
+  mysql_library_file="$(detect_mysql_library_file || true)"
+
+  if [[ -n "${drogon_dir}" ]]; then
+    printf '%s\n' "-DDrogon_DIR=${drogon_dir}"
+  fi
+  if [[ -n "${mysql_include_dir}" ]]; then
+    printf '%s\n' "-DMYSQL_INCLUDE_DIRS=${mysql_include_dir}"
+  fi
+  if [[ -n "${mysql_library_file}" ]]; then
+    printf '%s\n' "-DMYSQL_LIBRARIES=${mysql_library_file}"
+  fi
+}
+
+run_backend_cmake_configure() {
+  local source_dir="$1"
+  local build_dir="$2"
+  shift 2
+
+  local cmake_args=()
+  mapfile -t cmake_args < <(get_backend_cmake_args)
+
+  cmake --fresh -S "${source_dir}" -B "${build_dir}" "${cmake_args[@]}" "$@"
+}
+
 prepare_backend_build_env() {
   local build_dir="$1"
   local ccache_dir="${build_dir}/.ccache"
@@ -47,14 +118,16 @@ require_drogon_package() {
   local probe_build_dir="${root_dir}/backend/build/.drogon-probe"
   local probe_log_file="${probe_build_dir}.log"
   local drogon_dir=""
+  local cmake_args=()
 
   prepare_backend_build_env "${root_dir}/backend/build"
   drogon_dir="$(detect_drogon_config_dir || true)"
+  mapfile -t cmake_args < <(get_backend_cmake_args)
 
   if env CCACHE_DISABLE=1 cmake \
     -S "${root_dir}/scripts/cmake/drogon_probe" \
     -B "${probe_build_dir}" \
-    ${drogon_dir:+-DDrogon_DIR="${drogon_dir}"} \
+    "${cmake_args[@]}" \
     >"${probe_log_file}" 2>&1; then
     return 0
   fi

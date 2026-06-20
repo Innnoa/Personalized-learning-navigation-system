@@ -139,7 +139,7 @@ start_backend_if_needed() {
   prepare_backend_build_env "${BUILD_DIR}"
   require_backend_build_dependencies "${ROOT_DIR}" || fail "后端构建依赖检查未通过。"
 
-  cmake --fresh -S "${BACKEND_DIR}" -B "${BUILD_DIR}"
+  run_backend_cmake_configure "${BACKEND_DIR}" "${BUILD_DIR}"
   cmake --build "${BUILD_DIR}" -j"$(nproc)"
 
   RUNTIME_CONFIG_PATH="${TMP_DIR}/smoke_backend_config.json"

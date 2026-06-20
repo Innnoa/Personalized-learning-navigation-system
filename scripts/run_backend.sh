@@ -13,7 +13,7 @@ require_backend_build_dependencies "${ROOT_DIR}" || {
   exit 1
 }
 
-cmake --fresh -S "${ROOT_DIR}/backend" -B "${BUILD_DIR}"
+run_backend_cmake_configure "${ROOT_DIR}/backend" "${BUILD_DIR}"
 cmake --build "${BUILD_DIR}" -j"$(nproc)"
 
 cd "${BUILD_DIR}"
