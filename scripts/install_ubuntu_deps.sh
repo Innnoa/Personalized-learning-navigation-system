@@ -102,6 +102,7 @@ ensure_base_packages() {
     libssl-dev \
     uuid-dev \
     libpq-dev \
+    libbrotli-dev \
     zlib1g-dev \
     libjsoncpp-dev
 
