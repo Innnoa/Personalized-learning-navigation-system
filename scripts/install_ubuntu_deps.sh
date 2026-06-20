@@ -126,23 +126,48 @@ install_frontend_deps() {
   "${SCRIPT_DIR}/install_frontend_deps.sh"
 }
 
-print_drogon_help() {
-  local pkg_name=""
+detect_drogon_package() {
+  local candidate
 
-  if apt-cache show libdrogon-dev >/dev/null 2>&1; then
-    pkg_name="libdrogon-dev"
-  elif apt-cache show drogon-dev >/dev/null 2>&1; then
-    pkg_name="drogon-dev"
+  if ! command_exists apt-cache; then
+    return 1
   fi
+
+  for candidate in libdrogon-dev drogon-dev; do
+    if apt-cache show "${candidate}" >/dev/null 2>&1; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+install_drogon_package_if_available() {
+  local drogon_pkg=""
+
+  drogon_pkg="$(detect_drogon_package || true)"
+  if [[ -z "${drogon_pkg}" ]]; then
+    return 1
+  fi
+
+  log "安装 Drogon 开发包: ${drogon_pkg}"
+  apt_install "${drogon_pkg}"
+  return 0
+}
+
+print_drogon_help() {
+  local pkg_name="${1:-}"
 
   echo
   echo "[ubuntu-install] 后端 Drogon 依赖尚未就绪。"
   if [[ -n "${pkg_name}" ]]; then
-    echo "[ubuntu-install] 可尝试安装：sudo apt-get install -y ${pkg_name}"
+    echo "[ubuntu-install] 已尝试自动安装 ${pkg_name}，但 CMake 仍未检测通过。"
   else
     echo "[ubuntu-install] 当前 apt 源中未探测到明确的 Drogon 开发包。"
   fi
   echo "[ubuntu-install] 若你已自行安装 Drogon，请通过 CMAKE_PREFIX_PATH 或 Drogon_DIR 指向 DrogonConfig.cmake。"
+  echo "[ubuntu-install] 也可先手动确认：apt-cache search drogon"
 }
 
 check_backend_deps() {
@@ -156,7 +181,18 @@ check_backend_deps() {
     return
   fi
 
+  if install_drogon_package_if_available; then
+    if require_backend_build_dependencies "${ROOT_DIR}"; then
+      log "后端 Drogon 依赖检查通过。"
+      return
+    fi
+
+    print_drogon_help "$(detect_drogon_package || true)"
+    return 1
+  fi
+
   print_drogon_help
+  return 1
 }
 
 print_next_steps() {
