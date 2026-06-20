@@ -41,6 +41,16 @@ require_command() {
   fi
 }
 
+port_pids() {
+  local port="$1"
+  fuser "${port}/tcp" 2>/dev/null | xargs echo -n
+}
+
+is_port_busy() {
+  local port="$1"
+  [[ -n "$(port_pids "${port}")" ]]
+}
+
 is_pid_running() {
   local pid="$1"
   kill -0 "${pid}" >/dev/null 2>&1
@@ -80,6 +90,9 @@ start_backend() {
       return 0
     fi
     fail "端口 ${BACKEND_PORT} 已有后端服务。请改用其他端口，或设置 DEMO_REUSE_EXISTING=1 复用该服务。"
+  fi
+  if is_port_busy "${BACKEND_PORT}"; then
+    fail "端口 ${BACKEND_PORT} 已被其他进程占用（pid=$(port_pids "${BACKEND_PORT}")），但健康检查未通过。请先执行 ./scripts/demo_check_down.sh，或改用其他端口。"
   fi
 
   log "初始化数据库..."
@@ -145,6 +158,9 @@ start_frontend() {
     fi
     fail "端口 ${FRONTEND_PORT} 已有前端服务。请改用其他端口，或设置 DEMO_REUSE_EXISTING=1 复用该服务。"
   fi
+  if is_port_busy "${FRONTEND_PORT}"; then
+    fail "端口 ${FRONTEND_PORT} 已被其他进程占用（pid=$(port_pids "${FRONTEND_PORT}")），但页面探测未通过。请先执行 ./scripts/demo_check_down.sh，或改用其他端口。"
+  fi
 
   if [[ ! -d "${FRONTEND_DIR}/node_modules" ]]; then
     log "未检测到前端依赖，自动安装..."
@@ -180,8 +196,10 @@ print_summary() {
 main() {
   require_command curl
   require_command cmake
+  require_command fuser
   require_command nproc
   require_command npm
+  require_command xargs
 
   mkdir -p "${RUNTIME_DIR}"
   : >"${BACKEND_LOG_FILE}"
