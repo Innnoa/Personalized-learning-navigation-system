@@ -29,11 +29,17 @@ prepare_backend_build_env() {
   local build_dir="$1"
   local ccache_dir="${build_dir}/.ccache"
   local ccache_tmp_dir="${ccache_dir}/tmp"
+  local default_cmake_library_path="/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/local/lib:/usr/local/lib64"
+  local default_cmake_include_path="/usr/include:/usr/include/mysql:/usr/include/postgresql:/usr/local/include"
+  local default_cmake_prefix_path="/usr/lib/cmake:/usr/lib/x86_64-linux-gnu/cmake:/usr/local/lib/cmake:/usr/local/lib64/cmake"
 
   mkdir -p "${ccache_tmp_dir}"
 
   export CCACHE_DIR="${CCACHE_DIR:-${ccache_dir}}"
   export CCACHE_TEMPDIR="${CCACHE_TEMPDIR:-${ccache_tmp_dir}}"
+  export CMAKE_LIBRARY_PATH="${CMAKE_LIBRARY_PATH:-${default_cmake_library_path}}"
+  export CMAKE_INCLUDE_PATH="${CMAKE_INCLUDE_PATH:-${default_cmake_include_path}}"
+  export CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH:-${default_cmake_prefix_path}}"
 }
 
 require_drogon_package() {
@@ -55,7 +61,7 @@ require_drogon_package() {
 
   cat >&2 <<'EOF'
 [backend-deps] 未检测到可用的 Drogon CMake 依赖链。
-[backend-deps] 请先安装 Drogon 开发包，并确认其依赖（如 jsoncpp、zlib、sqlite3）可被 CMake 发现。
+[backend-deps] 请先安装 Drogon 开发包，并确认其依赖（如 jsoncpp、zlib、sqlite3、uuid、libpq、mysqlclient/mariadb）可被 CMake 发现。
 [backend-deps] 也可以通过 CMAKE_PREFIX_PATH / Drogon_DIR 指向 DrogonConfig.cmake。
 [backend-deps] Arch Linux / AUR 可执行：paru -S drogon
 [backend-deps] 也可执行：yay -S drogon

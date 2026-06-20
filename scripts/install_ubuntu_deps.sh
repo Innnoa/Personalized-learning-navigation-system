@@ -62,6 +62,23 @@ apt_install() {
   "${SUDO_CMD[@]}" apt-get install -y "${packages[@]}"
 }
 
+apt_install_first_available() {
+  local pkg=""
+
+  if ! command_exists apt-cache; then
+    fail "缺少 apt-cache，无法自动探测可用的 apt 包。"
+  fi
+
+  for pkg in "$@"; do
+    if apt-cache show "${pkg}" >/dev/null 2>&1; then
+      apt_install "${pkg}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 detect_node_major() {
   if ! command_exists node; then
     return 1
@@ -83,8 +100,17 @@ ensure_base_packages() {
     sqlite3 \
     libsqlite3-dev \
     libssl-dev \
+    uuid-dev \
+    libpq-dev \
     zlib1g-dev \
     libjsoncpp-dev
+
+  if ! apt_install_first_available \
+    default-libmysqlclient-dev \
+    libmysqlclient-dev \
+    libmariadb-dev; then
+    log "未在当前 apt 源中找到 MySQL/MariaDB 开发包，后续若 Drogon 依赖检查报 MySQL 缺失，请手动安装对应开发包。"
+  fi
 }
 
 ensure_nodejs() {
