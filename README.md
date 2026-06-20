@@ -116,6 +116,7 @@ docs/             设计文档、论文材料、演示截图
 ## 本地运行
 
 ```bash
+./scripts/install_ubuntu_deps.sh   # Ubuntu 一键安装依赖
 ./scripts/init_database.sh        # 初始化数据库
 ./scripts/run_backend.sh          # 启动后端 (port 8080)
 ./scripts/install_frontend_deps.sh # 安装前端依赖
