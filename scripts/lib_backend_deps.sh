@@ -6,6 +6,25 @@ get_project_root() {
   cd "${script_dir}/.." && pwd
 }
 
+detect_drogon_config_dir() {
+  local candidate
+
+  for candidate in \
+    "${Drogon_DIR:-}" \
+    "/usr/lib/cmake/Drogon" \
+    "/usr/lib/x86_64-linux-gnu/cmake/Drogon" \
+    "/usr/local/lib/cmake/Drogon" \
+    "/usr/local/lib64/cmake/Drogon"
+  do
+    if [[ -n "${candidate}" && -f "${candidate}/DrogonConfig.cmake" ]]; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 prepare_backend_build_env() {
   local build_dir="$1"
   local ccache_dir="${build_dir}/.ccache"
@@ -20,10 +39,17 @@ prepare_backend_build_env() {
 require_drogon_package() {
   local root_dir="${1:-$(get_project_root)}"
   local probe_build_dir="${root_dir}/backend/build/.drogon-probe"
+  local probe_log_file="${probe_build_dir}.log"
+  local drogon_dir=""
 
   prepare_backend_build_env "${root_dir}/backend/build"
+  drogon_dir="$(detect_drogon_config_dir || true)"
 
-  if cmake -S "${root_dir}/scripts/cmake/drogon_probe" -B "${probe_build_dir}" >/dev/null 2>&1; then
+  if env CCACHE_DISABLE=1 cmake \
+    -S "${root_dir}/scripts/cmake/drogon_probe" \
+    -B "${probe_build_dir}" \
+    ${drogon_dir:+-DDrogon_DIR="${drogon_dir}"} \
+    >"${probe_log_file}" 2>&1; then
     return 0
   fi
 
@@ -34,6 +60,13 @@ require_drogon_package() {
 [backend-deps] Arch Linux / AUR 可执行：paru -S drogon
 [backend-deps] 也可执行：yay -S drogon
 EOF
+  if [[ -n "${drogon_dir}" ]]; then
+    echo "[backend-deps] 已探测到 DrogonConfig.cmake: ${drogon_dir}/DrogonConfig.cmake" >&2
+  fi
+  if [[ -f "${probe_log_file}" ]]; then
+    echo "[backend-deps] CMake probe 日志: ${probe_log_file}" >&2
+    tail -n 20 "${probe_log_file}" >&2 || true
+  fi
   return 1
 }
 
