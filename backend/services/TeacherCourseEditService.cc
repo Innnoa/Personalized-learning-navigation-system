@@ -2,7 +2,10 @@
 
 #include <drogon/drogon.h>
 
+#include <algorithm>
 #include <fstream>
+#include <map>
+#include <optional>
 #include <stdexcept>
 
 namespace
@@ -112,6 +115,118 @@ void writeResourceFile(const std::string &courseCode, const Json::Value &root)
     builder["indentation"] = "  ";
     file << Json::writeString(builder, root);
     file.close();
+}
+
+std::optional<int> findKnowledgePointIdByCode(int courseId, const std::string &code)
+{
+    if (code.empty())
+    {
+        return std::nullopt;
+    }
+
+    const auto result = getClient()->execSqlSync(
+        "select id from knowledge_points where code = ? and course_id = ? limit 1",
+        code,
+        std::to_string(courseId));
+    if (result.empty())
+    {
+        return std::nullopt;
+    }
+
+    return result.front()["id"].as<int>();
+}
+
+double clampMasteryValue(double value)
+{
+    return std::clamp(value, 0.0, 1.0);
+}
+
+Json::Value parseFocusTagsJson(const std::string &value)
+{
+    if (value.empty())
+    {
+        return Json::Value(Json::arrayValue);
+    }
+
+    Json::CharReaderBuilder builder;
+    Json::Value parsed;
+    std::string errors;
+    std::istringstream stream(value);
+    if (Json::parseFromStream(builder, stream, &parsed, &errors) && parsed.isArray())
+    {
+        return parsed;
+    }
+
+    return Json::Value(Json::arrayValue);
+}
+
+Json::Value buildResourcePayloadRow(const drogon::orm::Row &row)
+{
+    Json::Value resource;
+    resource["id"] = row["id"].as<int>();
+    resource["knowledgePointCode"] =
+        row["knowledge_point_code"].isNull() ? "" : row["knowledge_point_code"].as<std::string>();
+    resource["knowledgePointName"] =
+        row["knowledge_point_name"].isNull() ? "" : row["knowledge_point_name"].as<std::string>();
+    resource["title"] = row["title"].as<std::string>();
+    resource["resourceType"] = row["resource_type"].as<std::string>();
+    resource["source"] = row["source"].as<std::string>();
+    resource["url"] = row["url"].as<std::string>();
+    resource["description"] = row["description"].as<std::string>();
+    resource["recommendedUsage"] = row["recommended_usage"].as<std::string>();
+    resource["recommendedPhase"] = row["recommended_phase"].as<std::string>();
+    resource["importanceWeight"] = row["importance_weight"].as<double>();
+    resource["estimatedMinutes"] = row["estimated_minutes"].as<int>();
+    resource["minMastery"] = row["min_mastery"].as<double>();
+    resource["maxMastery"] = row["max_mastery"].as<double>();
+    resource["focusTags"] = parseFocusTagsJson(row["focus_tags_json"].as<std::string>());
+    resource["status"] = row["status"].as<std::string>();
+    resource["displayOrder"] = row["display_order"].as<int>();
+    return resource;
+}
+
+Json::Value buildGroupedLegacyResourcePayload(
+    const Json::Value &resourceRows)
+{
+    Json::Value groups(Json::arrayValue);
+    std::vector<std::string> orderedCodes;
+    std::map<std::string, Json::Value> grouped;
+
+    for (const auto &resource : resourceRows)
+    {
+        const auto knowledgePointCode = resource["knowledgePointCode"].asString();
+        const auto groupCode = knowledgePointCode;
+        if (grouped.find(groupCode) == grouped.end())
+        {
+            Json::Value group;
+            group["knowledgePointCode"] = knowledgePointCode;
+            group["resources"] = Json::arrayValue;
+            grouped[groupCode] = group;
+            orderedCodes.push_back(groupCode);
+        }
+
+        Json::Value legacy;
+        legacy["title"] = resource["title"];
+        legacy["type"] = resource["resourceType"];
+        legacy["source"] = resource["source"];
+        legacy["url"] = resource["url"];
+        legacy["description"] = resource["description"];
+        legacy["recommendedUsage"] = resource["recommendedUsage"];
+        legacy["recommendedPhase"] = resource["recommendedPhase"];
+        legacy["importanceWeight"] = resource["importanceWeight"];
+        legacy["estimatedMinutes"] = resource["estimatedMinutes"];
+        legacy["minMastery"] = resource["minMastery"];
+        legacy["maxMastery"] = resource["maxMastery"];
+        legacy["focusTags"] = resource["focusTags"];
+        grouped[groupCode]["resources"].append(legacy);
+    }
+
+    for (const auto &code : orderedCodes)
+    {
+        groups.append(grouped[code]);
+    }
+
+    return groups;
 }
 }
 
@@ -366,8 +481,276 @@ Json::Value TeacherCourseEditService::readResources(
     const std::string &username,
     const std::string &courseCode)
 {
+    const auto listed = listResources(username, courseCode, Json::Value(Json::objectValue));
+
+    Json::Value payload;
+    payload["courseCode"] = courseCode;
+    payload["resources"] = listed["resources"];
+    payload["knowledgePointResources"] =
+        buildGroupedLegacyResourcePayload(listed["resources"]);
+    return payload;
+}
+
+Json::Value TeacherCourseEditService::listResources(
+    const std::string &username,
+    const std::string &courseCode,
+    const Json::Value &query)
+{
+    (void)query;
     verifyTeacherCourseAssignment(username, courseCode);
-    return readResourceFile(courseCode);
+    const int courseId = findCourseId(courseCode);
+
+    const auto result = getClient()->execSqlSync(
+        "select lr.id, lr.title, lr.resource_type, lr.source, lr.url, lr.description, "
+        "lr.recommended_usage, lr.recommended_phase, lr.importance_weight, "
+        "lr.estimated_minutes, lr.min_mastery, lr.max_mastery, lr.focus_tags_json, "
+        "lr.status, lr.display_order, kp.code as knowledge_point_code, kp.name as knowledge_point_name "
+        "from learning_resources lr "
+        "left join knowledge_points kp on kp.id = lr.knowledge_point_id "
+        "where lr.course_id = ? "
+        "order by lr.display_order asc, lr.id asc",
+        std::to_string(courseId));
+
+    Json::Value payload;
+    payload["courseCode"] = courseCode;
+    Json::Value resources(Json::arrayValue);
+    for (const auto &row : result)
+    {
+        resources.append(buildResourcePayloadRow(row));
+    }
+    payload["resources"] = resources;
+    return payload;
+}
+
+Json::Value TeacherCourseEditService::createResource(
+    const std::string &username,
+    const std::string &courseCode,
+    const Json::Value &body)
+{
+    verifyTeacherCourseAssignment(username, courseCode);
+    const int courseId = findCourseId(courseCode);
+
+    const auto title = body.get("title", "").asString();
+    if (title.empty())
+    {
+        throw std::invalid_argument("资源标题不能为空。");
+    }
+
+    const auto pointId =
+        findKnowledgePointIdByCode(courseId, body.get("knowledgePointCode", "").asString());
+
+    Json::StreamWriterBuilder builder;
+    builder["indentation"] = "";
+    const auto focusTagsJson = Json::writeString(builder, body["focusTags"]);
+    const auto minMastery = clampMasteryValue(body.get("minMastery", 0.0).asDouble());
+    const auto maxMastery = clampMasteryValue(body.get("maxMastery", 1.0).asDouble());
+
+    const auto nextOrderResult = getClient()->execSqlSync(
+        "select coalesce(max(display_order), -1) + 1 as next_order "
+        "from learning_resources where course_id = ?",
+        std::to_string(courseId));
+    const auto displayOrder = nextOrderResult.front()["next_order"].as<int>();
+
+    getClient()->execSqlSync(
+        "insert into learning_resources "
+        "(course_id, knowledge_point_id, title, resource_type, source, url, description, "
+        "recommended_usage, recommended_phase, importance_weight, estimated_minutes, "
+        "min_mastery, max_mastery, focus_tags_json, display_order, status) "
+        "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        std::to_string(courseId),
+        pointId.has_value() ? std::to_string(*pointId) : nullptr,
+        title,
+        body.get("resourceType", "article").asString(),
+        body.get("source", "").asString(),
+        body.get("url", "").asString(),
+        body.get("description", "").asString(),
+        body.get("recommendedUsage", "").asString(),
+        body.get("recommendedPhase", "learn").asString(),
+        std::to_string(body.get("importanceWeight", 1.0).asDouble()),
+        std::to_string(std::max(1, body.get("estimatedMinutes", 20).asInt())),
+        std::to_string(std::min(minMastery, maxMastery)),
+        std::to_string(std::max(minMastery, maxMastery)),
+        focusTagsJson,
+        std::to_string(displayOrder),
+        body.get("status", "active").asString());
+
+    const auto inserted = getClient()->execSqlSync(
+        "select lr.id, lr.title, lr.resource_type, lr.source, lr.url, lr.description, "
+        "lr.recommended_usage, lr.recommended_phase, lr.importance_weight, "
+        "lr.estimated_minutes, lr.min_mastery, lr.max_mastery, lr.focus_tags_json, "
+        "lr.status, lr.display_order, kp.code as knowledge_point_code, kp.name as knowledge_point_name "
+        "from learning_resources lr "
+        "left join knowledge_points kp on kp.id = lr.knowledge_point_id "
+        "where lr.id = last_insert_rowid() limit 1");
+
+    Json::Value payload;
+    payload["created"] = true;
+    payload["resource"] = buildResourcePayloadRow(inserted.front());
+    return payload;
+}
+
+Json::Value TeacherCourseEditService::updateResource(
+    const std::string &username,
+    const std::string &courseCode,
+    int resourceId,
+    const Json::Value &body)
+{
+    verifyTeacherCourseAssignment(username, courseCode);
+    const int courseId = findCourseId(courseCode);
+
+    const auto existing = getClient()->execSqlSync(
+        "select id from learning_resources where id = ? and course_id = ? limit 1",
+        std::to_string(resourceId),
+        std::to_string(courseId));
+    if (existing.empty())
+    {
+        throw std::invalid_argument("未找到指定学习资源。");
+    }
+
+    if (body.isMember("knowledgePointCode"))
+    {
+        const auto pointId =
+            findKnowledgePointIdByCode(courseId, body["knowledgePointCode"].asString());
+        getClient()->execSqlSync(
+            "update learning_resources set knowledge_point_id = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            pointId.has_value() ? std::to_string(*pointId) : nullptr,
+            std::to_string(resourceId));
+    }
+    if (body.isMember("title"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set title = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["title"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("resourceType"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set resource_type = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["resourceType"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("source"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set source = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["source"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("url"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set url = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["url"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("description"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set description = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["description"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("recommendedUsage"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set recommended_usage = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["recommendedUsage"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("recommendedPhase"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set recommended_phase = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["recommendedPhase"].asString(),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("importanceWeight"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set importance_weight = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            std::to_string(std::max(0.0, body["importanceWeight"].asDouble())),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("estimatedMinutes"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set estimated_minutes = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            std::to_string(std::max(1, body["estimatedMinutes"].asInt())),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("minMastery"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set min_mastery = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            std::to_string(clampMasteryValue(body["minMastery"].asDouble())),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("maxMastery"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set max_mastery = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            std::to_string(clampMasteryValue(body["maxMastery"].asDouble())),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("focusTags"))
+    {
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "";
+        getClient()->execSqlSync(
+            "update learning_resources set focus_tags_json = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            Json::writeString(builder, body["focusTags"]),
+            std::to_string(resourceId));
+    }
+    if (body.isMember("status"))
+    {
+        getClient()->execSqlSync(
+            "update learning_resources set status = ?, updated_at = CURRENT_TIMESTAMP where id = ?",
+            body["status"].asString(),
+            std::to_string(resourceId));
+    }
+
+    const auto updated = getClient()->execSqlSync(
+        "select lr.id, lr.title, lr.resource_type, lr.source, lr.url, lr.description, "
+        "lr.recommended_usage, lr.recommended_phase, lr.importance_weight, "
+        "lr.estimated_minutes, lr.min_mastery, lr.max_mastery, lr.focus_tags_json, "
+        "lr.status, lr.display_order, kp.code as knowledge_point_code, kp.name as knowledge_point_name "
+        "from learning_resources lr "
+        "left join knowledge_points kp on kp.id = lr.knowledge_point_id "
+        "where lr.id = ? limit 1",
+        std::to_string(resourceId));
+
+    Json::Value payload;
+    payload["updated"] = true;
+    payload["resource"] = buildResourcePayloadRow(updated.front());
+    return payload;
+}
+
+Json::Value TeacherCourseEditService::deleteResource(
+    const std::string &username,
+    const std::string &courseCode,
+    int resourceId)
+{
+    verifyTeacherCourseAssignment(username, courseCode);
+    const int courseId = findCourseId(courseCode);
+
+    const auto existing = getClient()->execSqlSync(
+        "select id from learning_resources where id = ? and course_id = ? limit 1",
+        std::to_string(resourceId),
+        std::to_string(courseId));
+    if (existing.empty())
+    {
+        throw std::invalid_argument("未找到指定学习资源。");
+    }
+
+    getClient()->execSqlSync(
+        "delete from learning_resources where id = ? and course_id = ?",
+        std::to_string(resourceId),
+        std::to_string(courseId));
+
+    Json::Value payload;
+    payload["deleted"] = true;
+    return payload;
 }
 
 Json::Value TeacherCourseEditService::writeResources(

@@ -272,6 +272,7 @@ const breadcrumbs = computed(() => graphData.value?.breadcrumbs || []);
 const currentScopeCode = computed(() => graphData.value?.view?.scopeCode || "root");
 const currentScopeName = computed(() => graphData.value?.view?.scopeName || "课程主图");
 const currentScopeLevel = computed(() => resolveScopeLevel(graphData.value));
+const activeCourseCode = computed(() => String(props.profile?.course?.code || ""));
 
 const currentScopeGraph = computed(() => normalizePayload(graphData.value, masteryByCode.value));
 
@@ -858,8 +859,9 @@ async function loadGraph(scopeCode = "root", options = {}) {
   try {
     const params = {};
     if (scopeCode !== "root") params.scopeCode = scopeCode;
-    if (props.profile?.course?.code) params.courseCode = props.profile.course.code;
-    const payload = await fetchKnowledgeGraph(params);
+    if (activeCourseCode.value) params.courseCode = activeCourseCode.value;
+    const payload =
+      Object.keys(params).length > 0 ? await fetchKnowledgeGraph(params) : await fetchKnowledgeGraph();
 
     const normalizedPayload = normalizePayload(payload, masteryByCode.value);
     graphData.value = payload;
@@ -931,6 +933,20 @@ watch(
 
     await loadGraph(resolveRememberedScopeCodeForFocus(code), {
       preferredSelectedCode: code,
+    });
+  },
+);
+
+watch(
+  activeCourseCode,
+  async (courseCode, previousCourseCode) => {
+    if (!courseCode || courseCode === previousCourseCode) {
+      return;
+    }
+
+    await loadGraph(currentScopeCode.value || "root", {
+      preferredSelectedCode:
+        selectedNodeCode.value || props.preferredSelectedCode || "",
     });
   },
 );

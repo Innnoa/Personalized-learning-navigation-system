@@ -68,6 +68,16 @@ std::string readLearningResourceFilePath()
     return "../config/learning_resources.json";
 }
 
+auto getDbClient()
+{
+    auto client = drogon::app().getDbClient("sqlite_client");
+    if (!client)
+    {
+        throw std::runtime_error("未找到 sqlite_client 数据库连接。");
+    }
+    return client;
+}
+
 std::string readDetailCatalogPath()
 {
     const auto &config = drogon::app().getCustomConfig();
@@ -142,6 +152,10 @@ Json::Value buildSingleResourcePayload(const Json::Value &resourceJson)
     payload["description"] = resourceJson["description"].asString();
     payload["recommendedUsage"] = resourceJson["recommendedUsage"].asString();
     payload["recommendedPhase"] = resourceJson["recommendedPhase"].asString();
+    payload["importanceWeight"] = resourceJson.get("importanceWeight", 1.0).asDouble();
+    payload["estimatedMinutes"] = resourceJson.get("estimatedMinutes", 20).asInt();
+    payload["minMastery"] = resourceJson.get("minMastery", 0.0).asDouble();
+    payload["maxMastery"] = resourceJson.get("maxMastery", 1.0).asDouble();
     payload["focusTags"] = buildStringArrayPayload(resourceJson["focusTags"]);
     payload["focusNodeCode"] = resourceJson["focusNodeCode"].asString();
     payload["focusNodeLabel"] = resourceJson["focusNodeLabel"].asString();
@@ -625,33 +639,40 @@ int buildPhasePriority(const std::string &recommendedPhase,
                        const algorithm::planner::LearningPathItem &item)
 {
     const bool scheduledNow = item.status == "scheduled";
+    const auto normalizedPhase =
+        recommendedPhase == "learn" ? std::string("主学")
+        : recommendedPhase == "preview" ? std::string("预习")
+        : recommendedPhase == "practice" ? std::string("巩固")
+        : recommendedPhase == "review" ? std::string("答辩复盘")
+        : recommendedPhase == "extend" ? std::string("延伸学习")
+        : recommendedPhase;
 
-    if (recommendedPhase == "主学")
+    if (normalizedPhase == "主学")
     {
         return scheduledNow ? 600 : 520;
     }
 
-    if (recommendedPhase == "预习")
+    if (normalizedPhase == "预习")
     {
         return scheduledNow ? 520 : 600;
     }
 
-    if (recommendedPhase == "难点突破")
+    if (normalizedPhase == "难点突破")
     {
         return scheduledNow ? 460 : 440;
     }
 
-    if (recommendedPhase == "巩固")
+    if (normalizedPhase == "巩固")
     {
         return scheduledNow ? 380 : 360;
     }
 
-    if (recommendedPhase == "答辩复盘")
+    if (normalizedPhase == "答辩复盘")
     {
         return 300;
     }
 
-    if (recommendedPhase == "延伸学习")
+    if (normalizedPhase == "延伸学习")
     {
         return 220;
     }
@@ -738,10 +759,24 @@ int buildResourcePriorityScore(
     const algorithm::planner::LearningPathItem &item,
     const Json::Value &resourcePayload)
 {
+    const double minMastery = resourcePayload.get("minMastery", 0.0).asDouble();
+    const double maxMastery = resourcePayload.get("maxMastery", 1.0).asDouble();
+    const bool inRange =
+        item.masteryScore >= std::min(minMastery, maxMastery) &&
+        item.masteryScore <= std::max(minMastery, maxMastery);
+    const int masteryRangeScore = inRange ? 140 : -220;
+    const int timeScore =
+        std::max(0, 120 - resourcePayload.get("estimatedMinutes", 20).asInt() * 3);
+    const int importanceScore = static_cast<int>(
+        std::round(resourcePayload.get("importanceWeight", 1.0).asDouble() * 90.0));
+    const int relevanceScore = static_cast<int>(
+        std::round(std::clamp(item.reasonTrace.relevanceScore, 0.0, 1.0) * 150.0));
+
     return buildPhasePriority(resourcePayload["recommendedPhase"].asString(), item) +
            buildTypePriority(resourcePayload["type"].asString()) +
            buildFocusPriority(resourcePayload, item) +
-           buildCoveragePriority(resourcePayload);
+           buildCoveragePriority(resourcePayload) + masteryRangeScore +
+           timeScore + importanceScore + relevanceScore;
 }
 
 int buildRepeatedAttributePenalty(
@@ -1468,6 +1503,86 @@ std::string buildSelectionReason(
 
 std::unordered_map<std::string, Json::Value> loadLearningResourceCatalog()
 {
+    try
+    {
+        const auto countResult = getDbClient()->execSqlSync(
+            "select count(*) as count from learning_resources");
+        if (!countResult.empty() && countResult.front()["count"].as<long long>() > 0)
+        {
+            const auto result = getDbClient()->execSqlSync(
+                "select lr.title, lr.resource_type, lr.source, lr.url, lr.description, "
+                "lr.recommended_usage, lr.recommended_phase, lr.importance_weight, "
+                "lr.estimated_minutes, lr.min_mastery, lr.max_mastery, lr.focus_tags_json, "
+                "kp.code as knowledge_point_code, kp.name as knowledge_point_name "
+                "from learning_resources lr "
+                "left join knowledge_points kp on kp.id = lr.knowledge_point_id "
+                "where lr.status = 'active' "
+                "order by lr.display_order asc, lr.id asc");
+
+            std::unordered_map<std::string, Json::Value> catalog;
+            for (const auto &row : result)
+            {
+                const auto knowledgePointCode =
+                    row["knowledge_point_code"].isNull()
+                        ? std::string()
+                        : row["knowledge_point_code"].as<std::string>();
+                if (knowledgePointCode.empty())
+                {
+                    continue;
+                }
+
+                Json::Value resourceJson;
+                resourceJson["title"] = row["title"].as<std::string>();
+                resourceJson["type"] = row["resource_type"].as<std::string>();
+                resourceJson["source"] = row["source"].as<std::string>();
+                resourceJson["url"] = row["url"].as<std::string>();
+                resourceJson["description"] = row["description"].as<std::string>();
+                resourceJson["recommendedUsage"] =
+                    row["recommended_usage"].as<std::string>();
+                resourceJson["recommendedPhase"] =
+                    row["recommended_phase"].as<std::string>();
+                resourceJson["importanceWeight"] =
+                    row["importance_weight"].as<double>();
+                resourceJson["estimatedMinutes"] =
+                    row["estimated_minutes"].as<int>();
+                resourceJson["minMastery"] = row["min_mastery"].as<double>();
+                resourceJson["maxMastery"] = row["max_mastery"].as<double>();
+
+                Json::CharReaderBuilder builder;
+                Json::Value focusTags(Json::arrayValue);
+                std::string errors;
+                std::istringstream stream(row["focus_tags_json"].as<std::string>());
+                if (Json::parseFromStream(builder, stream, &focusTags, &errors) &&
+                    focusTags.isArray())
+                {
+                    resourceJson["focusTags"] = focusTags;
+                }
+                else
+                {
+                    resourceJson["focusTags"] = Json::arrayValue;
+                }
+
+                resourceJson["focusNodeCode"] = knowledgePointCode;
+                resourceJson["focusNodeLabel"] =
+                    row["knowledge_point_name"].isNull()
+                        ? knowledgePointCode
+                        : row["knowledge_point_name"].as<std::string>();
+
+                catalog[knowledgePointCode].append(
+                    buildSingleResourcePayload(resourceJson));
+            }
+
+            if (!catalog.empty())
+            {
+                return catalog;
+            }
+        }
+    }
+    catch (const std::exception &error)
+    {
+        LOG_WARN << "数据库资源目录加载失败，回退到 JSON: " << error.what();
+    }
+
     const auto filePath = readLearningResourceFilePath();
     std::ifstream input(filePath);
     if (!input.is_open())
@@ -1521,7 +1636,8 @@ std::unordered_map<std::string, Json::Value> loadLearningResourceCatalog()
 
 const std::unordered_map<std::string, Json::Value> &getLearningResourceCatalog()
 {
-    static const auto catalog = loadLearningResourceCatalog();
+    static thread_local std::unordered_map<std::string, Json::Value> catalog;
+    catalog = loadLearningResourceCatalog();
     return catalog;
 }
 

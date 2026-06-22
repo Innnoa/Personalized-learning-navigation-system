@@ -100,6 +100,7 @@ function buildScopePayload() {
         estimatedMinutes: 20,
         displayOrder: 1,
         description: "顺序队列基础",
+        hasPracticeRecord: false,
       },
       {
         id: "queue-linked",
@@ -111,6 +112,7 @@ function buildScopePayload() {
         estimatedMinutes: 25,
         displayOrder: 2,
         description: "链式队列基础",
+        hasPracticeRecord: true,
       },
     ],
     edges: [
@@ -876,6 +878,87 @@ describe("DetailLearningWorkspace", () => {
     await flushUi(6);
 
     expect(wrapper.text()).toContain("进入练习检验");
+  });
+
+  it("marks scheduled detail nodes as practiced when historical practice records exist", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const store = useNavigationStore();
+
+    store.setDetailLearningContext({
+      learnerCode: "demo-learner",
+      detailLearningSections: [
+        {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      ],
+      selectedScopeCode: "queue-detail",
+      sourceTargetLabel: "队列",
+      sourcePage: "home",
+    });
+    store.setDetailLearningViewState("queue-detail", {
+      targetNodeCode: "queue-linked",
+      availableMinutes: 20,
+      planResult: {
+        summary: {
+          scheduledCount: 1,
+          deferredCount: 0,
+          masteredCount: 0,
+          scheduledMinutes: 20,
+          totalRequiredMinutes: 20,
+          targetReachableWithinBudget: true,
+        },
+        path: [
+          {
+            code: "queue-linked",
+            name: "链式队列",
+            chapterNo: 4,
+            difficultyLevel: 2,
+            estimatedMinutes: 20,
+            masteryPercent: 30,
+            status: "scheduled",
+            explanation: {
+              summary: "当前应先掌握链式队列。",
+            },
+          },
+        ],
+        practiceStatusByCode: ["queue-linked"],
+        resourceRecommendations: [],
+      },
+    });
+
+    const wrapper = mount(DetailLearningWorkspace, {
+      global: {
+        plugins: [pinia],
+      },
+      props: {
+        learnerCode: "demo-learner",
+        masteryByCode: {
+          "queue-array": 0.2,
+          "queue-linked": 0.1,
+        },
+        section: {
+          code: "queue",
+          name: "队列",
+          scopeCode: "queue-detail",
+          scopeLabel: "队列",
+          chapterNo: 4,
+          estimatedMinutes: 30,
+          status: "scheduled",
+        },
+      },
+    });
+
+    await flushUi(6);
+
+    expect(wrapper.text()).toContain("链式队列");
+    expect(wrapper.text()).toContain("已练习");
   });
 
   it("shows practice-check-only entry instead of subjective mastery controls", async () => {

@@ -120,13 +120,13 @@ describe("authStore", () => {
       user: {
         id: 1,
         username: "student_demo",
-        displayName: "演示学生账号",
+        displayName: "槐诗（学生演示）",
       },
       roles: ["student"],
       activeRole: "student",
       linkedLearner: {
         learnerCode: "demo-learner",
-        learnerName: "演示学习者",
+        learnerName: "槐诗",
       },
     });
 
@@ -134,13 +134,13 @@ describe("authStore", () => {
     expect(store.currentUser).toEqual({
       id: 1,
       username: "student_demo",
-      displayName: "演示学生账号",
+      displayName: "槐诗（学生演示）",
     });
     expect(store.currentRoles).toEqual(["student"]);
     expect(store.activeRole).toBe("student");
     expect(store.linkedLearner).toEqual({
       learnerCode: "demo-learner",
-      learnerName: "演示学习者",
+      learnerName: "槐诗",
     });
   });
 
@@ -152,7 +152,7 @@ describe("authStore", () => {
         user: {
           id: 1,
           username: "student_demo",
-          displayName: "演示学生账号",
+          displayName: "槐诗（学生演示）",
         },
         roles: ["student"],
         activeRole: "student",

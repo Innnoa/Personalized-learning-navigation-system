@@ -20,8 +20,12 @@ class TeacherCourseEditController : public drogon::HttpController<TeacherCourseE
                   "/api/teacher/courses/{1}/knowledge-dependencies", drogon::Put);
     ADD_METHOD_TO(TeacherCourseEditController::readResources,
                   "/api/teacher/courses/{1}/resources", drogon::Get);
-    ADD_METHOD_TO(TeacherCourseEditController::writeResources,
-                  "/api/teacher/courses/{1}/resources", drogon::Put);
+    ADD_METHOD_TO(TeacherCourseEditController::createResource,
+                  "/api/teacher/courses/{1}/resources", drogon::Post);
+    ADD_METHOD_TO(TeacherCourseEditController::updateResource,
+                  "/api/teacher/courses/{1}/resources/{2}", drogon::Put);
+    ADD_METHOD_TO(TeacherCourseEditController::deleteResource,
+                  "/api/teacher/courses/{1}/resources/{2}", drogon::Delete);
     METHOD_LIST_END
 
     void createKnowledgePoint(const drogon::HttpRequestPtr &req,
@@ -44,8 +48,16 @@ class TeacherCourseEditController : public drogon::HttpController<TeacherCourseE
     void readResources(const drogon::HttpRequestPtr &req,
                        std::function<void(const drogon::HttpResponsePtr &)> &&callback,
                        const std::string &courseCode) const;
-    void writeResources(const drogon::HttpRequestPtr &req,
+    void createResource(const drogon::HttpRequestPtr &req,
                         std::function<void(const drogon::HttpResponsePtr &)> &&callback,
                         const std::string &courseCode) const;
+    void updateResource(const drogon::HttpRequestPtr &req,
+                        std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                        const std::string &courseCode,
+                        int resourceId) const;
+    void deleteResource(const drogon::HttpRequestPtr &req,
+                        std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+                        const std::string &courseCode,
+                        int resourceId) const;
 };
 }

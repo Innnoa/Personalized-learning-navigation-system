@@ -118,8 +118,8 @@ export async function fetchCourseResources(courseCode, params = {}) {
   return data;
 }
 
-export async function saveCourseResources(courseCode, body, params = {}) {
-  const { data } = await http.put(
+export async function createCourseResource(courseCode, body, params = {}) {
+  const { data } = await http.post(
     `/teacher/courses/${courseCode}/resources`,
     body,
     { params },
@@ -127,18 +127,86 @@ export async function saveCourseResources(courseCode, body, params = {}) {
   return data;
 }
 
-export async function fetchCourseQuestions(courseCode, params = {}) {
-  const { data } = await http.get(
-    `/teacher/courses/${courseCode}/questions`,
+export async function updateCourseResource(courseCode, resourceId, body, params = {}) {
+  const { data } = await http.put(
+    `/teacher/courses/${courseCode}/resources/${resourceId}`,
+    body,
     { params },
   );
   return data;
 }
 
-export async function saveCourseQuestions(courseCode, body, params = {}) {
-  const { data } = await http.put(
-    `/teacher/courses/${courseCode}/questions`,
+export async function deleteCourseResource(courseCode, resourceId, params = {}) {
+  const { data } = await http.delete(
+    `/teacher/courses/${courseCode}/resources/${resourceId}`,
+    { params },
+  );
+  return data;
+}
+
+export async function fetchQuestionBanks(courseCode, params = {}) {
+  const { data } = await http.get(
+    `/teacher/courses/${courseCode}/question-banks`,
+    { params },
+  );
+  return data;
+}
+
+export async function createQuestionBank(courseCode, body, params = {}) {
+  const { data } = await http.post(
+    `/teacher/courses/${courseCode}/question-banks`,
     body,
+    { params },
+  );
+  return data;
+}
+
+export async function updateQuestionBank(courseCode, bankId, body, params = {}) {
+  const { data } = await http.put(
+    `/teacher/courses/${courseCode}/question-banks/${bankId}`,
+    body,
+    { params },
+  );
+  return data;
+}
+
+export async function deleteQuestionBank(courseCode, bankId, params = {}) {
+  const { data } = await http.delete(
+    `/teacher/courses/${courseCode}/question-banks/${bankId}`,
+    { params },
+  );
+  return data;
+}
+
+export async function fetchBankQuestions(courseCode, bankId, params = {}) {
+  const { data } = await http.get(
+    `/teacher/courses/${courseCode}/question-banks/${bankId}/questions`,
+    { params },
+  );
+  return data;
+}
+
+export async function createBankQuestion(courseCode, bankId, body, params = {}) {
+  const { data } = await http.post(
+    `/teacher/courses/${courseCode}/question-banks/${bankId}/questions`,
+    body,
+    { params },
+  );
+  return data;
+}
+
+export async function updateBankQuestion(courseCode, bankId, questionId, body, params = {}) {
+  const { data } = await http.put(
+    `/teacher/courses/${courseCode}/question-banks/${bankId}/questions/${questionId}`,
+    body,
+    { params },
+  );
+  return data;
+}
+
+export async function deleteBankQuestion(courseCode, bankId, questionId, params = {}) {
+  const { data } = await http.delete(
+    `/teacher/courses/${courseCode}/question-banks/${bankId}/questions/${questionId}`,
     { params },
   );
   return data;

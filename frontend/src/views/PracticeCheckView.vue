@@ -78,7 +78,18 @@
           >
             <p class="question-number">{{ getQuestionNumberLabel(question.id, questionIndex) }}</p>
             <p class="question-prompt">{{ question.prompt }}</p>
-            <div class="question-options">
+            <div v-if="question.type === 'short_answer'" class="question-text-answer">
+              <textarea
+                :value="answers[question.id] ?? ''"
+                class="text-answer-input"
+                data-testid="practice-text-answer"
+                rows="3"
+                :disabled="showReport || submitting"
+                placeholder="请输入你的答案"
+                @input="updateTextAnswer(question.id, $event.target.value)"
+              />
+            </div>
+            <div v-else class="question-options">
               <label
                 v-for="(option, optionIndex) in question.options"
                 :key="`${question.id}-${optionIndex}`"
@@ -170,10 +181,10 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
-import { submitLearningFeedback } from "../api/feedback";
+import { fetchPracticeQuestions, submitLearningFeedback } from "../api/feedback";
 import PageLayout from "../components/PageLayout.vue";
 import { useNavigationStore } from "../stores/navigationStore";
 import {
@@ -194,6 +205,7 @@ const submitError = ref("");
 const submitSuccessMessage = ref("");
 const submitting = ref(false);
 const reportSummary = ref(null);
+const remoteQuestionSet = ref(null);
 
 const practiceCheckContext = computed(
   () => navigationStore.practiceCheckContext || {},
@@ -222,22 +234,50 @@ const practiceScopeText = computed(() => {
   return scopeLabel || scopeCode || "未指定";
 });
 
-const questionSet = computed(() =>
+const fallbackQuestionSet = computed(() =>
   getPracticeCheckQuestionSet(practiceCheckContext.value.targetCode, {
     previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent,
   }) || [],
 );
 
+const questionSet = computed(() => remoteQuestionSet.value || fallbackQuestionSet.value);
+
 const hasSupportedQuestions = computed(() => questionSet.value.length > 0);
 const resolvedQuestionTargetCode = computed(() =>
   resolvePracticeQuestionTargetCode(practiceCheckContext.value.targetCode),
 );
-const answerKey = computed(() =>
-  getPracticeCheckAnswerKey(resolvedQuestionTargetCode.value, {
+const answerKey = computed(() => {
+  if (remoteQuestionSet.value) {
+    return Object.fromEntries(
+      remoteQuestionSet.value.map((question) => [question.id, question.correctIndex]),
+    );
+  }
+
+  return getPracticeCheckAnswerKey(resolvedQuestionTargetCode.value, {
     previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent,
-  }),
-);
+  });
+});
 const showReport = computed(() => Boolean(reportSummary.value));
+
+watchEffect(async () => {
+  const targetCode = practiceCheckContext.value.targetCode;
+  if (!targetCode) {
+    remoteQuestionSet.value = null;
+    return;
+  }
+
+  try {
+    const payload = await fetchPracticeQuestions({
+      targetCode,
+      previousMasteryPercent: practiceCheckContext.value.previousMasteryPercent ?? 0,
+    });
+    remoteQuestionSet.value = Array.isArray(payload?.questions) && payload.questions.length > 0
+      ? payload.questions
+      : null;
+  } catch {
+    remoteQuestionSet.value = null;
+  }
+});
 
 function selectAnswer(questionId, optionIndex) {
   if (showReport.value) {
@@ -249,13 +289,33 @@ function selectAnswer(questionId, optionIndex) {
   submitSuccessMessage.value = "";
 }
 
+function normalizeAnswerValue(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function updateTextAnswer(questionId, value) {
+  if (showReport.value) {
+    return;
+  }
+
+  answers[questionId] = value;
+  submitError.value = "";
+  submitSuccessMessage.value = "";
+}
+
 function hasAnsweredAllQuestions() {
-  return questionSet.value.every((question) => Number.isInteger(answers[question.id]));
+  return questionSet.value.every((question) => {
+    if (question.type === "short_answer") {
+      return String(answers[question.id] || "").trim().length > 0;
+    }
+
+    return Number.isInteger(answers[question.id]);
+  });
 }
 
 function countCorrectAnswers() {
   return questionSet.value.reduce((count, question) => {
-    if (answers[question.id] === answerKey.value[question.id]) {
+    if (isQuestionCorrect(question.id)) {
       return count + 1;
     }
 
@@ -264,6 +324,24 @@ function countCorrectAnswers() {
 }
 
 function isQuestionCorrect(questionId) {
+  const question = questionSet.value.find((item) => item.id === questionId);
+  if (question?.type === "short_answer") {
+    const answer = question.answer || {};
+    const userAnswer = normalizeAnswerValue(answers[questionId]);
+    if (!userAnswer) {
+      return false;
+    }
+
+    const keywordMatches = Array.isArray(answer.keywords)
+      ? answer.keywords.some((keyword) => userAnswer.includes(normalizeAnswerValue(keyword)))
+      : false;
+    const referenceMatch = answer.referenceAnswer
+      ? userAnswer === normalizeAnswerValue(answer.referenceAnswer)
+      : false;
+
+    return keywordMatches || referenceMatch;
+  }
+
   return answers[questionId] === answerKey.value[questionId];
 }
 
@@ -280,6 +358,9 @@ function getSelectedOptionLabel(questionId) {
 
 function getCorrectOptionLabel(questionId) {
   const question = questionSet.value.find((item) => item.id === questionId);
+  if (question?.type === "short_answer") {
+    return question.answer?.referenceAnswer || "未配置";
+  }
   const correctOptionIndex = answerKey.value[questionId];
 
   if (!question || !Number.isInteger(correctOptionIndex)) {
@@ -339,6 +420,8 @@ async function submitPractice() {
   submitError.value = "";
   submitSuccessMessage.value = "";
   reportSummary.value = null;
+  const feedbackTargetCode =
+    resolvedQuestionTargetCode.value || practiceCheckContext.value.targetCode;
 
   if (!hasAnsweredAllQuestions()) {
     submitError.value = "请先完成全部题目再提交。";
@@ -364,13 +447,15 @@ async function submitPractice() {
   try {
     await submitLearningFeedback({
       learnerCode: practiceCheckContext.value.learnerCode || "demo-learner",
+      sourcePage: practiceCheckContext.value.sourcePage || "home",
+      scopeCode: practiceCheckContext.value.scopeCode || "",
       masteryByCode: {
-        [practiceCheckContext.value.targetCode]:
+        [feedbackTargetCode]:
           Number(practiceCheckContext.value.previousMasteryPercent || 0) / 100,
       },
         feedbackItems: [
           {
-            code: practiceCheckContext.value.targetCode,
+            code: feedbackTargetCode,
             completionStatus,
             selfRatedMastery: weightedMasteryPercent / 100,
           },
@@ -403,8 +488,13 @@ async function goHome() {
   if (practiceCheckContext.value.scopeCode && practiceCheckContext.value.scopeCode !== "root") {
     query.scope = practiceCheckContext.value.scopeCode;
   }
-  if (practiceCheckContext.value.targetCode) {
-    query.target = practiceCheckContext.value.targetCode;
+  const returnTargetCode =
+    practiceCheckContext.value.originTargetCode || practiceCheckContext.value.targetCode;
+  if (returnTargetCode) {
+    query.target = returnTargetCode;
+  }
+  if (showReport.value) {
+    query.practiceUpdated = "1";
   }
 
   await router.push({
@@ -507,6 +597,29 @@ h3,
 .question-options {
   display: grid;
   gap: 10px;
+}
+
+.question-text-answer {
+  margin-top: 4px;
+}
+
+.text-answer-input {
+  width: 100%;
+  min-height: 88px;
+  padding: 12px 14px;
+  border: 1px solid rgba(12, 106, 113, 0.2);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #17303d;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.text-answer-input:focus {
+  outline: 2px solid rgba(12, 106, 113, 0.18);
+  border-color: rgba(12, 106, 113, 0.45);
 }
 
 .option-item {

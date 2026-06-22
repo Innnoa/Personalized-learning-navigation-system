@@ -45,6 +45,29 @@ DetailLearningRepository::listDetailMasteryByLearnerId(int learnerId)
     return records;
 }
 
+std::vector<std::string>
+DetailLearningRepository::listPracticedNodeCodesByLearnerAndScope(
+    int learnerId, const std::string &scopeCode)
+{
+    const auto result = getClient()->execSqlSync(
+        "select distinct node_code "
+        "from detail_learning_feedback_records "
+        "where learner_id = ? and scope_code = ? "
+        "order by node_code asc",
+        learnerId,
+        scopeCode);
+
+    std::vector<std::string> practicedNodeCodes;
+    practicedNodeCodes.reserve(result.size());
+
+    for (const auto &row : result)
+    {
+        practicedNodeCodes.push_back(row["node_code"].as<std::string>());
+    }
+
+    return practicedNodeCodes;
+}
+
 void DetailLearningRepository::upsertDetailMastery(int learnerId,
                                                    const std::string &scopeCode,
                                                    const std::string &nodeCode,

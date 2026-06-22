@@ -19,6 +19,7 @@
         v-else
         :key="workspaceKey"
         :learner-code="detailLearningLearnerCode"
+        :course-code="learnerProfile?.course?.code || authStore.linkedLearner?.courseCode || ''"
         :mastery-by-code="
           learnerProfile?.graphMasteryByCode || learnerProfile?.masteryByCode || {}
         "
@@ -90,7 +91,14 @@ async function loadRouteSection(scopeCode) {
   routeSectionError.value = "";
 
   try {
-    const payload = await fetchKnowledgeGraph({ scopeCode });
+    const params = { scopeCode };
+    const courseCode = String(
+      learnerProfile.value?.course?.code || authStore.linkedLearner?.courseCode || "",
+    );
+    if (courseCode) {
+      params.courseCode = courseCode;
+    }
+    const payload = await fetchKnowledgeGraph(params);
     const view = payload?.view || {};
     routeSection.value = {
       code: view.parentNodeCode || "",
@@ -165,6 +173,17 @@ watch(
     }
 
     await loadLearnerProfile();
+  },
+);
+
+watch(
+  () => learnerProfile.value?.course?.code || authStore.linkedLearner?.courseCode || "",
+  async (courseCode, previousCourseCode) => {
+    if (!courseCode || courseCode === previousCourseCode || !requestedScopeCode.value) {
+      return;
+    }
+
+    await loadRouteSection(requestedScopeCode.value);
   },
 );
 

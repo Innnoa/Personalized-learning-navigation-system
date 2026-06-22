@@ -161,12 +161,46 @@ INSERT INTO learners (
 )
 VALUES (
     'demo-learner',
-    '演示学习者',
+    '槐诗',
     '计算机科学与技术',
     '大三',
     (SELECT id FROM courses WHERE code = 'data-structures'),
-    '默认演示学习者，用于展示学习者画像、反馈记录与动态路径规划。'
+    '默认演示学习者，用于展示学习者画像、反馈记录与动态路径规划。账号显示名与学习者姓名保持一致。'
 );
+
+INSERT INTO learners (
+    code,
+    name,
+    major,
+    grade_label,
+    target_course_id,
+    note
+)
+VALUES
+    (
+        'lin-yao',
+        '林曜',
+        '软件工程',
+        '大二',
+        (SELECT id FROM courses WHERE code = 'data-structures'),
+        '偏稳健型学习者，基础概念较强，图与树类内容仍在推进。'
+    ),
+    (
+        'zhou-mu',
+        '周沐',
+        '人工智能',
+        '大三',
+        (SELECT id FROM courses WHERE code = 'data-structures'),
+        '中段推进型学习者，线性结构掌握较好，字符串与图部分待补强。'
+    ),
+    (
+        'qiao-an',
+        '乔岸',
+        '信息安全',
+        '大二',
+        (SELECT id FROM courses WHERE code = 'data-structures'),
+        '冲刺型学习者，前半程扎实，拓扑排序与关键路径已接近完成。'
+    );
 
 INSERT INTO learner_mastery (
     learner_id,
@@ -243,6 +277,216 @@ VALUES
         (SELECT id FROM learners WHERE code = 'demo-learner'),
         (SELECT id FROM knowledge_points WHERE code = 'topological-sort' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
         0.00
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'ds-intro' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.95
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'algorithm-analysis' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.82
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'linear-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.86
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'sequence-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.78
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'linked-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.72
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'stack' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.68
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'queue' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.61
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'string' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.55
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'kmp' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.41
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'tree-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.58
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'binary-tree-traversal' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.46
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'huffman-tree' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.37
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'graph-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.33
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'topological-sort' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.24
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'ds-intro' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.81
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'algorithm-analysis' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.63
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'linear-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.76
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'sequence-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.67
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'linked-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.59
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'stack' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.65
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'queue' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.57
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'string' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.44
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'kmp' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.28
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'tree-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.49
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'binary-tree-traversal' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.36
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'huffman-tree' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.22
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'graph-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.31
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'topological-sort' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.19
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'ds-intro' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.97
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'algorithm-analysis' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.88
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'linear-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.91
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'sequence-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.84
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'linked-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.79
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'stack' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.76
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'queue' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.73
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'string' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.69
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'kmp' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.62
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'tree-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.74
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'binary-tree-traversal' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.66
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'huffman-tree' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.57
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'graph-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.61
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'topological-sort' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        0.52
     );
 
 INSERT OR IGNORE INTO users (
@@ -252,9 +496,12 @@ INSERT OR IGNORE INTO users (
     status
 )
 VALUES
-    ('student_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '演示学生账号', 'active'),
-    ('teacher_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '演示教师账号', 'active'),
-    ('admin_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '演示管理员账号', 'active');
+    ('student_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '槐诗（学生演示）', 'active'),
+    ('lin_yao', '67037c5cb7db4f6f013744fd6f49cfde3ac5a42c8a62ca7a9917dbe47417daf6', '林曜', 'active'),
+    ('zhou_mu', '78d8ce721f0d8d7f4c7da7cd9f4c5d49324dbf57f970d5ff5eb34d6b59a31f89', '周沐', 'active'),
+    ('qiao_an', '65ee5a0b57c2c5486fca675afeb9ffbb5578c68c9d5bb3d2ad5df6d0a9189742', '乔岸', 'active'),
+    ('teacher_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', '傅依（教师演示）', 'active'),
+    ('admin_demo', 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', 'admin（管理员演示）', 'active');
 
 INSERT OR IGNORE INTO user_roles (
     user_id,
@@ -262,6 +509,9 @@ INSERT OR IGNORE INTO user_roles (
 )
 VALUES
     ((SELECT id FROM users WHERE username = 'student_demo'), 'student'),
+    ((SELECT id FROM users WHERE username = 'lin_yao'), 'student'),
+    ((SELECT id FROM users WHERE username = 'zhou_mu'), 'student'),
+    ((SELECT id FROM users WHERE username = 'qiao_an'), 'student'),
     ((SELECT id FROM users WHERE username = 'teacher_demo'), 'teacher'),
     ((SELECT id FROM users WHERE username = 'admin_demo'), 'admin');
 
@@ -273,6 +523,114 @@ VALUES (
     (SELECT id FROM users WHERE username = 'student_demo'),
     (SELECT id FROM learners WHERE code = 'demo-learner')
 );
+
+INSERT OR IGNORE INTO user_learner_links (
+    user_id,
+    learner_id
+)
+VALUES
+    (
+        (SELECT id FROM users WHERE username = 'lin_yao'),
+        (SELECT id FROM learners WHERE code = 'lin-yao')
+    ),
+    (
+        (SELECT id FROM users WHERE username = 'zhou_mu'),
+        (SELECT id FROM learners WHERE code = 'zhou-mu')
+    ),
+    (
+        (SELECT id FROM users WHERE username = 'qiao_an'),
+        (SELECT id FROM learners WHERE code = 'qiao-an')
+    );
+
+INSERT INTO learning_feedback_records (
+    learner_id,
+    knowledge_point_id,
+    feedback_batch_id,
+    completion_status,
+    self_rated_mastery,
+    previous_mastery,
+    updated_mastery,
+    rule_applied,
+    recorded_at
+)
+VALUES
+    (
+        (SELECT id FROM learners WHERE code = 'demo-learner'),
+        (SELECT id FROM knowledge_points WHERE code = 'sequence-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-demo-learner-seq',
+        'partial',
+        0.34,
+        0.22,
+        0.28,
+        'seeded-demo-progress',
+        '2026-06-10 09:30:00'
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'demo-learner'),
+        (SELECT id FROM knowledge_points WHERE code = 'linked-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-demo-learner-linked',
+        'partial',
+        0.54,
+        0.31,
+        0.48,
+        'seeded-demo-progress',
+        '2026-06-12 15:20:00'
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'demo-learner'),
+        (SELECT id FROM knowledge_points WHERE code = 'queue' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-demo-learner-queue',
+        'completed',
+        0.61,
+        0.39,
+        0.56,
+        'seeded-demo-progress',
+        '2026-06-16 11:40:00'
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'demo-learner'),
+        (SELECT id FROM knowledge_points WHERE code = 'tree-basic' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-demo-learner-tree',
+        'completed',
+        0.88,
+        0.43,
+        0.92,
+        'seeded-demo-progress',
+        '2026-06-19 18:10:00'
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'lin-yao'),
+        (SELECT id FROM knowledge_points WHERE code = 'queue' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-lin-yao-queue',
+        'partial',
+        0.66,
+        0.55,
+        0.61,
+        'seeded-demo-progress',
+        '2026-06-15 10:20:00'
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'zhou-mu'),
+        (SELECT id FROM knowledge_points WHERE code = 'sequence-list' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-zhou-mu-seq',
+        'completed',
+        0.71,
+        0.60,
+        0.67,
+        'seeded-demo-progress',
+        '2026-06-16 14:10:00'
+    ),
+    (
+        (SELECT id FROM learners WHERE code = 'qiao-an'),
+        (SELECT id FROM knowledge_points WHERE code = 'topological-sort' AND course_id = (SELECT id FROM courses WHERE code = 'data-structures')),
+        'seed-qiao-an-topo',
+        'completed',
+        0.58,
+        0.43,
+        0.52,
+        'seeded-demo-progress',
+        '2026-06-18 19:40:00'
+    );
 
 INSERT OR IGNORE INTO teacher_course_assignments (
     user_id,

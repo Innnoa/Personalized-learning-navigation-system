@@ -75,6 +75,10 @@ std::filesystem::path prepareIsolatedTestDatabase()
     const auto projectRoot = locateProjectRoot();
     const auto schemaPath = projectRoot / "database/init/001_schema.sql";
     const auto seedPath = projectRoot / "database/seed/course_data_structures.sql";
+    const auto questionBankSeedPath =
+        projectRoot / "database/seed/question_banks_data_structures.sql";
+    const auto resourceSeedPath =
+        projectRoot / "database/seed/learning_resources_data_structures.sql";
     const auto dbPath = projectRoot / "backend/build/tests/test_app.db";
 
     std::filesystem::create_directories(dbPath.parent_path());
@@ -96,6 +100,14 @@ std::filesystem::path prepareIsolatedTestDatabase()
     {
         executeSqlScript(db, readTextFile(schemaPath), schemaPath);
         executeSqlScript(db, readTextFile(seedPath), seedPath);
+        if (std::filesystem::exists(questionBankSeedPath))
+        {
+            executeSqlScript(db, readTextFile(questionBankSeedPath), questionBankSeedPath);
+        }
+        if (std::filesystem::exists(resourceSeedPath))
+        {
+            executeSqlScript(db, readTextFile(resourceSeedPath), resourceSeedPath);
+        }
     }
     catch (...)
     {

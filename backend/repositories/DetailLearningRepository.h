@@ -31,6 +31,8 @@ class DetailLearningRepository
   public:
     static std::vector<LearnerDetailMasteryRecord> listDetailMasteryByLearnerId(
         int learnerId);
+    static std::vector<std::string> listPracticedNodeCodesByLearnerAndScope(
+        int learnerId, const std::string &scopeCode);
     static void upsertDetailMastery(int learnerId,
                                     const std::string &scopeCode,
                                     const std::string &nodeCode,

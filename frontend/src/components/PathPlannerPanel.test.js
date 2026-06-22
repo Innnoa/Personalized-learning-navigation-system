@@ -43,6 +43,11 @@ async function flushUi() {
   await Promise.resolve();
 }
 
+async function submitPlanner(wrapper) {
+  await wrapper.get("form").trigger("submit");
+  await flushUi();
+}
+
 describe("PathPlannerPanel", () => {
   beforeEach(() => {
     pushMock.mockReset();
@@ -81,6 +86,7 @@ describe("PathPlannerPanel", () => {
     const wrapper = mount(PathPlannerPanel, {
       props: {
         learnerCode: "demo-learner",
+        courseCode: "custom-course",
         initialMasteryByCode: {
           stack: 0.4,
           queue: 0.2,
@@ -93,9 +99,11 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
+    await submitPlanner(wrapper);
 
     expect(generateLearningPath).toHaveBeenCalledWith({
       learnerCode: "demo-learner",
+      courseCode: "custom-course",
       targetCodes: ["queue"],
       availableMinutes: 120,
       masteryByCode: {
@@ -157,6 +165,7 @@ describe("PathPlannerPanel", () => {
       externalTargetCode: "stack",
     });
     await flushUi();
+    await submitPlanner(wrapper);
 
     expect(generateLearningPath).toHaveBeenCalledWith({
       learnerCode: "demo-learner",
@@ -172,7 +181,7 @@ describe("PathPlannerPanel", () => {
     expect(targetSelect.element.value).toBe("stack");
   });
 
-  it("emits focus-node when clicking locate action in path result", async () => {
+  it("does not render locate graph buttons in path result cards", async () => {
     routeQuery = {
       target: "",
     };
@@ -229,12 +238,10 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
-    await wrapper
-      .findAll("button")
-      .find((button) => button.text() === "前往学习图谱")
-      .trigger("click");
+    await submitPlanner(wrapper);
 
-    expect(wrapper.emitted("focus-node")).toEqual([["queue"]]);
+    expect(wrapper.text()).not.toContain("前往学习图谱");
+    expect(wrapper.emitted("focus-node")).toBeFalsy();
   });
 
   it("keeps resource entry on path items instead of rendering standalone resource section", async () => {
@@ -310,6 +317,7 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
+    await submitPlanner(wrapper);
 
     expect(wrapper.text()).not.toContain("按学习节点查看推荐资源");
     expect(wrapper.text()).not.toContain("当前导航速览");
@@ -320,7 +328,7 @@ describe("PathPlannerPanel", () => {
     expect(wrapper.text()).toContain("由于目标链路依赖队列");
   });
 
-  it("opens detail learning page for scheduled nodes with detail scope", async () => {
+  it("does not render detail learning buttons in scheduled path items", async () => {
     fetchKnowledgeGraph.mockResolvedValue({
       nodes: [
         { code: "stack", label: "栈" },
@@ -374,18 +382,13 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
-    await wrapper.get("[data-testid='detail-learning-queue']").trigger("click");
+    await submitPlanner(wrapper);
 
-    expect(pushMock).toHaveBeenCalledWith({
-      name: "home",
-      query: {
-        scope: "queue-detail",
-        target: "queue",
-      },
-    });
+    expect(wrapper.find("[data-testid='detail-learning-queue']").exists()).toBe(false);
+    expect(wrapper.text()).not.toContain("细化学习");
   });
 
-  it("includes deferred detail branches in detail learning context", async () => {
+  it("does not render detail learning buttons even when scheduled and deferred nodes have detail scopes", async () => {
     fetchKnowledgeGraph.mockResolvedValue({
       nodes: [
         { code: "graph-basic", label: "图的存储与遍历", chapterNo: 6, detailScopeCode: "graph-basic" },
@@ -437,7 +440,6 @@ describe("PathPlannerPanel", () => {
 
     const pinia = createPinia();
     setActivePinia(pinia);
-    const store = useNavigationStore();
 
     const wrapper = mount(PathPlannerPanel, {
       props: {
@@ -454,20 +456,10 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
-    await wrapper.get("[data-testid='detail-learning-graph-basic']").trigger("click");
+    await submitPlanner(wrapper);
 
-    expect(store.detailLearningSections).toHaveLength(2);
-    expect(store.detailLearningSections.map((item) => item.code)).toEqual([
-      "graph-basic",
-      "topological-sort",
-    ]);
-    expect(pushMock).toHaveBeenCalledWith({
-      name: "home",
-      query: {
-        scope: "graph-basic",
-        target: "graph-basic",
-      },
-    });
+    expect(wrapper.find("[data-testid='detail-learning-graph-basic']").exists()).toBe(false);
+    expect(wrapper.text()).not.toContain("细化学习");
   });
 
   it("shows practice-check-only entry instead of subjective mastery controls", async () => {
@@ -524,6 +516,7 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
+    await submitPlanner(wrapper);
 
     expect(wrapper.text()).toContain("通过练习检验客观更新掌握度");
     expect(wrapper.text()).toContain("进入练习检验");
@@ -615,6 +608,7 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
+    await submitPlanner(wrapper);
     await wrapper.get("[data-testid='export-path-button']").trigger("click");
 
     expect(createObjectURLMock).toHaveBeenCalledTimes(1);
@@ -680,6 +674,7 @@ describe("PathPlannerPanel", () => {
     });
 
     await flushUi();
+    await submitPlanner(wrapper);
     expect(wrapper.text()).toContain("通过练习检验客观更新掌握度");
     expect(wrapper.text()).toContain("进入练习检验");
     expect(wrapper.text()).not.toContain("学习后掌握度");
@@ -741,6 +736,7 @@ describe("PathPlannerPanel", () => {
     const navigationStore = useNavigationStore();
 
     await flushUi();
+    await submitPlanner(wrapper);
     const practiceCheckButton = wrapper
       .findAll("button")
       .find((button) => button.text() === "进入练习检验");
@@ -848,6 +844,7 @@ describe("PathPlannerPanel", () => {
     const navigationStore = useNavigationStore();
 
     await flushUi();
+    await submitPlanner(wrapper);
 
     const practiceButtons = wrapper.findAll('[data-testid^="practice-check-"]');
     expect(practiceButtons).toHaveLength(3);
@@ -869,5 +866,144 @@ describe("PathPlannerPanel", () => {
       notes: "",
     });
     expect(pushMock).toHaveBeenCalledWith({ name: "practice-check" });
+  });
+
+  it("marks scheduled main-path nodes as practiced when historical practice records exist", async () => {
+    fetchKnowledgeGraph.mockResolvedValue({
+      nodes: [
+        { code: "linear-list", label: "线性表" },
+      ],
+    });
+    generateLearningPath.mockResolvedValue({
+      summary: {
+        scheduledCount: 1,
+        deferredCount: 0,
+        masteredCount: 0,
+        scheduledMinutes: 35,
+        totalRequiredMinutes: 35,
+        targetReachableWithinBudget: true,
+      },
+      path: [
+        {
+          code: "linear-list",
+          name: "线性表",
+          chapterNo: 2,
+          estimatedMinutes: 35,
+          masteryPercent: 82,
+          status: "scheduled",
+          reasonTrace: {
+            relevanceScore: 0.9,
+            importanceScore: 0.8,
+            timeCostPenalty: 0.2,
+          },
+          explanation: {
+            summary: "当前建议优先巩固线性表。",
+          },
+        },
+      ],
+      practiceStatusByCode: ["linear-list"],
+      resourceRecommendations: [],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mount(PathPlannerPanel, {
+      props: {
+        learnerCode: "demo-learner",
+        initialMasteryByCode: {
+          "linear-list": 0.82,
+        },
+        profileLoading: false,
+      },
+      global: {
+        plugins: [pinia],
+      },
+    });
+    await flushUi();
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(wrapper.text()).toContain("线性表");
+    expect(wrapper.text()).toContain("已练习");
+  });
+
+  it("auto-regenerates the plan when home passes a force refresh token after practice", async () => {
+    routeQuery = {
+      target: "queue",
+      practiceUpdated: "1",
+    };
+    fetchKnowledgeGraph.mockResolvedValue({
+      nodes: [
+        { code: "stack", label: "栈" },
+        { code: "queue", label: "队列" },
+      ],
+    });
+    generateLearningPath.mockResolvedValue({
+      summary: {
+        targetReachableWithinBudget: true,
+        scheduledCount: 1,
+        deferredCount: 0,
+        masteredCount: 0,
+        scheduledMinutes: 30,
+        totalRequiredMinutes: 30,
+        availableMinutes: 120,
+      },
+      path: [
+        {
+          code: "queue",
+          name: "队列",
+          chapterNo: 3,
+          estimatedMinutes: 30,
+          masteryPercent: 35,
+          status: "scheduled",
+          reasonTrace: {
+            triggerReasons: ["练习后重新规划。"],
+            relevanceScore: 0.9,
+            importanceScore: 0.85,
+            timeCostPenalty: 0.2,
+          },
+        },
+      ],
+      resourceRecommendations: [],
+    });
+
+    const pinia = createPinia();
+    setActivePinia(pinia);
+
+    const wrapper = mount(PathPlannerPanel, {
+      props: {
+        learnerCode: "demo-learner",
+        initialMasteryByCode: {
+          stack: 0.4,
+          queue: 0.35,
+        },
+        forceRefreshToken: 0,
+        profileLoading: false,
+      },
+      global: {
+        plugins: [pinia],
+      },
+    });
+    await flushUi();
+    generateLearningPath.mockClear();
+
+    await wrapper.setProps({
+      forceRefreshToken: 1,
+    });
+    await flushUi();
+    await flushUi();
+
+    expect(generateLearningPath).toHaveBeenCalledWith({
+      learnerCode: "demo-learner",
+      targetCodes: ["queue"],
+      availableMinutes: 120,
+      masteryByCode: {
+        stack: 0.4,
+        queue: 0.35,
+      },
+    });
+    expect(wrapper.text()).toContain("通过练习检验客观更新掌握度");
+    expect(wrapper.text()).toContain("队列");
   });
 });

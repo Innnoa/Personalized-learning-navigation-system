@@ -140,6 +140,30 @@ void FeedbackRepository::insertFeedbackRecord(const FeedbackRecordWrite &record)
         record.updatedMastery, record.ruleApplied);
 }
 
+std::vector<std::string>
+FeedbackRepository::listPracticedKnowledgePointCodesByLearnerId(int learnerId)
+{
+    ensureFeedbackRollbackSchema();
+
+    const auto result = getClient()->execSqlSync(
+        "select distinct kp.code "
+        "from learning_feedback_records r "
+        "join knowledge_points kp on kp.id = r.knowledge_point_id "
+        "where r.learner_id = ? "
+        "order by kp.code asc",
+        learnerId);
+
+    std::vector<std::string> practicedCodes;
+    practicedCodes.reserve(result.size());
+
+    for (const auto &row : result)
+    {
+        practicedCodes.push_back(row["code"].as<std::string>());
+    }
+
+    return practicedCodes;
+}
+
 std::optional<LatestFeedbackBatchInfo>
 FeedbackRepository::findLatestFeedbackBatchByLearnerId(int learnerId)
 {

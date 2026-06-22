@@ -4,7 +4,7 @@ import { nextTick } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PracticeCheckView from "./PracticeCheckView.vue";
-import { submitLearningFeedback } from "../api/feedback";
+import { fetchPracticeQuestions, submitLearningFeedback } from "../api/feedback";
 import { useNavigationStore } from "../stores/navigationStore";
 import { getPracticeCheckQuestionSet } from "../utils/practiceCheckQuestions";
 import {
@@ -24,6 +24,7 @@ vi.mock("vue-router", async () => {
 });
 
 vi.mock("../api/feedback", () => ({
+  fetchPracticeQuestions: vi.fn(),
   submitLearningFeedback: vi.fn(),
 }));
 
@@ -40,6 +41,11 @@ async function answerQuestions(wrapper, selectedOptionIndexes) {
     const optionIndex = selectedOptionIndexes[questionIndex];
     await radios[questionIndex * 4 + optionIndex].setValue();
   }
+}
+
+async function answerShortAnswerQuestion(wrapper, value) {
+  const textarea = wrapper.find('textarea[data-testid="practice-text-answer"]');
+  await textarea.setValue(value);
 }
 
 function getExpectedResult(targetCode, previousMasteryPercent, selectedOptionIndexes) {
@@ -96,8 +102,10 @@ function mountView() {
 describe("PracticeCheckView", () => {
   beforeEach(() => {
     pushMock.mockReset();
+    fetchPracticeQuestions.mockReset();
     submitLearningFeedback.mockReset();
     window.sessionStorage.clear();
+    fetchPracticeQuestions.mockResolvedValue({ questions: [] });
   });
 
   it("shows fixed demo questions for supported practice targets", async () => {
@@ -115,6 +123,80 @@ describe("PracticeCheckView", () => {
     expect(wrapper.text()).toContain("队列练习检验");
     expect(wrapper.text()).toContain("第 1 题");
     expect(wrapper.text()).toContain("第 5 题");
+  });
+
+  it("prefers backend practice questions when the API returns configured questions", async () => {
+    fetchPracticeQuestions.mockResolvedValue({
+      questions: [
+        {
+          id: "queue-db-1",
+          type: "single_choice",
+          difficulty: "easy",
+          prompt: "数据库题目：队列的主要特性是什么？",
+          options: ["后进先出", "先进先出", "随机访问", "递归展开"],
+          correctIndex: 1,
+          explanation: "队列遵循 FIFO。",
+        },
+      ],
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      targetCode: "queue",
+      targetName: "队列",
+      previousMasteryPercent: 20,
+    });
+
+    await flushUi();
+
+    expect(wrapper.text()).toContain("数据库题目：队列的主要特性是什么？");
+  });
+
+  it("allows entering and submitting short-answer practice questions from backend payload", async () => {
+    fetchPracticeQuestions.mockResolvedValue({
+      questions: [
+        {
+          id: "queue-short-1",
+          type: "short_answer",
+          difficulty: "medium",
+          prompt: "请填写队列的典型访问顺序。",
+          options: [],
+          answer: {
+            referenceAnswer: "先进先出",
+            keywords: ["先进先出", "FIFO"],
+          },
+          explanation: "队列遵循先进先出。",
+        },
+      ],
+    });
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        queue: 0.64,
+      },
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      targetCode: "queue",
+      targetName: "队列",
+      previousMasteryPercent: 50,
+    });
+
+    await flushUi();
+
+    expect(wrapper.text()).toContain("请填写队列的典型访问顺序。");
+    expect(wrapper.find('textarea[data-testid="practice-text-answer"]').exists()).toBe(true);
+
+    await answerShortAnswerQuestion(wrapper, "先进先出");
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(submitLearningFeedback).toHaveBeenCalledTimes(1);
+    expect(wrapper.text()).toContain("批改报告");
   });
 
   it("shows newly added graph-basic questions for common demo targets", async () => {
@@ -198,6 +280,8 @@ describe("PracticeCheckView", () => {
 
     expect(submitLearningFeedback).toHaveBeenCalledWith({
       learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      scopeCode: "",
       masteryByCode: {
         "queue-linked": 0.5,
       },
@@ -242,6 +326,8 @@ describe("PracticeCheckView", () => {
 
     expect(submitLearningFeedback).toHaveBeenCalledWith({
       learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      scopeCode: "",
       masteryByCode: {
         "graph-basic-bfs": 0.45,
       },
@@ -253,6 +339,54 @@ describe("PracticeCheckView", () => {
         },
       ],
     });
+  });
+
+  it("submits fallback parent code when a detail node reuses parent linear-list questions", async () => {
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        "linear-list": 0.58,
+      },
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      targetCode: "linear-list-definition",
+      targetName: "线性表定义",
+      scopeCode: "linear-list",
+      scopeLabel: "线性表",
+      previousMasteryPercent: 30,
+    });
+
+    await nextTick();
+
+    const selectedOptionIndexes = [1, 0, 1, 0, 1];
+    const expectedResult = getExpectedResult("linear-list-definition", 30, selectedOptionIndexes);
+
+    expect(wrapper.text()).toContain("线性表中的元素关系最典型特点是什么？");
+
+    await answerQuestions(wrapper, selectedOptionIndexes);
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    expect(submitLearningFeedback).toHaveBeenCalledWith({
+      learnerCode: "demo-learner",
+      sourcePage: "detail-learning",
+      scopeCode: "linear-list",
+      masteryByCode: {
+        "linear-list": 0.3,
+      },
+      feedbackItems: [
+        {
+          code: "linear-list",
+          completionStatus: expectedResult.completionStatus,
+          selfRatedMastery: expectedResult.weightedMasteryPercent / 100,
+        },
+      ],
+    });
+    expect(wrapper.text()).toContain("批改报告");
   });
 
   it("shows an inline grading report and mastery change summary after successful submit", async () => {
@@ -345,6 +479,8 @@ describe("PracticeCheckView", () => {
 
     expect(submitLearningFeedback).toHaveBeenCalledWith({
       learnerCode: "demo-learner",
+      sourcePage: "home",
+      scopeCode: "",
       masteryByCode: {
         queue: 0.5,
       },
@@ -393,6 +529,8 @@ describe("PracticeCheckView", () => {
 
     expect(submitLearningFeedback).toHaveBeenCalledWith({
       learnerCode: "demo-learner",
+      sourcePage: "home",
+      scopeCode: "",
       masteryByCode: {
         queue: 0.35,
       },
@@ -433,6 +571,47 @@ describe("PracticeCheckView", () => {
       query: {
         scope: "queue-detail",
         target: "queue-linked",
+      },
+    });
+  });
+
+  it("returns home with practiceUpdated query after successful submit so planner refreshes immediately", async () => {
+    submitLearningFeedback.mockResolvedValue({
+      masteryByCode: {
+        queue: 0.59,
+      },
+    });
+
+    const { store, wrapper } = mountView();
+
+    store.setPracticeCheckContext({
+      learnerCode: "demo-learner",
+      sourcePage: "home",
+      targetCode: "queue",
+      targetName: "队列",
+      originTargetCode: "graph-basic",
+      originTargetName: "图的存储与遍历",
+      previousMasteryPercent: 50,
+    });
+
+    await nextTick();
+
+    await answerQuestions(wrapper, [1, 1, 1, 1, 1]);
+    await wrapper.get("form").trigger("submit");
+    await flushUi();
+
+    const backButton = wrapper
+      .findAll("button")
+      .find((item) => item.text().includes("返回首页并刷新路径"));
+    expect(backButton).toBeTruthy();
+
+    await backButton.trigger("click");
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "home",
+      query: {
+        target: "graph-basic",
+        practiceUpdated: "1",
       },
     });
   });

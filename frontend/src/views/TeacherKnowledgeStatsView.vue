@@ -123,18 +123,20 @@
               <tr v-for="kp in points" :key="'dep-' + kp.code">
                 <td class="deps-target">{{ kp.code }}<br/><small>{{ kp.name }}</small></td>
                 <td class="deps-prereqs">
-                  <label
-                    v-for="pre in points.filter(p => p.code !== kp.code)"
-                    :key="'pre-' + kp.code + '-' + pre.code"
-                    class="dep-checkbox"
-                  >
-                    <input
-                      type="checkbox"
-                      :checked="isDependency(kp.code, pre.code)"
-                      @change="toggleDependency(kp.code, pre.code)"
-                    />
-                    {{ pre.code }}
-                  </label>
+                  <div class="deps-prereq-list">
+                    <label
+                      v-for="pre in points.filter(p => p.code !== kp.code)"
+                      :key="'pre-' + kp.code + '-' + pre.code"
+                      class="dep-checkbox"
+                    >
+                      <input
+                        type="checkbox"
+                        :checked="isDependency(kp.code, pre.code)"
+                        @change="toggleDependency(kp.code, pre.code)"
+                      />
+                      {{ pre.code }}
+                    </label>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -434,7 +436,8 @@ onMounted(loadPoints);
 .deps-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
 .deps-table th, .deps-table td { padding: 8px 10px; border-bottom: 1px solid #d8e0e6; text-align: left; }
 .deps-target { font-family: monospace; white-space: nowrap; }
-.deps-prereqs { display: flex; flex-wrap: wrap; gap: 8px; }
+.deps-prereqs { vertical-align: top; }
+.deps-prereq-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .dep-checkbox { display: inline-flex; align-items: center; gap: 4px; color: #51606d; cursor: pointer; }
 .dep-checkbox input { margin: 0; }
 </style>

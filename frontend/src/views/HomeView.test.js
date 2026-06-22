@@ -73,7 +73,7 @@ function mountView(options = {}) {
     user: { username: "student_demo" },
     roles: ["student"],
     activeRole: "student",
-    linkedLearner: { learnerCode: "demo-learner", learnerName: "演示学习者" },
+    linkedLearner: { learnerCode: "demo-learner", learnerName: "槐诗" },
   });
 
   return {
@@ -96,10 +96,11 @@ function mountView(options = {}) {
               "learnerCode",
               "feedbackRecordCount",
               "initialMasteryByCode",
+              "forceRefreshToken",
             ],
             emits: ["feedback-saved", "focus-node"],
             template:
-            "<div data-testid='planner-panel' :data-learner-code='learnerCode' :data-feedback='feedbackRecordCount' :data-mastery='initialMasteryByCode.queue'><button data-testid='planner-focus-node' @click=\"$emit('focus-node', 'queue')\">focus</button></div>",
+            "<div data-testid='planner-panel' :data-learner-code='learnerCode' :data-feedback='feedbackRecordCount' :data-mastery='initialMasteryByCode.queue' :data-refresh-token='forceRefreshToken'><button data-testid='planner-focus-node' @click=\"$emit('focus-node', 'queue')\">focus</button></div>",
           },
         },
       },
@@ -165,7 +166,7 @@ describe("HomeView", () => {
   });
 
   it("reloads learner profile and clears the practice updated query on home", async () => {
-    mountView({
+    const { wrapper } = mountView({
       query: {
         practiceUpdated: "1",
       },
@@ -174,6 +175,7 @@ describe("HomeView", () => {
     await flushUi();
 
     expect(fetchLearnerProfile).toHaveBeenCalledTimes(2);
+    expect(wrapper.get("[data-testid='planner-panel']").attributes("data-refresh-token")).toBe("1");
     expect(replaceMock).toHaveBeenCalledWith({
       name: "home",
       query: {},
@@ -194,5 +196,55 @@ describe("HomeView", () => {
     expect(wrapper.get("[data-testid='detail-workspace']").attributes("data-scope")).toBe(
       "queue-detail",
     );
+  });
+
+  it("clears cached detail workspace state for the current scope when practice updated returns from detail mode", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const authStore = useAuthStore();
+    authStore.setSession({
+      user: { username: "student_demo" },
+      roles: ["student"],
+      activeRole: "student",
+      linkedLearner: { learnerCode: "demo-learner", learnerName: "槐诗" },
+    });
+
+    const { useNavigationStore } = await import("../stores/navigationStore");
+    const store = useNavigationStore();
+    store.setDetailLearningViewState("queue-detail", {
+      targetNodeCode: "queue-linked",
+      planResult: {
+        path: [{ code: "queue-linked", status: "scheduled" }],
+      },
+    });
+
+    routeState = {
+      name: "home",
+      query: {
+        scope: "queue-detail",
+        target: "queue-linked",
+        practiceUpdated: "1",
+      },
+    };
+
+    mount(HomeView, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          PageLayout: { template: "<div><slot /></div>" },
+          DetailLearningWorkspace: {
+            props: ["section"],
+            template: "<div data-testid='detail-workspace'></div>",
+          },
+          PathPlannerPanel: {
+            template: "<div data-testid='planner-panel'></div>",
+          },
+        },
+      },
+    });
+
+    await flushUi();
+
+    expect(store.detailLearningViewStateByScopeCode("queue-detail")).toBe(null);
   });
 });

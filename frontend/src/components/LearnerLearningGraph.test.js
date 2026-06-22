@@ -483,4 +483,38 @@ describe("LearnerLearningGraph", () => {
     expect(navigationStore.learningGraphViewState.currentScopeCode).toBe("root");
     expect(navigationStore.learningGraphViewState.selectedNodeCode).toBe("queue");
   });
+
+  it("reloads graph with active course code after learner profile arrives", async () => {
+    mockScopedGraphFetch();
+
+    const wrapper = mount(LearnerLearningGraph, {
+      global: {
+        plugins: [createPinia()],
+      },
+      props: {
+        profile: null,
+      },
+    });
+
+    await flushUi();
+
+    expect(fetchKnowledgeGraph).toHaveBeenCalledTimes(1);
+    expect(fetchKnowledgeGraph).toHaveBeenNthCalledWith(1);
+
+    await wrapper.setProps({
+      profile: {
+        ...buildProfilePayload(),
+        course: {
+          code: "custom-course",
+          name: "自拟课程",
+        },
+      },
+    });
+    await flushUi();
+
+    expect(fetchKnowledgeGraph).toHaveBeenCalledTimes(2);
+    expect(fetchKnowledgeGraph).toHaveBeenNthCalledWith(2, {
+      courseCode: "custom-course",
+    });
+  });
 });

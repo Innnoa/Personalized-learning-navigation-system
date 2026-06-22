@@ -9,6 +9,10 @@
 
 namespace
 {
+bool approxEqual(double left, double right, double epsilon = 1e-9)
+{
+    return std::abs(left - right) <= epsilon;
+}
 constexpr uint16_t kTeacherCourseEditTestPort = 18991;
 
 drogon::orm::DbClientPtr getClient()
@@ -67,6 +71,51 @@ void cleanupKp(const std::string &code)
         // ignore if already cleaned up
     }
 }
+
+void cleanupResourceByTitle(const std::string &title)
+{
+    getClient()->execSqlSync(
+        "delete from learning_resources where title = ?",
+        title);
+}
+
+bool hasColumn(const std::string &tableName, const std::string &columnName)
+{
+    const auto result = getClient()->execSqlSync(
+        "pragma table_info(" + tableName + ")");
+    for (const auto &row : result)
+    {
+        if (row["name"].as<std::string>() == columnName)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+}
+
+DROGON_TEST(TeacherContentSchemaIncludesResourceAndQuestionTables)
+{
+    const auto client = getClient();
+
+    const auto resourcesResult = client->execSqlSync(
+        "select name from sqlite_master where type = 'table' and name = 'learning_resources'");
+    const auto banksResult = client->execSqlSync(
+        "select name from sqlite_master where type = 'table' and name = 'question_banks'");
+    const auto questionsResult = client->execSqlSync(
+        "select name from sqlite_master where type = 'table' and name = 'questions'");
+
+    REQUIRE(resourcesResult.size() == 1);
+    REQUIRE(banksResult.size() == 1);
+    REQUIRE(questionsResult.size() == 1);
+    CHECK(hasColumn("learning_resources", "importance_weight"));
+    CHECK(hasColumn("learning_resources", "estimated_minutes"));
+    CHECK(hasColumn("learning_resources", "min_mastery"));
+    CHECK(hasColumn("learning_resources", "max_mastery"));
+    CHECK(hasColumn("questions", "importance_weight"));
+    CHECK(hasColumn("questions", "min_mastery"));
+    CHECK(hasColumn("questions", "max_mastery"));
 }
 
 DROGON_TEST(TeacherCourseEditServiceCreatesKnowledgePoint)
@@ -149,11 +198,81 @@ DROGON_TEST(TeacherCourseEditServiceUpdatesDependencies)
 
 DROGON_TEST(TeacherCourseEditServiceReadsResources)
 {
+    getClient()->execSqlSync(
+        "delete from learning_resources where course_id = (select id from courses where code = ?)",
+        "data-structures");
+
     const auto payload =
         services::TeacherCourseEditService::readResources(
             "teacher_demo", "data-structures");
 
     CHECK(payload.isMember("knowledgePointResources"));
+    CHECK(payload["resources"].isArray());
+    CHECK(payload["resources"].size() >= 1U);
+}
+
+DROGON_TEST(TeacherCourseEditServiceCreatesListsUpdatesAndDeletesResource)
+{
+    cleanupResourceByTitle("资源 CRUD 测试");
+    cleanupResourceByTitle("资源 CRUD 测试（已更新）");
+
+    Json::Value createBody;
+    createBody["knowledgePointCode"] = "ds-intro";
+    createBody["title"] = "资源 CRUD 测试";
+    createBody["resourceType"] = "article";
+    createBody["source"] = "unit-test";
+    createBody["url"] = "https://example.com/resource-crud";
+    createBody["description"] = "用于测试数据库资源 CRUD。";
+    createBody["recommendedUsage"] = "先阅读后练习。";
+    createBody["recommendedPhase"] = "learn";
+    createBody["focusTags"] = Json::arrayValue;
+    createBody["importanceWeight"] = 1.8;
+    createBody["estimatedMinutes"] = 18;
+    createBody["minMastery"] = 0.15;
+    createBody["maxMastery"] = 0.72;
+
+    const auto created =
+        services::TeacherCourseEditService::createResource(
+            "teacher_demo", "data-structures", createBody);
+
+    REQUIRE(created["created"].asBool() == true);
+    const auto resourceId = created["resource"]["id"].asInt();
+    CHECK(approxEqual(created["resource"]["importanceWeight"].asDouble(), 1.8));
+    CHECK(created["resource"]["estimatedMinutes"].asInt() == 18);
+    CHECK(approxEqual(created["resource"]["minMastery"].asDouble(), 0.15));
+    CHECK(approxEqual(created["resource"]["maxMastery"].asDouble(), 0.72));
+
+    const auto listed =
+        services::TeacherCourseEditService::listResources(
+            "teacher_demo", "data-structures", Json::Value(Json::objectValue));
+    REQUIRE(listed["resources"].isArray());
+    CHECK(listed["resources"].size() >= 1U);
+    CHECK(approxEqual(
+        listed["resources"][listed["resources"].size() - 1]["importanceWeight"]
+            .asDouble(),
+        1.8));
+
+    Json::Value updateBody;
+    updateBody["title"] = "资源 CRUD 测试（已更新）";
+    updateBody["recommendedPhase"] = "review";
+    updateBody["importanceWeight"] = 2.4;
+    updateBody["estimatedMinutes"] = 12;
+    updateBody["minMastery"] = 0.30;
+    updateBody["maxMastery"] = 0.95;
+
+    const auto updated =
+        services::TeacherCourseEditService::updateResource(
+            "teacher_demo", "data-structures", resourceId, updateBody);
+    CHECK(updated["updated"].asBool() == true);
+    CHECK(approxEqual(updated["resource"]["importanceWeight"].asDouble(), 2.4));
+    CHECK(updated["resource"]["estimatedMinutes"].asInt() == 12);
+    CHECK(approxEqual(updated["resource"]["minMastery"].asDouble(), 0.30));
+    CHECK(approxEqual(updated["resource"]["maxMastery"].asDouble(), 0.95));
+
+    const auto removed =
+        services::TeacherCourseEditService::deleteResource(
+            "teacher_demo", "data-structures", resourceId);
+    CHECK(removed["deleted"].asBool() == true);
 }
 
 DROGON_TEST(TeacherCourseEditServiceRejectsInvalidKnowledgePointCode)

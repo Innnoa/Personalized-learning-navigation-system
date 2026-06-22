@@ -1,8 +1,10 @@
 #include "services/FeedbackService.h"
 
 #include "algorithm/adjuster/LearningPathAdjuster.h"
+#include "repositories/DetailLearningRepository.h"
 #include "repositories/FeedbackRepository.h"
 #include "repositories/LearnerProfileRepository.h"
+#include "services/DetailScopeCatalogService.h"
 #include "services/KnowledgeGraphService.h"
 #include "services/LearnerProfileService.h"
 
@@ -127,6 +129,70 @@ std::vector<algorithm::adjuster::FeedbackItem> parseFeedbackItems(
 
     return feedbackItems;
 }
+
+std::string parseScopeCode(const Json::Value &requestJson)
+{
+    if (!requestJson.isMember("scopeCode"))
+    {
+        return "";
+    }
+
+    if (!requestJson["scopeCode"].isString())
+    {
+        throw std::invalid_argument("scopeCode 必须是字符串。");
+    }
+
+    return requestJson["scopeCode"].asString();
+}
+
+std::string parseSourcePage(const Json::Value &requestJson)
+{
+    if (!requestJson.isMember("sourcePage"))
+    {
+        return "";
+    }
+
+    if (!requestJson["sourcePage"].isString())
+    {
+        throw std::invalid_argument("sourcePage 必须是字符串。");
+    }
+
+    return requestJson["sourcePage"].asString();
+}
+
+std::string resolveDetailPracticeNodeCode(const std::string &scopeCode,
+                                          const std::string &feedbackCode)
+{
+    if (scopeCode.empty())
+    {
+        return "";
+    }
+
+    const auto &catalog = services::DetailScopeCatalogService::getCatalog();
+    const auto scopeIt = catalog.scopesByCode.find(scopeCode);
+    if (scopeIt == catalog.scopesByCode.end())
+    {
+        return "";
+    }
+
+    for (const auto &node : scopeIt->second.nodes)
+    {
+        if (node.code == feedbackCode)
+        {
+            return node.code;
+        }
+    }
+
+    for (const auto &node : scopeIt->second.nodes)
+    {
+        if (node.code.rfind(feedbackCode + "-", 0) == 0)
+        {
+            return node.code;
+        }
+    }
+
+    return "";
+}
 }
 
 namespace services
@@ -134,6 +200,8 @@ namespace services
 Json::Value FeedbackService::submitFeedback(const Json::Value &requestJson)
 {
     const auto learnerCode = resolveLearnerCode(requestJson);
+    const auto scopeCode = parseScopeCode(requestJson);
+    const auto sourcePage = parseSourcePage(requestJson);
     const auto learner =
         repositories::LearnerProfileRepository::findLearnerByCode(
             learnerCode.empty() ? readDefaultLearnerCode() : learnerCode);
@@ -193,6 +261,25 @@ Json::Value FeedbackService::submitFeedback(const Json::Value &requestJson)
                     detail.updatedMastery,
                     detail.ruleApplied,
                     feedbackBatchId});
+
+        const auto detailNodeCode =
+            sourcePage == "detail-learning"
+                ? resolveDetailPracticeNodeCode(scopeCode, detail.code)
+                : std::string();
+        if (!detailNodeCode.empty())
+        {
+            repositories::DetailLearningRepository::insertDetailFeedbackRecord(
+                repositories::DetailFeedbackRecordWrite{
+                    learner->id,
+                    scopeCode,
+                    detailNodeCode,
+                    detail.completionStatus,
+                    selfRatedMasteryByCode[detail.code],
+                    detail.previousMastery,
+                    detail.updatedMastery,
+                    detail.ruleApplied,
+                    feedbackBatchId});
+        }
     }
 
     auto payload = LearnerProfileService::buildProfilePayload(learner->code);

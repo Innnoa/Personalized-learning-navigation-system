@@ -218,7 +218,7 @@ void TeacherCourseEditController::readResources(
     }
 }
 
-void TeacherCourseEditController::writeResources(
+void TeacherCourseEditController::createResource(
     const drogon::HttpRequestPtr &req,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     const std::string &courseCode) const
@@ -229,8 +229,36 @@ void TeacherCourseEditController::writeResources(
     {
         const auto body = parseBody(req);
         respondJson(
-            services::TeacherCourseEditService::writeResources(
+            services::TeacherCourseEditService::createResource(
                 username, courseCode, body),
+            callback,
+            drogon::k201Created);
+    }
+    catch (const std::invalid_argument &error)
+    {
+        respondError(error, "请求不合法。", drogon::k400BadRequest, callback);
+    }
+    catch (const std::exception &error)
+    {
+        respondError(error, "创建学习资源失败。",
+                     drogon::k500InternalServerError, callback);
+    }
+}
+
+void TeacherCourseEditController::updateResource(
+    const drogon::HttpRequestPtr &req,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    const std::string &courseCode,
+    int resourceId) const
+{
+    const auto username = req->getParameter("username");
+
+    try
+    {
+        const auto body = parseBody(req);
+        respondJson(
+            services::TeacherCourseEditService::updateResource(
+                username, courseCode, resourceId, body),
             callback);
     }
     catch (const std::invalid_argument &error)
@@ -239,7 +267,33 @@ void TeacherCourseEditController::writeResources(
     }
     catch (const std::exception &error)
     {
-        respondError(error, "保存学习资源失败。",
+        respondError(error, "更新学习资源失败。",
+                     drogon::k500InternalServerError, callback);
+    }
+}
+
+void TeacherCourseEditController::deleteResource(
+    const drogon::HttpRequestPtr &req,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    const std::string &courseCode,
+    int resourceId) const
+{
+    const auto username = req->getParameter("username");
+
+    try
+    {
+        respondJson(
+            services::TeacherCourseEditService::deleteResource(
+                username, courseCode, resourceId),
+            callback);
+    }
+    catch (const std::invalid_argument &error)
+    {
+        respondError(error, "请求不合法。", drogon::k400BadRequest, callback);
+    }
+    catch (const std::exception &error)
+    {
+        respondError(error, "删除学习资源失败。",
                      drogon::k500InternalServerError, callback);
     }
 }

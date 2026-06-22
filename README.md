@@ -65,8 +65,8 @@ docs/             设计文档、论文材料、演示截图
 - 课程管理 — 创建课程，查看已分配课程
 - 知识点 CRUD — 行内编辑 + 新建 + 删除
 - 依赖关系编辑 — 复选框面板，全量替换保存
-- 学习资源管理 — 按知识点增删，整体保存至 JSON
-- 题库管理 — 单选题增删改，整体保存，支持同步至前端
+- 学习资源管理 — 表格化筛选、增删改，数据库持久化
+- 题库管理 — 题库列表 + 题目表格管理，支持单选/多选/判断/简答题
 - 知识点掌握统计 — 按知识点查看全班掌握度分布
 - 学生进度概览 — 列表筛选，掌握度分布
 - 个体进度详情 — 按学生查看知识点掌握情况
@@ -101,7 +101,7 @@ docs/             设计文档、论文材料、演示截图
 
 ## 数据库
 
-**12 张表**：`courses`, `knowledge_points`, `knowledge_dependencies`, `learners`, `users`, `user_roles`, `user_learner_links`, `learner_mastery`, `learner_detail_mastery`, `learning_feedback_records`, `detail_learning_feedback_records`, `learning_resource_view_records`, `teacher_course_assignments`
+**16 张表**：`courses`, `knowledge_points`, `knowledge_dependencies`, `learners`, `users`, `user_roles`, `user_learner_links`, `learner_mastery`, `learner_detail_mastery`, `learning_feedback_records`, `detail_learning_feedback_records`, `learning_resource_view_records`, `teacher_course_assignments`, `learning_resources`, `question_banks`, `questions`
 
 ## 内置账号
 
@@ -133,9 +133,9 @@ docs/             设计文档、论文材料、演示截图
 ## 测试
 
 ```bash
-# 后端（113 项）
+# 后端（含新增资源/题库数据库化测试）
 cd backend/build && ctest --output-on-failure
 
-# 前端（166 项）
-cd frontend && npm run test -- --run
+# 前端（建议优先跑定向页面测试）
+cd frontend && npm run test -- --run src/views/TeacherResourcesView.test.js src/views/TeacherQuestionsView.test.js src/views/PracticeCheckView.test.js
 ```

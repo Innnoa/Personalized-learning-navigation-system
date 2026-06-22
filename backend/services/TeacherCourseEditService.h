@@ -28,9 +28,22 @@ class TeacherCourseEditService
                                           const std::string &courseCode,
                                           const Json::Value &body);
 
-    // Resource file management
+    // Resource CRUD
     static Json::Value readResources(const std::string &username,
                                      const std::string &courseCode);
+    static Json::Value listResources(const std::string &username,
+                                     const std::string &courseCode,
+                                     const Json::Value &query);
+    static Json::Value createResource(const std::string &username,
+                                      const std::string &courseCode,
+                                      const Json::Value &body);
+    static Json::Value updateResource(const std::string &username,
+                                      const std::string &courseCode,
+                                      int resourceId,
+                                      const Json::Value &body);
+    static Json::Value deleteResource(const std::string &username,
+                                      const std::string &courseCode,
+                                      int resourceId);
     static Json::Value writeResources(const std::string &username,
                                       const std::string &courseCode,
                                       const Json::Value &body);

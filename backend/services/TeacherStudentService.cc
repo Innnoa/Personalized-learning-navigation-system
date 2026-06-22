@@ -102,7 +102,7 @@ Json::Value TeacherStudentService::buildCourseStats(const std::string &username,
     verifyTeacherCourseAssignment(username, courseCode);
 
     const auto result = getClient()->execSqlSync(
-        "select count(l.id) as student_count, "
+        "select count(distinct l.id) as student_count, "
         "coalesce(avg(lm.mastery_score), 0.0) as avg_mastery "
         "from learners l "
         "join courses c on c.id = l.target_course_id "

@@ -42,6 +42,7 @@
 
 # Project runtime/build artifacts
 frontend/node_modules/
+.worktrees/
 frontend/dist/
 backend/build*/
 .worktrees/

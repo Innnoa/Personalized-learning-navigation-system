@@ -51,7 +51,7 @@ DROGON_TEST(TeacherStudentServiceListsStudentsForAssignedCourse)
 
     CHECK(payload["courseCode"].asString() == "data-structures");
     REQUIRE(payload["students"].isArray());
-    REQUIRE(payload["students"].size() >= 1U);
+    REQUIRE(payload["students"].size() >= 4U);
 
     const auto &first = payload["students"][0];
     CHECK(first.isMember("learnerCode"));
@@ -74,7 +74,7 @@ DROGON_TEST(TeacherStudentServiceProvidesCourseStats)
         "teacher_demo", "data-structures");
 
     CHECK(payload["courseCode"].asString() == "data-structures");
-    CHECK(payload["studentCount"].asUInt() >= 1U);
+    CHECK(payload["studentCount"].asUInt() >= 4U);
     CHECK(payload["avgMastery"].asDouble() >= 0.0);
     CHECK(payload["avgMastery"].asDouble() <= 1.0);
     REQUIRE(payload["masteryDistribution"].isObject());
@@ -138,7 +138,7 @@ DROGON_TEST(TeacherStudentsHttpEndpointReturnsStudentList)
 
     const auto payload = parseJsonResponse(response);
     REQUIRE(payload["students"].isArray());
-    REQUIRE(payload["students"].size() >= 1U);
+    REQUIRE(payload["students"].size() >= 4U);
 }
 
 DROGON_TEST(TeacherStatsHttpEndpointReturnsStats)
@@ -156,7 +156,7 @@ DROGON_TEST(TeacherStatsHttpEndpointReturnsStats)
     CHECK(response->getStatusCode() == drogon::k200OK);
 
     const auto payload = parseJsonResponse(response);
-    CHECK(payload["studentCount"].asUInt() >= 1U);
+    CHECK(payload["studentCount"].asUInt() >= 4U);
     REQUIRE(payload["masteryDistribution"].isObject());
 }
 

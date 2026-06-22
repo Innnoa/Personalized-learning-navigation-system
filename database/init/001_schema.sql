@@ -217,3 +217,85 @@ CREATE TABLE IF NOT EXISTS teacher_course_assignments (
 
 CREATE INDEX IF NOT EXISTS idx_teacher_course_assignments_course
     ON teacher_course_assignments(course_id);
+
+CREATE TABLE IF NOT EXISTS learning_resources (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL,
+    knowledge_point_id INTEGER,
+    title TEXT NOT NULL,
+    resource_type TEXT NOT NULL DEFAULT 'article',
+    source TEXT NOT NULL DEFAULT '',
+    url TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
+    recommended_usage TEXT NOT NULL DEFAULT '',
+    recommended_phase TEXT NOT NULL DEFAULT 'learn',
+    importance_weight REAL NOT NULL DEFAULT 1.0 CHECK (importance_weight >= 0.0),
+    estimated_minutes INTEGER NOT NULL DEFAULT 20 CHECK (estimated_minutes > 0),
+    min_mastery REAL NOT NULL DEFAULT 0.0 CHECK (min_mastery BETWEEN 0.0 AND 1.0),
+    max_mastery REAL NOT NULL DEFAULT 1.0 CHECK (max_mastery BETWEEN 0.0 AND 1.0),
+    focus_tags_json TEXT NOT NULL DEFAULT '[]',
+    display_order INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+    created_by_user_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (knowledge_point_id) REFERENCES knowledge_points(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_learning_resources_course_point
+    ON learning_resources(course_id, knowledge_point_id, status, display_order);
+
+CREATE TABLE IF NOT EXISTS question_banks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL,
+    knowledge_point_id INTEGER NOT NULL,
+    bank_code TEXT NOT NULL,
+    bank_name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+    created_by_user_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (knowledge_point_id) REFERENCES knowledge_points(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL,
+    UNIQUE (course_id, bank_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_question_banks_course_point
+    ON question_banks(course_id, knowledge_point_id, status);
+
+CREATE TABLE IF NOT EXISTS questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bank_id INTEGER NOT NULL,
+    course_id INTEGER NOT NULL,
+    knowledge_point_id INTEGER NOT NULL,
+    question_code TEXT NOT NULL,
+    question_type TEXT NOT NULL CHECK (
+        question_type IN ('single_choice', 'multiple_choice', 'true_false', 'short_answer')
+    ),
+    difficulty_level INTEGER NOT NULL DEFAULT 1 CHECK (difficulty_level BETWEEN 1 AND 5),
+    importance_weight REAL NOT NULL DEFAULT 1.0 CHECK (importance_weight >= 0.0),
+    prompt TEXT NOT NULL,
+    options_json TEXT NOT NULL DEFAULT '[]',
+    answer_json TEXT NOT NULL DEFAULT '{}',
+    explanation TEXT NOT NULL DEFAULT '',
+    estimated_seconds INTEGER NOT NULL DEFAULT 60 CHECK (estimated_seconds > 0),
+    min_mastery REAL NOT NULL DEFAULT 0.0 CHECK (min_mastery BETWEEN 0.0 AND 1.0),
+    max_mastery REAL NOT NULL DEFAULT 1.0 CHECK (max_mastery BETWEEN 0.0 AND 1.0),
+    display_order INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+    created_by_user_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (bank_id) REFERENCES question_banks(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (knowledge_point_id) REFERENCES knowledge_points(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL,
+    UNIQUE (bank_id, question_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_questions_bank_status_order
+    ON questions(bank_id, status, display_order);

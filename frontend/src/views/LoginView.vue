@@ -39,7 +39,7 @@
           :disabled="isSubmitting"
           @click="handleDemoLogin('student_demo')"
         >
-          学生演示
+          槐诗（学生演示）
         </button>
         <button
           type="button"
@@ -47,7 +47,7 @@
           :disabled="isSubmitting"
           @click="handleDemoLogin('teacher_demo')"
         >
-          教师演示
+          傅依（教师演示）
         </button>
         <button
           type="button"
@@ -55,7 +55,7 @@
           :disabled="isSubmitting"
           @click="handleDemoLogin('admin_demo')"
         >
-          管理员演示
+          admin（管理员演示）
         </button>
       </div>
 

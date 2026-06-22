@@ -111,6 +111,21 @@ DROGON_TEST(TeacherCourseOverviewEndpointReturnsMetadataAndKnowledgePointCount)
     CHECK(payload["course"]["courseCode"].asString() == "data-structures");
     CHECK(payload["course"]["courseName"].asString() == "数据结构");
     CHECK(payload["course"]["knowledgePointCount"].asUInt() == 14U);
+    CHECK(payload["course"].isMember("dependencyCount"));
+    CHECK(payload["course"].isMember("resourceCount"));
+    CHECK(payload["course"].isMember("questionBankCount"));
+    CHECK(payload["course"].isMember("questionCount"));
+    CHECK(payload["course"].isMember("resourceCoveredPointCount"));
+    CHECK(payload["course"].isMember("questionCoveredPointCount"));
+    CHECK(payload["course"]["dependencyCount"].asUInt() >= 0U);
+    CHECK(payload["course"]["resourceCount"].asUInt() >= 0U);
+    CHECK(payload["course"]["questionBankCount"].asUInt() >= 0U);
+    CHECK(payload["course"]["questionCount"].asUInt() >= 0U);
+    CHECK(payload["course"]["resourceCoveredPointCount"].asUInt() >= 0U);
+    CHECK(payload["course"]["questionCoveredPointCount"].asUInt() >= 0U);
+    CHECK(payload.isMember("chapterStats"));
+    REQUIRE(payload["chapterStats"].isArray());
+    CHECK(payload["chapterStats"].size() >= 1U);
 }
 
 DROGON_TEST(TeacherCourseOverviewEndpointRejectsUnassignedTeacherCourse)

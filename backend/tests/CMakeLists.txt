@@ -21,6 +21,7 @@ add_executable(${PROJECT_NAME}
                LearnerProfileFeedbackServiceTest.cc
                 TeacherStudentServiceTest.cc
                 TeacherCourseEditServiceTest.cc
+                TeacherQuestionBankServiceTest.cc
                 TestSupport.cc)
 target_sources(${PROJECT_NAME}
                PRIVATE

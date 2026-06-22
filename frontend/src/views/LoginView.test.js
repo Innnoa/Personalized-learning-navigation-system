@@ -143,9 +143,9 @@ describe("LoginView", () => {
     const { wrapper } = mountView();
 
     expect(wrapper.text()).toContain("使用账号密码或演示账号进入对应角色视图");
-    expect(wrapper.text()).toContain("学生演示");
-    expect(wrapper.text()).toContain("教师演示");
-    expect(wrapper.text()).toContain("管理员演示");
+    expect(wrapper.text()).toContain("槐诗（学生演示）");
+    expect(wrapper.text()).toContain("傅依（教师演示）");
+    expect(wrapper.text()).toContain("admin（管理员演示）");
   });
 
   it("routes teachers to the teacher dashboard after login", async () => {

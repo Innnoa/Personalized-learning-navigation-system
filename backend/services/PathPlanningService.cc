@@ -4,6 +4,7 @@
 #include "algorithm/explainer/LearningPathExplainer.h"
 #include "algorithm/planner/LearningPathPlanner.h"
 #include "repositories/DetailLearningRepository.h"
+#include "repositories/FeedbackRepository.h"
 #include "repositories/LearnerProfileRepository.h"
 #include "services/DetailLearningProgressService.h"
 #include "services/KnowledgeGraphService.h"
@@ -147,6 +148,21 @@ std::string resolvePlanningLearnerCode(const Json::Value &requestJson)
 
     const auto learnerCode = requestJson["learnerCode"].asString();
     return learnerCode.empty() ? readDefaultLearnerCode() : learnerCode;
+}
+
+std::string resolvePlanningCourseCode(const Json::Value &requestJson)
+{
+    if (!requestJson.isMember("courseCode"))
+    {
+        return "";
+    }
+
+    if (!requestJson["courseCode"].isString())
+    {
+        throw std::invalid_argument("courseCode 必须是字符串。");
+    }
+
+    return requestJson["courseCode"].asString();
 }
 
 algorithm::planner::PlanningRequest parseDetailPlanningRequest(
@@ -740,6 +756,37 @@ std::vector<std::string> collectDefaultTargetCodes(
 
     return targetCodes;
 }
+
+Json::Value buildPracticedDetailNodeCodesPayload(
+    int learnerId, const std::string &scopeCode)
+{
+    Json::Value practicedNodeCodes(Json::arrayValue);
+    const auto practicedCodes =
+        repositories::DetailLearningRepository::listPracticedNodeCodesByLearnerAndScope(
+            learnerId, scopeCode);
+
+    for (const auto &code : practicedCodes)
+    {
+        practicedNodeCodes.append(code);
+    }
+
+    return practicedNodeCodes;
+}
+
+Json::Value buildPracticedKnowledgePointCodesPayload(int learnerId)
+{
+    Json::Value practicedCodes(Json::arrayValue);
+    const auto codeList =
+        repositories::FeedbackRepository::listPracticedKnowledgePointCodesByLearnerId(
+            learnerId);
+
+    for (const auto &code : codeList)
+    {
+        practicedCodes.append(code);
+    }
+
+    return practicedCodes;
+}
 }
 
 namespace services
@@ -748,16 +795,27 @@ Json::Value PathPlanningService::buildPathPayload(const Json::Value &requestJson
 {
     const auto request = parsePlanningRequest(requestJson);
     const auto learnerCode = resolvePlanningLearnerCode(requestJson);
-    const auto graph = KnowledgeGraphService::loadKnowledgeGraph();
+    const auto courseCode = resolvePlanningCourseCode(requestJson);
+    const auto learner =
+        repositories::LearnerProfileRepository::findLearnerByCode(
+            learnerCode.empty() ? readDefaultLearnerCode() : learnerCode);
+    if (!learner.has_value())
+    {
+        throw std::invalid_argument("未找到指定学习者，无法生成学习路径。");
+    }
+    const auto graph = KnowledgeGraphService::loadKnowledgeGraph(courseCode);
     const auto planningResult =
         algorithm::planner::generateLearningPath(graph, request);
 
-    return buildPlanningPayload(
+    auto payload = buildPlanningPayload(
         graph,
         request,
         planningResult,
         "已生成最小版个性化学习路径。",
         learnerCode);
+    payload["practiceStatusByCode"] =
+        buildPracticedKnowledgePointCodesPayload(learner->id);
+    return payload;
 }
 
 Json::Value PathPlanningService::buildAdjustedPathPayload(
@@ -765,8 +823,16 @@ Json::Value PathPlanningService::buildAdjustedPathPayload(
 {
     const auto baseRequest = parsePlanningRequest(requestJson);
     const auto learnerCode = resolvePlanningLearnerCode(requestJson);
+    const auto courseCode = resolvePlanningCourseCode(requestJson);
+    const auto learner =
+        repositories::LearnerProfileRepository::findLearnerByCode(
+            learnerCode.empty() ? readDefaultLearnerCode() : learnerCode);
+    if (!learner.has_value())
+    {
+        throw std::invalid_argument("未找到指定学习者，无法调整学习路径。");
+    }
     const auto feedbackItems = parseFeedbackItems(requestJson);
-    const auto graph = KnowledgeGraphService::loadKnowledgeGraph();
+    const auto graph = KnowledgeGraphService::loadKnowledgeGraph(courseCode);
     const auto adjustmentResult = algorithm::adjuster::adjustLearningPath(
         graph, baseRequest, feedbackItems);
 
@@ -808,6 +874,8 @@ Json::Value PathPlanningService::buildAdjustedPathPayload(
     payload["feedbackSummary"]["blockedCount"] = adjustmentResult.blockedCount;
     payload["updatedMasteryByCode"] = updatedMasteryByCode;
     payload["adjustments"] = adjustmentDetails;
+    payload["practiceStatusByCode"] =
+        buildPracticedKnowledgePointCodesPayload(learner->id);
 
     return payload;
 }
@@ -818,6 +886,13 @@ Json::Value PathPlanningService::buildDetailPathPayload(
     const auto scopeCode = parseDetailScopeCode(requestJson);
     auto request = parseDetailPlanningRequest(requestJson);
     const auto learnerCode = resolvePlanningLearnerCode(requestJson);
+    const auto learner =
+        repositories::LearnerProfileRepository::findLearnerByCode(
+            learnerCode.empty() ? readDefaultLearnerCode() : learnerCode);
+    if (!learner.has_value())
+    {
+        throw std::invalid_argument("未找到指定学习者，无法生成细化学习路径。");
+    }
     const auto scopePayload = KnowledgeGraphService::buildGraphPayload(scopeCode);
     const auto scopeGraph = buildScopedGraphFromPayload(scopePayload);
 
@@ -843,6 +918,8 @@ Json::Value PathPlanningService::buildDetailPathPayload(
     payload["scope"] = scopePayload["view"];
     payload["breadcrumbs"] = scopePayload["breadcrumbs"];
     payload["meta"] = scopePayload["meta"];
+    payload["practiceStatusByCode"] =
+        buildPracticedDetailNodeCodesPayload(learner->id, scopeCode);
 
     return payload;
 }
@@ -948,6 +1025,8 @@ Json::Value PathPlanningService::buildAdjustedDetailPathPayload(
     payload["feedbackBatchId"] = feedbackBatchId;
     payload["updatedMasteryByCode"] = updatedMasteryByCode;
     payload["adjustments"] = adjustmentDetails;
+    payload["practiceStatusByCode"] =
+        buildPracticedDetailNodeCodesPayload(learner->id, scopeCode);
 
     return payload;
 }

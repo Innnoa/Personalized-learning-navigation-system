@@ -195,22 +195,6 @@
                   <div class="path-item-actions">
                     <span>{{ item.estimatedMinutes }} 分钟</span>
                     <button
-                      type="button"
-                      class="detail-toggle"
-                      @click="emit('focus-node', item.code)"
-                    >
-                      前往学习图谱
-                    </button>
-                    <button
-                      v-if="hasDetailLearningSection(item.code)"
-                      :data-testid="`detail-learning-${item.code}`"
-                      type="button"
-                      class="detail-toggle"
-                      @click="openDetailLearningSection(item.code)"
-                    >
-                      细化学习
-                    </button>
-                    <button
                       v-if="hasResourceSection(item.code)"
                       type="button"
                       class="detail-toggle"
@@ -287,13 +271,6 @@
                   <strong>{{ item.name }}</strong>
                   <div class="path-item-actions">
                     <span>{{ item.estimatedMinutes }} 分钟</span>
-                    <button
-                      type="button"
-                      class="detail-toggle"
-                      @click="emit('focus-node', item.code)"
-                    >
-                      前往学习图谱
-                    </button>
                     <button
                       v-if="hasResourceSection(item.code)"
                       type="button"
@@ -425,12 +402,18 @@
                   class="feedback-item"
                 >
                   <div class="feedback-item-head">
-                    <div>
-                      <strong>{{ item.name }}</strong>
-                      <p class="path-item-meta">
+                  <div>
+                    <strong>{{ item.name }}</strong>
+                    <p class="path-item-meta">
                         第{{ item.chapterNo }}章 · 当前掌握度 {{ item.masteryPercent }}%
+                        <span
+                          v-if="item.hasPracticeRecord"
+                          class="practice-status-badge"
+                        >
+                          已练习
+                        </span>
                       </p>
-                    </div>
+                  </div>
                     <span class="feedback-badge">{{ item.estimatedMinutes }} 分钟</span>
                   </div>
                   <p class="path-item-reason">
@@ -667,6 +650,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  forceRefreshToken: {
+    type: Number,
+    default: 0,
+  },
+  courseCode: {
+    type: String,
+    default: "",
+  },
   externalTargetCode: {
     type: String,
     default: "",
@@ -742,8 +733,16 @@ const selectedTargetLabel = computed(() => {
   return target?.label || "未选择";
 });
 
+const practicedNodeCodeSet = computed(
+  () => new Set(planResult.value?.practiceStatusByCode || []),
+);
 const scheduledItems = computed(() =>
-  (planResult.value?.path || []).filter((item) => item.status === "scheduled"),
+  (planResult.value?.path || [])
+    .filter((item) => item.status === "scheduled")
+    .map((item) => ({
+      ...item,
+      hasPracticeRecord: practicedNodeCodeSet.value.has(item.code),
+    })),
 );
 
 const deferredItems = computed(() =>
@@ -1202,6 +1201,8 @@ function goToPracticeCheck(targetItem = null) {
     sourcePage: "home",
     targetCode: resolvedTargetItem.code,
     targetName: resolvedTargetItem.name,
+    originTargetCode: selectedTargetCode.value || resolvedTargetItem.code,
+    originTargetName: selectedTargetLabel.value || resolvedTargetItem.name,
     scopeCode: "root",
     scopeLabel: "课程主图",
     previousMasteryPercent: Math.round(Number(resolvedTargetItem.masteryPercent) || 0),
@@ -1310,7 +1311,12 @@ async function loadKnowledgePoints() {
   optionsError.value = "";
 
   try {
-    const payload = await fetchKnowledgeGraph();
+    const params = {};
+    if (props.courseCode) {
+      params.courseCode = props.courseCode;
+    }
+    const payload =
+      Object.keys(params).length > 0 ? await fetchKnowledgeGraph(params) : await fetchKnowledgeGraph();
     knowledgePoints.value = payload.nodes;
     applyRequestedTargetCode();
   } catch (error) {
@@ -1354,6 +1360,7 @@ async function submitPlan() {
   try {
     planResult.value = await generateLearningPath({
       learnerCode: props.learnerCode,
+      courseCode: props.courseCode,
       targetCodes: [selectedTargetCode.value],
       availableMinutes: availableMinutes.value,
       masteryByCode: buildMasteryPayload(),
@@ -1407,6 +1414,7 @@ async function rollbackLatestAdjustment() {
 
     const nextPlanResult = await generateLearningPath({
       learnerCode: props.learnerCode,
+      courseCode: props.courseCode,
       targetCodes: [selectedTargetCode.value],
       availableMinutes: availableMinutes.value,
       masteryByCode: updatedMasteryByCode,
@@ -1445,6 +1453,17 @@ watch(
     applyMasterySnapshot(snapshot);
   },
   { deep: true },
+);
+
+watch(
+  () => props.courseCode,
+  async (courseCode, previousCourseCode) => {
+    if (!courseCode || courseCode === previousCourseCode) {
+      return;
+    }
+
+    await loadKnowledgePoints();
+  },
 );
 
 watch(
@@ -1501,8 +1520,25 @@ onMounted(async () => {
 
   if (!optionsError.value) {
     await initializePlannerFromProfile();
+    if (props.forceRefreshToken > 0 && selectedTargetCode.value) {
+      await submitPlan();
+    }
   }
 });
+
+watch(
+  () => props.forceRefreshToken,
+  async (token, previousToken) => {
+    if (!token || token === previousToken || !optionsReady.value || !selectedTargetCode.value) {
+      return;
+    }
+
+    await submitPlan();
+  },
+  {
+    immediate: true,
+  },
+);
 
 // Persist target selection
 watch(selectedTargetCode, (val) => {
@@ -2151,6 +2187,19 @@ dd {
   color: #0c5960;
   font-size: 0.9rem;
   font-weight: 700;
+}
+
+.practice-status-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(23, 107, 57, 0.12);
+  color: #176b39;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .feedback-summary {

@@ -20,8 +20,10 @@
         v-else-if="plannerMode === 'main'"
         :key="plannerRenderKey"
         :learner-code="resolvedLearnerCode"
+        :course-code="learnerProfile?.course?.code || authStore.linkedLearner?.courseCode || ''"
         :initial-mastery-by-code="learnerProfile?.masteryByCode || {}"
         :feedback-record-count="learnerProfile?.summary?.feedbackRecordCount || 0"
+        :force-refresh-token="forcePlannerRefreshToken"
         :profile-loading="learnerProfileLoading"
         @feedback-saved="handleLearnerProfileUpdated"
         @focus-node="handleGraphFocusRequested"
@@ -30,6 +32,7 @@
         v-else-if="routeSection"
         :key="detailWorkspaceKey"
         :learner-code="resolvedLearnerCode"
+        :course-code="learnerProfile?.course?.code || authStore.linkedLearner?.courseCode || ''"
         :mastery-by-code="
           learnerProfile?.graphMasteryByCode || learnerProfile?.masteryByCode || {}
         "
@@ -60,6 +63,7 @@ const navigationStore = useNavigationStore();
 const learnerProfile = ref(null);
 const learnerProfileLoading = ref(true);
 const plannerRenderKey = ref(0);
+const forcePlannerRefreshToken = ref(0);
 const routeSection = ref(null);
 const routeSectionLoading = ref(false);
 const authLearnerCode = computed(() => String(authStore.linkedLearner?.learnerCode || ""));
@@ -125,9 +129,16 @@ async function loadRouteSection() {
   routeSectionLoading.value = true;
 
   try {
-    const payload = await fetchKnowledgeGraph({
+    const params = {
       scopeCode: String(route.query.scope || ""),
-    });
+    };
+    const courseCode = String(
+      learnerProfile.value?.course?.code || authStore.linkedLearner?.courseCode || "",
+    );
+    if (courseCode) {
+      params.courseCode = courseCode;
+    }
+    const payload = await fetchKnowledgeGraph(params);
     const view = payload?.view || {};
     routeSection.value = {
       code: view.parentNodeCode || "",
@@ -162,7 +173,22 @@ async function refreshLearnerProfileAfterPracticeUpdate() {
   const cleanedQuery = { ...route.query };
   delete cleanedQuery.practiceUpdated;
 
+  if (typeof window !== "undefined" && resolvedLearnerCode.value) {
+    try {
+      const scopeCode =
+        plannerMode.value === "detail"
+          ? String(route.query.scope || "root")
+          : "root";
+      window.sessionStorage.removeItem(`plns-plan-${resolvedLearnerCode.value}-${scopeCode}`);
+    } catch {}
+  }
+
+  if (plannerMode.value === "detail") {
+    navigationStore.clearDetailLearningViewState(String(route.query.scope || ""));
+  }
+
   await loadLearnerProfile();
+  forcePlannerRefreshToken.value += 1;
   plannerRenderKey.value += 1;
 
   await router.replace({
@@ -202,6 +228,17 @@ watch(
 watch(
   () => [route.query.scope, route.query.target],
   async () => {
+    await loadRouteSection();
+  },
+);
+
+watch(
+  () => learnerProfile.value?.course?.code || authStore.linkedLearner?.courseCode || "",
+  async (courseCode, previousCourseCode) => {
+    if (!courseCode || courseCode === previousCourseCode) {
+      return;
+    }
+
     await loadRouteSection();
   },
 );

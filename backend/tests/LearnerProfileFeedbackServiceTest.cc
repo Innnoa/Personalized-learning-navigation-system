@@ -4,6 +4,7 @@
 #include "services/DemoResetService.h"
 #include "services/FeedbackService.h"
 #include "services/LearnerProfileService.h"
+#include "services/PathPlanningService.h"
 #include "services/ResourceViewService.h"
 
 #include <cmath>
@@ -109,6 +110,21 @@ int queryFeedbackRecordCount(const std::string &learnerCode)
     return result.front()["total"].as<int>();
 }
 
+int queryDetailFeedbackRecordCount(const std::string &learnerCode,
+                                   const std::string &scopeCode,
+                                   const std::string &nodeCode)
+{
+    const auto result = getClient()->execSqlSync(
+        "select count(1) as total "
+        "from detail_learning_feedback_records r "
+        "join learners l on l.id = r.learner_id "
+        "where l.code = ? and r.scope_code = ? and r.node_code = ?",
+        learnerCode,
+        scopeCode,
+        nodeCode);
+    return result.front()["total"].as<int>();
+}
+
 int queryResourceViewRecordCount(const std::string &learnerCode)
 {
     const auto result = getClient()->execSqlSync(
@@ -132,14 +148,27 @@ DROGON_TEST(LearnerProfileServiceBuildsDefaultLearnerPayload)
     CHECK(payload["summary"]["masteredCount"].asInt() == 1);
     CHECK(payload["summary"]["inProgressCount"].asInt() == 12);
     CHECK(payload["summary"]["notStartedCount"].asInt() == 1);
-    CHECK(payload["summary"]["feedbackRecordCount"].asInt() == 0);
+    CHECK(payload["summary"]["feedbackRecordCount"].asInt() == 4);
     CHECK(payload["summary"]["resourceViewRecordCount"].asInt() == 0);
     CHECK(payload["summary"]["averageMasteryPercent"].asInt() == 41);
     CHECK(std::abs(payload["masteryByCode"]["topological-sort"].asDouble() - 0.0) <
           1e-9);
     CHECK(payload["masteryItems"].size() == 14U);
-    CHECK(payload["recentFeedbackItems"].size() == 0U);
+    CHECK(payload["recentFeedbackItems"].size() == 4U);
     CHECK(payload["recentResourceViewItems"].size() == 0U);
+    REQUIRE(payload["analytics"].isObject());
+    REQUIRE(payload["analytics"]["feedbackTrend"].isArray());
+    CHECK(payload["analytics"]["feedbackTrend"].size() == 4U);
+    CHECK(payload["analytics"]["feedbackTrend"][0]["knowledgePointCode"].asString() ==
+          "sequence-list");
+    CHECK(payload["analytics"]["feedbackTrend"][1]["knowledgePointCode"].asString() ==
+          "linked-list");
+    CHECK(payload["analytics"]["feedbackTrend"][2]["knowledgePointCode"].asString() ==
+          "queue");
+    CHECK(payload["analytics"]["feedbackTrend"][3]["knowledgePointCode"].asString() ==
+          "tree-basic");
+    CHECK(payload["analytics"]["feedbackTrend"][0]["recordedAt"].asString() <
+          payload["analytics"]["feedbackTrend"][3]["recordedAt"].asString());
 }
 
 DROGON_TEST(LearnerProfileServiceBuildsChartAnalyticsPayload)
@@ -231,6 +260,50 @@ DROGON_TEST(LearnerProfileServiceBuildsGraphMasteryForDetailNodes)
                    payload["masteryByCode"]["queue"].asDouble()) < 1e-9);
     CHECK(std::abs(payload["graphMasteryByCode"]["queue-circular"].asDouble() -
                    payload["masteryByCode"]["queue"].asDouble()) < 1e-9);
+}
+
+DROGON_TEST(FeedbackServicePersistsDetailPracticeHistoryWhenScopeContextProvided)
+{
+    const std::string learnerCode = "detail-practice-history-test-learner";
+    createIsolatedLearnerFromDemo(learnerCode, "细化练习历史测试学习者");
+
+    Json::Value request(Json::objectValue);
+    request["learnerCode"] = learnerCode;
+    request["scopeCode"] = "linear-list";
+    request["sourcePage"] = "detail-learning";
+    request["feedbackItems"] = Json::Value(Json::arrayValue);
+    request["feedbackItems"][0]["code"] = "linear-list";
+    request["feedbackItems"][0]["completionStatus"] = "partial";
+    request["feedbackItems"][0]["selfRatedMastery"] = 0.48;
+
+    const auto payload = services::FeedbackService::submitFeedback(request);
+
+    CHECK(payload["feedbackBatchId"].asString().empty() == false);
+    CHECK(queryDetailFeedbackRecordCount(
+              learnerCode, "linear-list", "linear-list-definition") == 1);
+
+    Json::Value detailRequest(Json::objectValue);
+    detailRequest["learnerCode"] = learnerCode;
+    detailRequest["scopeCode"] = "linear-list";
+    detailRequest["targetNodeCode"] = "linear-list-definition";
+    detailRequest["availableMinutes"] = 20;
+
+    const auto detailPayload =
+        services::PathPlanningService::buildDetailPathPayload(detailRequest);
+
+    CHECK(detailPayload["practiceStatusByCode"].isArray());
+
+    bool foundPracticedNode = false;
+    for (const auto &item : detailPayload["practiceStatusByCode"])
+    {
+        if (item.asString() == "linear-list-definition")
+        {
+            foundPracticedNode = true;
+            break;
+        }
+    }
+
+    CHECK(foundPracticedNode == true);
 }
 
 DROGON_TEST(ResourceViewServicePersistsRecentViewedResources)

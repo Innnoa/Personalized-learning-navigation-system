@@ -47,6 +47,8 @@ class FeedbackRepository
     static void upsertLearnerMastery(int learnerId, int knowledgePointId,
                                      double masteryScore);
     static void insertFeedbackRecord(const FeedbackRecordWrite &record);
+    static std::vector<std::string> listPracticedKnowledgePointCodesByLearnerId(
+        int learnerId);
     static std::optional<LatestFeedbackBatchInfo> findLatestFeedbackBatchByLearnerId(
         int learnerId);
     static std::vector<FeedbackBatchRecord> listFeedbackRecordsByBatchId(

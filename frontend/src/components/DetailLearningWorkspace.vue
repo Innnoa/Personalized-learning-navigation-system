@@ -438,7 +438,14 @@
                   <div>
                     <strong>{{ item.name }}</strong>
                     <p class="detail-path-item-meta">
-                      当前掌握度 {{ item.masteryPercent }}% · 预计 {{ item.estimatedMinutes }} 分钟
+                      当前掌握度 {{ item.masteryPercent }}%
+                      <span
+                        v-if="item.hasPracticeRecord"
+                        class="detail-practice-badge"
+                      >
+                        已练习
+                      </span>
+                      · 预计 {{ item.estimatedMinutes }} 分钟
                     </p>
                   </div>
                 </div>
@@ -650,6 +657,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  courseCode: {
+    type: String,
+    default: "",
+  },
   masteryByCode: {
     type: Object,
     default: () => ({}),
@@ -808,8 +819,21 @@ const directDependents = computed(() => {
     .sort(sortNodes);
 });
 
+const practicedNodeCodeSet = computed(
+  () =>
+    new Set(
+      detailPlanResult.value?.practiceStatusByCode ||
+        graphData.value?.practiceStatusByCode ||
+        [],
+    ),
+);
 const detailScheduledItems = computed(() =>
-  (detailPlanResult.value?.path || []).filter((item) => item.status === "scheduled"),
+  (detailPlanResult.value?.path || [])
+    .filter((item) => item.status === "scheduled")
+    .map((item) => ({
+      ...item,
+      hasPracticeRecord: practicedNodeCodeSet.value.has(item.code),
+    })),
 );
 
 const detailDeferredItems = computed(() =>
@@ -1927,7 +1951,11 @@ async function loadScopeGraph(scopeCode) {
   detailPlanError.value = "";
 
   try {
-    const payload = await fetchKnowledgeGraph({ scopeCode });
+    const params = { scopeCode };
+    if (props.courseCode) {
+      params.courseCode = props.courseCode;
+    }
+    const payload = await fetchKnowledgeGraph(params);
     const viewState = navigationStore.detailLearningViewStateByScopeCode(scopeCode);
     graphData.value = payload;
     restoreScopeState(payload, viewState);
@@ -1957,6 +1985,17 @@ watch(
   },
   {
     immediate: true,
+  },
+);
+
+watch(
+  () => props.courseCode,
+  async (courseCode, previousCourseCode) => {
+    if (!courseCode || courseCode === previousCourseCode || !props.section?.scopeCode) {
+      return;
+    }
+
+    await loadScopeGraph(String(props.section.scopeCode || ""));
   },
 );
 
@@ -2566,6 +2605,19 @@ h4 {
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+}
+
+.detail-practice-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(23, 107, 57, 0.12);
+  color: #176b39;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .detail-path-action-button {
