@@ -20,6 +20,18 @@ struct DemoBaselineSeed
     double masteryScore = 0.0;
 };
 
+struct DemoBaselineFeedbackSeed
+{
+    const char *code = "";
+    const char *feedbackBatchId = "";
+    const char *completionStatus = "";
+    double selfRatedMastery = 0.0;
+    double previousMastery = 0.0;
+    double updatedMastery = 0.0;
+    const char *ruleApplied = "";
+    const char *recordedAt = "";
+};
+
 constexpr std::array<DemoBaselineSeed, 14> kDefaultDemoBaseline = {{
     {"ds-intro", 0.90},
     {"algorithm-analysis", 0.70},
@@ -35,6 +47,13 @@ constexpr std::array<DemoBaselineSeed, 14> kDefaultDemoBaseline = {{
     {"huffman-tree", 0.05},
     {"graph-basic", 0.15},
     {"topological-sort", 0.00},
+}};
+
+constexpr std::array<DemoBaselineFeedbackSeed, 4> kDefaultDemoFeedbackBaseline = {{
+    {"sequence-list", "seed-demo-learner-seq", "partial", 0.34, 0.22, 0.28, "seeded-demo-progress", "2026-06-10 09:30:00"},
+    {"linked-list", "seed-demo-learner-linked", "partial", 0.54, 0.31, 0.48, "seeded-demo-progress", "2026-06-12 15:20:00"},
+    {"queue", "seed-demo-learner-queue", "completed", 0.61, 0.39, 0.56, "seeded-demo-progress", "2026-06-16 11:40:00"},
+    {"tree-basic", "seed-demo-learner-tree", "completed", 0.88, 0.43, 0.92, "seeded-demo-progress", "2026-06-19 18:10:00"},
 }};
 
 std::string readDefaultLearnerCode()
@@ -107,6 +126,8 @@ Json::Value DemoResetService::resetDemoState(const Json::Value &requestJson)
 
     std::vector<repositories::DemoBaselineMasteryWrite> baselineMastery;
     baselineMastery.reserve(kDefaultDemoBaseline.size());
+    std::vector<repositories::DemoBaselineFeedbackWrite> baselineFeedbackRecords;
+    baselineFeedbackRecords.reserve(kDefaultDemoFeedbackBaseline.size());
 
     for (const auto &seed : kDefaultDemoBaseline)
     {
@@ -123,6 +144,27 @@ Json::Value DemoResetService::resetDemoState(const Json::Value &requestJson)
                 seed.masteryScore});
     }
 
+    for (const auto &seed : kDefaultDemoFeedbackBaseline)
+    {
+        const auto iter = knowledgePointIdByCode.find(seed.code);
+        if (iter == knowledgePointIdByCode.end())
+        {
+            throw std::runtime_error(
+                "演示重置反馈基线引用了不存在的知识点编码。");
+        }
+
+        baselineFeedbackRecords.push_back(
+            repositories::DemoBaselineFeedbackWrite{
+                iter->second,
+                seed.feedbackBatchId,
+                seed.completionStatus,
+                seed.selfRatedMastery,
+                seed.previousMastery,
+                seed.updatedMastery,
+                seed.ruleApplied,
+                seed.recordedAt});
+    }
+
     const int clearedFeedbackRecordCount =
         repositories::LearnerProfileRepository::countFeedbackRecordsByLearnerId(
             learner->id);
@@ -131,7 +173,7 @@ Json::Value DemoResetService::resetDemoState(const Json::Value &requestJson)
             learner->id);
 
     repositories::DemoResetRepository::resetLearnerState(
-        learner->id, baselineMastery);
+        learner->id, baselineMastery, baselineFeedbackRecords);
 
     auto payload = LearnerProfileService::buildProfilePayload(learner->code);
     payload["message"] = "已恢复演示初始状态。";
