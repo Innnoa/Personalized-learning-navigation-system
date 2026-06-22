@@ -631,16 +631,16 @@ DROGON_TEST(DemoResetServiceRestoresLearnerToInitialBaseline)
 
     CHECK(resetPayload["status"].asString() == "ok");
     CHECK(resetPayload["learner"]["code"].asString() == learnerCode);
-    CHECK(resetPayload["summary"]["feedbackRecordCount"].asInt() == 0);
+    CHECK(resetPayload["summary"]["feedbackRecordCount"].asInt() == 4);
     CHECK(resetPayload["summary"]["resourceViewRecordCount"].asInt() == 0);
     CHECK(resetPayload["resetSummary"]["clearedFeedbackRecordCount"].asInt() == 2);
     CHECK(resetPayload["resetSummary"]["clearedResourceViewRecordCount"].asInt() == 1);
     CHECK(resetPayload["resetSummary"]["restoredMasteryPointCount"].asInt() == 14);
-    CHECK(resetPayload["recentFeedbackItems"].size() == 0U);
+    CHECK(resetPayload["recentFeedbackItems"].size() == 4U);
     CHECK(resetPayload["recentResourceViewItems"].size() == 0U);
     CHECK(std::abs(queryMasteryScore(learnerCode, "queue") - 0.35) < 1e-9);
     CHECK(std::abs(queryMasteryScore(learnerCode, "graph-basic") - 0.15) < 1e-9);
     CHECK(std::abs(queryMasteryScore(learnerCode, "topological-sort") - 0.0) < 1e-9);
-    CHECK(queryFeedbackRecordCount(learnerCode) == 0);
+    CHECK(queryFeedbackRecordCount(learnerCode) == 4);
     CHECK(queryResourceViewRecordCount(learnerCode) == 0);
 }

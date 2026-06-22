@@ -22,7 +22,8 @@ namespace repositories
 {
 void DemoResetRepository::resetLearnerState(
     int learnerId,
-    const std::vector<DemoBaselineMasteryWrite> &baselineMastery)
+    const std::vector<DemoBaselineMasteryWrite> &baselineMastery,
+    const std::vector<DemoBaselineFeedbackWrite> &baselineFeedbackRecords)
 {
     auto transaction = getClient()->newTransaction();
 
@@ -53,6 +54,24 @@ void DemoResetRepository::resetLearnerState(
                 learnerId,
                 item.knowledgePointId,
                 item.masteryScore);
+        }
+
+        for (const auto &item : baselineFeedbackRecords)
+        {
+            transaction->execSqlSync(
+                "insert into learning_feedback_records "
+                "(learner_id, knowledge_point_id, feedback_batch_id, completion_status, "
+                "self_rated_mastery, previous_mastery, updated_mastery, rule_applied, recorded_at) "
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                learnerId,
+                item.knowledgePointId,
+                item.feedbackBatchId,
+                item.completionStatus,
+                item.selfRatedMastery,
+                item.previousMastery,
+                item.updatedMastery,
+                item.ruleApplied,
+                item.recordedAt);
         }
     }
     catch (...)
