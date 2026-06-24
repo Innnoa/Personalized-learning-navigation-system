@@ -27,6 +27,30 @@ fail() {
   exit 1
 }
 
+detect_lan_ipv4() {
+  local candidate
+
+  if command -v hostname >/dev/null 2>&1; then
+    for candidate in $(hostname -I 2>/dev/null || true); do
+      if [[ "${candidate}" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] && [[ "${candidate}" != 127.* ]]; then
+        echo "${candidate}"
+        return 0
+      fi
+    done
+  fi
+
+  if command -v ip >/dev/null 2>&1; then
+    while IFS= read -r candidate; do
+      if [[ -n "${candidate}" ]] && [[ "${candidate}" != 127.* ]]; then
+        echo "${candidate}"
+        return 0
+      fi
+    done < <(ip -4 -o addr show scope global 2>/dev/null | awk '{split($4, a, "/"); print a[1]}')
+  fi
+
+  return 1
+}
+
 require_command() {
   local cmd="$1"
   if ! command -v "${cmd}" >/dev/null 2>&1; then
@@ -101,9 +125,27 @@ run_smoke_if_needed() {
 }
 
 print_summary() {
+  local lan_ip=""
+  local localhost_frontend_url="http://127.0.0.1:${FRONTEND_PORT}"
+  local localhost_backend_url="http://127.0.0.1:${BACKEND_PORT}"
+
+  lan_ip="$(detect_lan_ipv4 || true)"
+
   log "✅ demo_check 通过"
-  echo "  前端地址: ${FRONTEND_BASE_URL}"
-  echo "  后端地址: ${API_BASE_URL}"
+  echo "  前端本机访问: ${localhost_frontend_url}"
+  if [[ -n "${lan_ip}" ]]; then
+    echo "  前端局域网访问: http://${lan_ip}:${FRONTEND_PORT}"
+  else
+    echo "  前端局域网访问: 未检测到局域网 IPv4"
+  fi
+  echo "  后端本机访问: ${localhost_backend_url}"
+  if [[ -n "${lan_ip}" ]]; then
+    echo "  后端局域网访问: http://${lan_ip}:${BACKEND_PORT}"
+  else
+    echo "  后端局域网访问: 未检测到局域网 IPv4"
+  fi
+  echo "  当前检查前端地址: ${FRONTEND_BASE_URL}"
+  echo "  当前检查后端地址: ${API_BASE_URL}"
   echo "  复用现有实例: ${CHECK_REUSE_EXISTING}"
   echo "  目标节点: ${CHECK_TARGET_CODE}"
   echo "  时间预算: ${CHECK_AVAILABLE_MINUTES}"
